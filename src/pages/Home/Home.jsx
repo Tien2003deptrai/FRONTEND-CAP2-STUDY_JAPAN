@@ -1,12 +1,5 @@
-import Navbar from '@/shares/components/Navbar/Navbar'
-import React from 'react'
-
-const Home = () => {
-  return (
-    <div>
-      <Navbar />
-    </div>
-  )
+function Home() {
+  return <div className="py-7">Home</div>
 }
 
 export default Home
