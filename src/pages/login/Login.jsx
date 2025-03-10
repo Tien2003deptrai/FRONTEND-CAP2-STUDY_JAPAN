@@ -1,6 +1,68 @@
-import React from 'react'
+import React, { useState } from 'react'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 
 function Login() {
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [emailError, setEmailError] = useState('')
+  const [passwordError, setPasswordError] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value)
+    setEmailError('')
+  }
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value)
+    setPasswordError('')
+  }
+
+  const isValidEmail = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    return emailRegex.test(email)
+  }
+
+  const isValidPassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+    return passwordRegex.test(password)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    let isValid = true
+
+    if (!email.trim()) {
+      setEmailError('Email hoặc tên đăng nhập không được để trống.')
+      isValid = false
+    } else if (!isValidEmail(email)) {
+      setEmailError('Email không hợp lệ.')
+      isValid = false
+    }
+
+    if (!password.trim()) {
+      setPasswordError('Mật khẩu không được để trống.')
+      isValid = false
+    } else if (!isValidPassword(password)) {
+      setPasswordError(
+        'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và ký tự đặc biệt.'
+      )
+      isValid = false
+    }
+
+    if (isValid) {
+      console.log('Email:', email, 'Password:', password)
+      setEmail('')
+      setPassword('')
+    }
+  }
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword)
+  }
+
   return (
     <div className="bg-pink-200 min-h-screen flex justify-center items-center">
       <div className="container mx-auto flex max-w-6xls rounded-lg shadow-lg overflow-hidden">
@@ -57,7 +119,7 @@ function Login() {
             Vui lòng đăng nhập để tiếp tục học tiếng Nhật
           </p>
 
-          <form id="loginForm">
+          <form id="loginForm" onSubmit={handleSubmit}>
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -71,10 +133,11 @@ function Login() {
                   id="email"
                   placeholder="Nhập email hoặc tên đăng nhập của bạn"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 transition duration-200 text-lg"
-                  required
+                  value={email}
+                  onChange={handleEmailChange}
                 />
-                <div className="text-red-600 hidden" id="emailError">
-                  Error message
+                <div className="text-red-600" id="emailError">
+                  {emailError}
                 </div>
               </div>
             </div>
@@ -88,32 +151,28 @@ function Login() {
               </label>
               <div className="relative">
                 <input
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   id="password"
                   placeholder="Nhập mật khẩu của bạn"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 transition duration-200 text-lg"
-                  required
+                  value={password}
+                  onChange={handlePasswordChange}
                 />
                 <button
                   type="button"
                   className="absolute right-3 top-3 text-gray-500"
                   id="togglePassword"
+                  onClick={togglePasswordVisibility}
                 >
-                  👁️
+                  {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
                 </button>
-                <div className="text-red-600 hidden" id="passwordError">
-                  Error message
+                <div className="text-red-600" id="passwordError">
+                  {passwordError}
                 </div>
               </div>
             </div>
 
             <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center">
-                <input type="checkbox" id="remember" className="mr-2" />
-                <label htmlFor="remember" className="text-gray-700 text-lg">
-                  Ghi nhớ đăng nhập
-                </label>
-              </div>
               <a href="#" className="text-red-600 hover:underline text-lg">
                 Quên mật khẩu?
               </a>
@@ -126,13 +185,6 @@ function Login() {
               Đăng nhập
             </button>
           </form>
-
-          <div className="text-center text-gray-600 text-lg">
-            Chưa có tài khoản?{' '}
-            <a href="#" className="text-red-600 hover:underline">
-              Đăng ký ngay
-            </a>
-          </div>
         </div>
       </div>
     </div>
