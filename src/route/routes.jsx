@@ -1,6 +1,8 @@
 import MainLayout from '@/layout/MainLayout'
 import Home from '@/pages/home/Home'
 import Login from '@/pages/login/Login'
+import ProfileUser from '@/pages/login/ProfileUser'
+
 export const publicRoutes = [
   {
     path: '/',
@@ -10,6 +12,10 @@ export const publicRoutes = [
   {
     path: 'login',
     element: <Login />,
+  },
+  {
+    path: 'user/:userId',
+    element: <ProfileUser />,
   },
   //   {
   //     path: 'register',

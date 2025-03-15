@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
+import axios from 'axios'
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -8,15 +9,18 @@ function Login() {
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [loginError, setLoginError] = useState('')
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value)
     setEmailError('')
+    setLoginError('')
   }
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value)
     setPasswordError('')
+    setLoginError('')
   }
 
   const isValidEmail = (email) => {
@@ -30,7 +34,7 @@ function Login() {
     return passwordRegex.test(password)
   }
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
     let isValid = true
 
@@ -53,9 +57,26 @@ function Login() {
     }
 
     if (isValid) {
-      console.log('Email:', email, 'Password:', password)
-      setEmail('')
-      setPassword('')
+      try {
+        const response = await axios.post('/api/login', {
+          email: email,
+          password: password,
+        })
+
+        console.log('Login successful:', response.data)
+        setEmail('')
+        setPassword('')
+        setLoginError('')
+      } catch (error) {
+        console.error(
+          'Login failed:',
+          error.response ? error.response.data : error.message
+        )
+        setLoginError(
+          error.response?.data?.message ||
+            'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.'
+        )
+      }
     }
   }
 
@@ -70,7 +91,7 @@ function Login() {
           <div className="w-20 h-20 bg-white rounded-full flex justify-center items-center mb-6 shadow-lg">
             <span className="text-4xl text-red-600">日</span>
           </div>
-          <h2 className="text-3xl font-bold mb-2">Nihongo Master</h2>
+          <h2 className="text-3xl font-bold mb-2">Study Japan</h2>
           <h3 className="text-xl mb-4">日本語を学ぼう!</h3>
           <p className="text-center mb-4 text-lg">
             Chào mừng bạn đến với nền tảng học tiếng Nhật hàng đầu Việt Nam. Nơi
@@ -87,9 +108,7 @@ function Login() {
 
         <div className="flex-1 bg-white px-8 py-24 w-1/2 h-full">
           <div className="flex justify-between items-center mb-6">
-            <div className="text-4xl font-bold text-red-600">
-              Nihongo Master
-            </div>
+            <div className="text-4xl font-bold text-red-600">Study Japan</div>
             <div className="relative">
               <button
                 className="text-gray-500 focus:outline-none"
@@ -177,7 +196,7 @@ function Login() {
                 Quên mật khẩu?
               </a>
             </div>
-
+            <div className="text-red-600 mb-2">{loginError}</div>
             <button
               type="submit"
               className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition duration-200 text-lg"
