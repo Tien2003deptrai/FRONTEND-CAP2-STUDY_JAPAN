@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import axios from 'axios'
 
+import { useState } from 'react'
 function Login() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -85,8 +85,8 @@ function Login() {
   }
 
   return (
-    <div className="bg-pink-200 min-h-screen flex justify-center items-center">
-      <div className="container mx-auto flex max-w-6xls rounded-lg shadow-lg overflow-hidden">
+    <div className="bg-pink-200 w-full h-screen flex justify-center items-center">
+      <div className="mx-auto flex max-w-6xls rounded-lg shadow-lg overflow-hidden">
         <div className="flex-1 py-15 px-8 bg-gradient-to-br from-red-600 to-red-800 text-white flex flex-col justify-center items-center">
           <div className="w-20 h-20 bg-white rounded-full flex justify-center items-center mb-6 shadow-lg">
             <span className="text-4xl text-red-600">日</span>
