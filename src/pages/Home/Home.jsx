@@ -1,5 +1,10 @@
-function Home() {
-  return <div className="py-7">Home</div>
-}
+import React from "react";
 
-export default Home
+const Home = () => {
+  return (
+    <div>
+Home      
+   </div>)
+};
+
+export default Home;
