@@ -15,7 +15,7 @@ function Header() {
 
         <nav className="hidden md:flex space-x-8 text-lg font-medium">
           <Link
-            to="/learning"
+            to="/courses"
             className="hover:text-gray-100 transition text-[22px] font-semibold duration-300"
           >
             Học Tập

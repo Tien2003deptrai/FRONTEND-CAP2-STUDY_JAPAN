@@ -6,6 +6,9 @@ export default {
       colors: {
         primary: '#DC2626',
       },
+      width: {
+        1200: '1200px',
+      },
     },
   },
   plugins: [],

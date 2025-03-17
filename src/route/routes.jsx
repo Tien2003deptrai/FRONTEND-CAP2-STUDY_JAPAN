@@ -2,6 +2,7 @@ import MainLayout from '@/layout/MainLayout'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import PageNotFound from '@/pages/not-found/PageNotFound'
+import StudentCourse from '@/pages/student-course/StudentCourse'
 
 export const publicRoutes = [
   {
@@ -9,14 +10,6 @@ export const publicRoutes = [
     element: <MainLayout />,
     children: [{ index: true, element: <Home /> }],
   },
-  //   {
-  //     path: 'login',
-  //     element: <Login />,
-  //   },
-  //   {
-  //     path: 'register',
-  //     element: <Register />,
-  //   },
   {
     path: 'not-allowed',
     element: <Forbiden />,
@@ -25,14 +18,12 @@ export const publicRoutes = [
     path: '*',
     element: <PageNotFound />,
   },
-  // {
-  //     path: 'reset-password',
-  //     element: <MainLayout isFooter={false} isHeader={false} />,
-  //     children: [
-  //         {
-  //             index: true,
-  //             element: <ChangePassword />,
-  //         },
-  //     ],
-  // },
+]
+
+export const studentRoutes = [
+  {
+    path: '/courses',
+    element: <MainLayout />,
+    children: [{ index: true, element: <StudentCourse /> }],
+  },
 ]
