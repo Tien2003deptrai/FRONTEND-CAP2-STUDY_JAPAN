@@ -1,92 +1,115 @@
+import axiosInstance from '@/network/httpRequest'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
-import axios from 'axios'
-
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
+
 function Login() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [emailError, setEmailError] = useState('')
-  const [passwordError, setPasswordError] = useState('')
+  // State management with clear naming and organization
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  })
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+    login: '',
+  })
   const [showPassword, setShowPassword] = useState(false)
-  const [loginError, setLoginError] = useState('')
+  const navigate = useNavigate()
 
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value)
-    setEmailError('')
-    setLoginError('')
+  // Validation utils - separated from handlers for better maintainability
+  const validators = {
+    email: (value) => {
+      if (!value.trim()) return 'Email hoặc tên đăng nhập không được để trống.'
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      return !emailRegex.test(value) ? 'Email không hợp lệ.' : ''
+    },
+    password: (value) => {
+      if (!value.trim()) return 'Mật khẩu không được để trống.'
+      const passwordRegex =
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
+      return !passwordRegex.test(value)
+        ? 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và ký tự đặc biệt.'
+        : ''
+    },
   }
 
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value)
-    setPasswordError('')
-    setLoginError('')
+  // Generic change handler using computed property names
+  const handleInputChange = (field) => (e) => {
+    const value = e.target.value
+    setFormData((prev) => ({ ...prev, [field]: value }))
+    setErrors((prev) => ({ ...prev, [field]: '', login: '' }))
   }
 
-  const isValidEmail = (email) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
+  const togglePasswordVisibility = () => setShowPassword((prev) => !prev)
+
+  // Form validation separated from submission logic
+  const validateForm = () => {
+    const newErrors = {
+      // email: validators.email(formData.email),
+      // password: validators.password(formData.password),
+      // login: '',
+      email: formData.email,
+      password: formData.password,
+      login: '',
+    }
+
+    setErrors(newErrors)
+    return !newErrors.email && !newErrors.password
   }
 
-  const isValidPassword = (password) => {
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-    return passwordRegex.test(password)
+  // Authentication logic isolated from UI concerns
+  const authenticate = async () => {
+    try {
+      const response = await axiosInstance.post('/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      })
+      if (response.data.status == 200 && response.data.success == true) {
+        Swal.fire({
+          icon: 'success', // Loại thông báo là thành công
+          title: 'Thành công!',
+          text: 'Đăng nhập thành công.',
+          confirmButtonText: 'Đóng', // Văn bản nút xác nhận
+        })
+        navigate('/')
+      }
+      console.log('Login successful:', response.data)
+      // Reset form after successful submission
+      setFormData({ email: '', password: '' })
+      setErrors({ email: '', password: '', login: '' })
+
+      // Here you would typically store the token and redirect the user
+      localStorage.setItem('token', response.data.token)
+      return { success: true, data: response.data }
+    } catch (error) {
+      console.error(
+        'Login failed:',
+        error.response ? error.response.data : error.message
+      )
+      const errorMessage =
+        error.response?.data?.message ||
+        'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.'
+
+      setErrors((prev) => ({ ...prev, login: errorMessage }))
+      return { success: false, error: errorMessage }
+    }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    let isValid = true
-
-    if (!email.trim()) {
-      setEmailError('Email hoặc tên đăng nhập không được để trống.')
-      isValid = false
-    } else if (!isValidEmail(email)) {
-      setEmailError('Email không hợp lệ.')
-      isValid = false
-    }
-
-    if (!password.trim()) {
-      setPasswordError('Mật khẩu không được để trống.')
-      isValid = false
-    } else if (!isValidPassword(password)) {
-      setPasswordError(
-        'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và ký tự đặc biệt.'
-      )
-      isValid = false
-    }
-
-    if (isValid) {
-      try {
-        const response = await axios.post('/api/login', {
-          email: email,
-          password: password,
-        })
-
-        console.log('Login successful:', response.data)
-        setEmail('')
-        setPassword('')
-        setLoginError('')
-      } catch (error) {
-        console.error(
-          'Login failed:',
-          error.response ? error.response.data : error.message
-        )
-        setLoginError(
-          error.response?.data?.message ||
-            'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.'
-        )
-      }
-    }
+    // if (validateForm()) {
+    await authenticate()
+    // }
   }
 
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword)
-  }
-
+  // UI separated from logic for better readability
   return (
     <div className="bg-pink-200 w-full h-screen flex justify-center items-center">
       <div className="mx-auto flex max-w-6xls rounded-lg shadow-lg overflow-hidden">
+        {/* Left panel - branding */}
         <div className="flex-1 py-15 px-8 bg-gradient-to-br from-red-600 to-red-800 text-white flex flex-col justify-center items-center">
           <div className="w-20 h-20 bg-white rounded-full flex justify-center items-center mb-6 shadow-lg">
             <span className="text-4xl text-red-600">日</span>
@@ -106,6 +129,7 @@ function Login() {
           </ul>
         </div>
 
+        {/* Right panel - login form */}
         <div className="flex-1 bg-white px-8 py-24 w-1/2 h-full">
           <div className="flex justify-between items-center mb-6">
             <div className="text-4xl font-bold text-red-600">Study Japan</div>
@@ -152,12 +176,12 @@ function Login() {
                   id="email"
                   placeholder="Nhập email hoặc tên đăng nhập của bạn"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 transition duration-200 text-lg"
-                  value={email}
-                  onChange={handleEmailChange}
+                  value={formData.email}
+                  onChange={handleInputChange('email')}
                 />
-                <div className="text-red-600" id="emailError">
-                  {emailError}
-                </div>
+                {errors.email && (
+                  <div className="text-red-600">{errors.email}</div>
+                )}
               </div>
             </div>
 
@@ -174,20 +198,19 @@ function Login() {
                   id="password"
                   placeholder="Nhập mật khẩu của bạn"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 transition duration-200 text-lg"
-                  value={password}
-                  onChange={handlePasswordChange}
+                  value={formData.password}
+                  onChange={handleInputChange('password')}
                 />
                 <button
                   type="button"
                   className="absolute right-3 top-3 text-gray-500"
-                  id="togglePassword"
                   onClick={togglePasswordVisibility}
                 >
                   {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
                 </button>
-                <div className="text-red-600" id="passwordError">
-                  {passwordError}
-                </div>
+                {errors.password && (
+                  <div className="text-red-600">{errors.password}</div>
+                )}
               </div>
             </div>
 
@@ -196,7 +219,11 @@ function Login() {
                 Quên mật khẩu?
               </a>
             </div>
-            <div className="text-red-600 mb-2">{loginError}</div>
+
+            {errors.login && (
+              <div className="text-red-600 mb-2">{errors.login}</div>
+            )}
+
             <button
               type="submit"
               className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition duration-200 text-lg"

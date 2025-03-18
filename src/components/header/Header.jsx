@@ -1,33 +1,39 @@
-import { Link } from "react-router-dom";
-import { Button } from "@mui/material"; 
-import { Input } from "@mantine/core"; 
-import SearchIcon from "@mui/icons-material/Search";
+import { Link } from 'react-router-dom'
 
 function Header() {
   return (
-    <header className="bg-red-600 text-white shadow-md py-4">
-      <div className="container mx-auto flex justify-between items-center px-4">
+    <header className="sticky top-0 left-0 w-full bg-white text-primary shadow-lg py-4 z-50">
+      <div className="container mx-auto flex justify-between items-center px-6">
         <div>
-          <Link to="/" className="text-2xl font-bold">
-            🇯🇵 Sakura Nihongo 
+          <Link
+            to="/"
+            className="text-3xl font-extrabold tracking-wide flex items-center"
+          >
+            <span className="mr-2">🇯🇵</span> Sakura Nihongo
           </Link>
         </div>
-        <nav className="hidden md:flex space-x-6 text-lg">
-          <Link to="/learning" className="hover:text-gray-200">Học tập</Link>
-          <Link to="/community" className="hover:text-gray-200">Cộng đồng</Link>
-          <Link to="/jlpt" className="hover:text-gray-200">JLPT</Link>
-          <Link to="/blog" className="hover:text-gray-200">Blog</Link>
+
+        <nav className="hidden md:flex space-x-8 text-lg font-medium">
+          <Link
+            to="/courses"
+            className="hover:text-gray-100 transition text-[22px] font-semibold duration-300"
+          >
+            Học Tập
+          </Link>
+          <Link
+            to="/community"
+            className="hover:text-gray-100 transition text-[22px] font-semibold duration-300"
+          >
+            Luyện Tập
+          </Link>
         </nav>
+
         <div className="flex items-center space-x-4">
-          <div className="relative hidden md:block">
-            <Input placeholder="Tìm kiếm từ vựng, Kanji..." className="pl-10 bg-white rounded-md" />
-            <SearchIcon className="absolute left-3 top-2 text-gray-500" />
-          </div>
-          <Button variant="outlined" color="inherit">Đăng nhập</Button>
+          <button className="primary-btn">Đăng nhập</button>
         </div>
       </div>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header

@@ -135,3 +135,27 @@ table {
   border-collapse: collapse;
   border-spacing: 0;
 }
+
+@layer components {
+  .primary-btn {
+    @apply bg-primary text-white text-sm px-4 py-2 rounded-md border border-solid border-transparent shadow-sm cursor-pointer text-center;
+  }
+  .primary-btn:hover {
+    @apply bg-white text-primary duration-150 border border-solid border-primary;
+  }
+  .primary-btn:disabled {
+    @apply bg-slate-400 cursor-not-allowed;
+  }
+}
+
+@layer components {
+  .second-btn {
+    @apply bg-white text-primary text-sm px-4 py-2 rounded-md border border-solid border-primary shadow-sm cursor-pointer text-center;
+  }
+  .second-btn:hover {
+    @apply bg-primary text-white duration-150;
+  }
+  .second-btn:disabled {
+    @apply bg-slate-400 cursor-not-allowed;
+  }
+}
