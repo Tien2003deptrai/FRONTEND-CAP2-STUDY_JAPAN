@@ -1,11 +1,11 @@
 import axiosInstance from '@/network/httpRequest'
+import useAuthStore from '@/store/useAuthStore'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2'
 
 function Login() {
+  const { login } = useAuthStore()
   // State management with clear naming and organization
   const [formData, setFormData] = useState({
     email: '',
@@ -17,7 +17,6 @@ function Login() {
     login: '',
   })
   const [showPassword, setShowPassword] = useState(false)
-  const navigate = useNavigate()
 
   // Validation utils - separated from handlers for better maintainability
   const validators = {
@@ -67,23 +66,14 @@ function Login() {
         email: formData.email,
         password: formData.password,
       })
-      if (response.data.status == 200 && response.data.success == true) {
-        Swal.fire({
-          icon: 'success', // Loại thông báo là thành công
-          title: 'Thành công!',
-          text: 'Đăng nhập thành công.',
-          confirmButtonText: 'Đóng', // Văn bản nút xác nhận
-        })
-        navigate('/')
+      if (response.status == 200) {
+        login(response.data.user, response.data.token)
+        window.location.replace('/')
       }
       console.log('Login successful:', response.data)
       // Reset form after successful submission
       setFormData({ email: '', password: '' })
       setErrors({ email: '', password: '', login: '' })
-
-      // Here you would typically store the token and redirect the user
-      localStorage.setItem('token', response.data.token)
-      return { success: true, data: response.data }
     } catch (error) {
       console.error(
         'Login failed:',
@@ -94,7 +84,6 @@ function Login() {
         'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.'
 
       setErrors((prev) => ({ ...prev, login: errorMessage }))
-      return { success: false, error: errorMessage }
     }
   }
 
