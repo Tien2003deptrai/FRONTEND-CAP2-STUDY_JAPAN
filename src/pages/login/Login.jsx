@@ -2,6 +2,8 @@ import axiosInstance from '@/network/httpRequest'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 function Login() {
   // State management with clear naming and organization
@@ -15,6 +17,7 @@ function Login() {
     login: '',
   })
   const [showPassword, setShowPassword] = useState(false)
+  const navigate = useNavigate()
 
   // Validation utils - separated from handlers for better maintainability
   const validators = {
@@ -45,8 +48,11 @@ function Login() {
   // Form validation separated from submission logic
   const validateForm = () => {
     const newErrors = {
-      email: validators.email(formData.email),
-      password: validators.password(formData.password),
+      // email: validators.email(formData.email),
+      // password: validators.password(formData.password),
+      // login: '',
+      email: formData.email,
+      password: formData.password,
       login: '',
     }
 
@@ -61,7 +67,15 @@ function Login() {
         email: formData.email,
         password: formData.password,
       })
-
+      if (response.data.status == 200 && response.data.success == true) {
+        Swal.fire({
+          icon: 'success', // Loại thông báo là thành công
+          title: 'Thành công!',
+          text: 'Đăng nhập thành công.',
+          confirmButtonText: 'Đóng', // Văn bản nút xác nhận
+        })
+        navigate('/')
+      }
       console.log('Login successful:', response.data)
       // Reset form after successful submission
       setFormData({ email: '', password: '' })
@@ -86,9 +100,9 @@ function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (validateForm()) {
-      await authenticate()
-    }
+    // if (validateForm()) {
+    await authenticate()
+    // }
   }
 
   // UI separated from logic for better readability
