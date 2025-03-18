@@ -13,7 +13,6 @@ function Footer() {
             <ul className="mt-2 space-y-2">
               <li><Link to="/learning" className="hover:text-gray-300">Học tập</Link></li>
               <li><Link to="/community" className="hover:text-gray-300">Luyện tập</Link></li>
-              <li><Link to="/jlpt" className="hover:text-gray-300">Flash Card</Link></li>
             </ul>
           </div>
           <div>

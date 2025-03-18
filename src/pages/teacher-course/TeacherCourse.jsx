@@ -1,12 +1,11 @@
 import axiosInstance from '@/network/httpRequest'
-import { useAuthStore } from '@/store/useAuthStore'
+import useAuthStore from '@/store/useAuthStore'
 import { Add } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 
 function TeacherCourse() {
   const { user } = useAuthStore()
-
   const getCourse = async () => {
     const res = await axiosInstance.get('/get-by-teacher', {
       params: {
