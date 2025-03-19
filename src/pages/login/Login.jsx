@@ -1,39 +1,27 @@
 import axiosInstance from '@/network/httpRequest'
 import useAuthStore from '@/store/useAuthStore'
+import { zodResolver } from '@hookform/resolvers/zod'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Swal from 'sweetalert2'
 import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
+import { useNavigate } from 'react-router-dom'
 import * as z from 'zod'
 
 const loginSchema = z.object({
   email: z
     .string()
     .trim()
-    .min(1, 'Email hoặc tên đăng nhập không được để trống.')
-    .refine((value) => {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      return emailRegex.test(value)
-    }, 'Email không hợp lệ.'),
-  password: z
-    .string()
-    .trim()
-    .min(1, 'Mật khẩu không được để trống.')
-    .refine((value) => {
-      const passwordRegex =
-        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-      return passwordRegex.test(value)
-    }, 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và ký tự đặc biệt.'),
+    .min(4, 'Email không hợp lệ.')
+    .email('Email không hợp lệ.'),
+  password: z.string().trim().min(4, 'Mật khẩu không hợp lệ.'),
 })
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false)
   const [loginError, setLoginError] = useState('')
   const navigate = useNavigate()
-
+  const { login } = useAuthStore()
   const {
     register,
     handleSubmit,
@@ -51,20 +39,13 @@ const Login = () => {
         password: data.password,
       })
 
-      if (response.data.status === 200 && response.data.success) {
-        Swal.fire({
-          icon: 'success',
-          title: 'Thành công!',
-          text: 'Đăng nhập thành công.',
-          confirmButtonText: 'Đóng',
-        })
-        localStorage.setItem('token', response.data.token)
+      if (response.data.status === 200) {
+        login(response.data.data.user, response.data.data.token)
         navigate('/')
       }
 
       console.log('Login successful:', response.data)
       setLoginError('')
-      return { success: true, data: response.data }
     } catch (error) {
       console.error(
         'Login failed:',
@@ -74,7 +55,6 @@ const Login = () => {
         error.response?.data?.message ||
         'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.'
       setLoginError(errorMessage)
-      return { success: false, error: errorMessage }
     }
   }
 
