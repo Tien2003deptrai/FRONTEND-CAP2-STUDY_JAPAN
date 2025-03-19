@@ -6,7 +6,6 @@ import { Link } from 'react-router-dom'
 
 function TeacherCourse() {
   const { user } = useAuthStore()
-
   const getCourse = async () => {
     const res = await axiosInstance.get('/get-by-teacher', {
       params: {
