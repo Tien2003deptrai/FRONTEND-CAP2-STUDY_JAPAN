@@ -1,6 +1,7 @@
 import useAuthStore from '@/store/useAuthStore'
 import { Avatar, Menu, MenuDropdown, MenuTarget } from '@mantine/core'
 import { Link } from 'react-router-dom'
+import MenuHeader from '../menu-header/MenuHeader'
 
 function Header() {
   const { user, logout } = useAuthStore()
@@ -12,30 +13,17 @@ function Header() {
 
   return (
     <header className="sticky top-0 left-0 w-full bg-white text-primary shadow-lg py-4 z-50">
-      <div className="container mx-auto flex justify-between items-center px-6">
+      <div className="mx-auto flex justify-between items-center px-12">
         <div>
-          <Link
+          <a
             to="/"
-            className="text-3xl font-extrabold tracking-wide flex items-center"
+            className="font-mono text-3xl font-extrabold tracking-wide flex items-center"
           >
-            <span className="mr-2">🇯🇵</span> Sakura Nihongo
-          </Link>
+            STUDY JAPAN
+          </a>
         </div>
 
-        <nav className="hidden md:flex space-x-8 text-lg font-medium">
-          <Link
-            to="/courses"
-            className="hover:text-gray-100 transition text-[22px] font-semibold duration-300"
-          >
-            Học Tập
-          </Link>
-          <Link
-            to="/community"
-            className="hover:text-gray-100 transition text-[22px] font-semibold duration-300"
-          >
-            Luyện Tập
-          </Link>
-        </nav>
+        <MenuHeader />
 
         <div className="flex items-center space-x-4">
           {user?._id ? (
