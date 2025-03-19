@@ -4,85 +4,65 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 
-function Login() {
-  // State management with clear naming and organization
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-  })
-  const [errors, setErrors] = useState({
-    email: '',
-    password: '',
-    login: '',
-  })
-  const [showPassword, setShowPassword] = useState(false)
-  const navigate = useNavigate()
-
-  // Validation utils - separated from handlers for better maintainability
-  const validators = {
-    email: (value) => {
-      if (!value.trim()) return 'Email hoặc tên đăng nhập không được để trống.'
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email hoặc tên đăng nhập không được để trống.')
+    .refine((value) => {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-      return !emailRegex.test(value) ? 'Email không hợp lệ.' : ''
-    },
-    password: (value) => {
-      if (!value.trim()) return 'Mật khẩu không được để trống.'
+      return emailRegex.test(value)
+    }, 'Email không hợp lệ.'),
+  password: z
+    .string()
+    .trim()
+    .min(1, 'Mật khẩu không được để trống.')
+    .refine((value) => {
       const passwordRegex =
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-      return !passwordRegex.test(value)
-        ? 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và ký tự đặc biệt.'
-        : ''
-    },
-  }
+      return passwordRegex.test(value)
+    }, 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ thường và ký tự đặc biệt.'),
+})
 
-  // Generic change handler using computed property names
-  const handleInputChange = (field) => (e) => {
-    const value = e.target.value
-    setFormData((prev) => ({ ...prev, [field]: value }))
-    setErrors((prev) => ({ ...prev, [field]: '', login: '' }))
-  }
+const Login = () => {
+  const [showPassword, setShowPassword] = useState(false)
+  const [loginError, setLoginError] = useState('')
+  const navigate = useNavigate()
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  })
 
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev)
 
-  // Form validation separated from submission logic
-  const validateForm = () => {
-    const newErrors = {
-      // email: validators.email(formData.email),
-      // password: validators.password(formData.password),
-      // login: '',
-      email: formData.email,
-      password: formData.password,
-      login: '',
-    }
-
-    setErrors(newErrors)
-    return !newErrors.email && !newErrors.password
-  }
-
-  // Authentication logic isolated from UI concerns
-  const authenticate = async () => {
+  const authenticate = async (data) => {
     try {
       const response = await axiosInstance.post('/auth/login', {
-        email: formData.email,
-        password: formData.password,
+        email: data.email,
+        password: data.password,
       })
-      if (response.data.status == 200 && response.data.success == true) {
+
+      if (response.data.status === 200 && response.data.success) {
         Swal.fire({
-          icon: 'success', // Loại thông báo là thành công
+          icon: 'success',
           title: 'Thành công!',
-          text: 'Đăng nhập thành công.',
-          confirmButtonText: 'Đóng', // Văn bản nút xác nhận
+          text: 'Đăng nhập thành công.',
+          confirmButtonText: 'Đóng',
         })
+        localStorage.setItem('token', response.data.token)
         navigate('/')
       }
-      console.log('Login successful:', response.data)
-      // Reset form after successful submission
-      setFormData({ email: '', password: '' })
-      setErrors({ email: '', password: '', login: '' })
 
-      // Here you would typically store the token and redirect the user
-      localStorage.setItem('token', response.data.token)
+      console.log('Login successful:', response.data)
+      setLoginError('')
       return { success: true, data: response.data }
     } catch (error) {
       console.error(
@@ -92,20 +72,15 @@ function Login() {
       const errorMessage =
         error.response?.data?.message ||
         'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.'
-
-      setErrors((prev) => ({ ...prev, login: errorMessage }))
+      setLoginError(errorMessage)
       return { success: false, error: errorMessage }
     }
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    // if (validateForm()) {
-    await authenticate()
-    // }
+  const onSubmit = async (data) => {
+    await authenticate(data)
   }
 
-  // UI separated from logic for better readability
   return (
     <div className="bg-pink-200 w-full h-screen flex justify-center items-center">
       <div className="mx-auto flex max-w-6xls rounded-lg shadow-lg overflow-hidden">
@@ -162,7 +137,7 @@ function Login() {
             Vui lòng đăng nhập để tiếp tục học tiếng Nhật
           </p>
 
-          <form id="loginForm" onSubmit={handleSubmit}>
+          <form id="loginForm" onSubmit={handleSubmit(onSubmit)}>
             <div className="mb-4">
               <label
                 htmlFor="email"
@@ -176,11 +151,10 @@ function Login() {
                   id="email"
                   placeholder="Nhập email hoặc tên đăng nhập của bạn"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 transition duration-200 text-lg"
-                  value={formData.email}
-                  onChange={handleInputChange('email')}
+                  {...register('email')}
                 />
                 {errors.email && (
-                  <div className="text-red-600">{errors.email}</div>
+                  <div className="text-red-600">{errors.email.message}</div>
                 )}
               </div>
             </div>
@@ -198,8 +172,7 @@ function Login() {
                   id="password"
                   placeholder="Nhập mật khẩu của bạn"
                   className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-600 transition duration-200 text-lg"
-                  value={formData.password}
-                  onChange={handleInputChange('password')}
+                  {...register('password')}
                 />
                 <button
                   type="button"
@@ -209,7 +182,7 @@ function Login() {
                   {showPassword ? <VisibilityIcon /> : <VisibilityOffIcon />}
                 </button>
                 {errors.password && (
-                  <div className="text-red-600">{errors.password}</div>
+                  <div className="text-red-600">{errors.password.message}</div>
                 )}
               </div>
             </div>
@@ -220,8 +193,8 @@ function Login() {
               </a>
             </div>
 
-            {errors.login && (
-              <div className="text-red-600 mb-2">{errors.login}</div>
+            {loginError && (
+              <div className="text-red-600 mb-2">{loginError}</div>
             )}
 
             <button
