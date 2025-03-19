@@ -1,7 +1,9 @@
 import axiosInstance from '@/network/httpRequest'
+import useAuthStore from '@/store/useAuthStore'
 import VisibilityIcon from '@mui/icons-material/Visibility'
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff'
 import { useState } from 'react'
+<<<<<<< HEAD
 import { useNavigate } from 'react-router-dom'
 import Swal from 'sweetalert2'
 import { useForm } from 'react-hook-form'
@@ -14,6 +16,27 @@ const loginSchema = z.object({
     .trim()
     .min(1, 'Email hoặc tên đăng nhập không được để trống.')
     .refine((value) => {
+=======
+
+function Login() {
+  const { login } = useAuthStore()
+  // State management with clear naming and organization
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  })
+  const [errors, setErrors] = useState({
+    email: '',
+    password: '',
+    login: '',
+  })
+  const [showPassword, setShowPassword] = useState(false)
+
+  // Validation utils - separated from handlers for better maintainability
+  const validators = {
+    email: (value) => {
+      if (!value.trim()) return 'Email hoặc tên đăng nhập không được để trống.'
+>>>>>>> 04bcf6ba50003746adbf04f2b2f3c3affdaf221e
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
       return emailRegex.test(value)
     }, 'Email không hợp lệ.'),
@@ -49,6 +72,7 @@ const Login = () => {
         email: data.email,
         password: data.password,
       })
+<<<<<<< HEAD
 
       if (response.data.status === 200 && response.data.success) {
         Swal.fire({
@@ -64,6 +88,16 @@ const Login = () => {
       console.log('Login successful:', response.data)
       setLoginError('')
       return { success: true, data: response.data }
+=======
+      if (response.status == 200) {
+        login(response.data.user, response.data.token)
+        window.location.replace('/')
+      }
+      console.log('Login successful:', response.data)
+      // Reset form after successful submission
+      setFormData({ email: '', password: '' })
+      setErrors({ email: '', password: '', login: '' })
+>>>>>>> 04bcf6ba50003746adbf04f2b2f3c3affdaf221e
     } catch (error) {
       console.error(
         'Login failed:',
@@ -72,8 +106,13 @@ const Login = () => {
       const errorMessage =
         error.response?.data?.message ||
         'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin đăng nhập.'
+<<<<<<< HEAD
       setLoginError(errorMessage)
       return { success: false, error: errorMessage }
+=======
+
+      setErrors((prev) => ({ ...prev, login: errorMessage }))
+>>>>>>> 04bcf6ba50003746adbf04f2b2f3c3affdaf221e
     }
   }
 
