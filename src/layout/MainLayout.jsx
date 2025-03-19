@@ -1,13 +1,12 @@
+import Header from '@/components/header/Header'
 import { Group } from '@mantine/core'
 import { Outlet } from 'react-router-dom'
 import Footer from '../components/footer/Footer'
-// import NavBar from '../component/header-nav/NavBar';
-import Header from '../components/admin/header/Header'
 
 function MainLayout() {
   return (
     <div>
-      <Header title={'StudyJapan'} />
+      <Header />
       {/* <NavBar /> */}
       <Group w={'100%'} justify="center">
         <Group maw={1440} w={'100%'}>
