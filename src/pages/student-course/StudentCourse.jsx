@@ -1,64 +1,55 @@
+import { useQuery } from '@tanstack/react-query'
 import CourseList from '@/components/course/courseList'
+import axiosInstance from '@/network/httpRequest'
 
 function StudentCourse() {
-  const sampleCourses = [
-    {
-      id: 1,
-      title: 'N5 Cơ bản',
-      description: 'Khoá học dành cho người mới bắt đầu.',
-      image:
-        'https://static.unica.vn/upload/images/2019/06/tieng-nhat-so-cap-cho-nguoi-moi_1561450243.jpg',
-    },
-    {
-      id: 2,
-      title: 'N4 Trung cấp',
-      description: 'Nâng cao khả năng tiếng Nhật.',
-      image:
-        'https://static.unica.vn/upload/images/2019/06/tieng-nhat-so-cap-cho-nguoi-moi_1561450243.jpg',
-    },
-    {
-      id: 3,
-      title: 'N3 Tiền nâng cao',
-      description: 'Học chuyên sâu với các bài tập thực tế.',
-      image:
-        'https://static.unica.vn/upload/images/2019/06/tieng-nhat-so-cap-cho-nguoi-moi_1561450243.jpg',
-    },
-    {
-      id: 4,
-      title: 'N2 Cao cấp',
-      description: 'Chuẩn bị cho kỳ thi JLPT N2.',
-      image:
-        'https://static.unica.vn/upload/images/2019/06/tieng-nhat-so-cap-cho-nguoi-moi_1561450243.jpg',
-    },
-    {
-      id: 5,
-      title: 'N1 Chuyên sâu',
-      description: 'Dành cho những ai muốn thành thạo tiếng Nhật.',
-      image:
-        'https://static.unica.vn/upload/images/2019/06/tieng-nhat-so-cap-cho-nguoi-moi_1561450243.jpg',
-    },
-    {
-      id: 6,
-      title: 'Giao tiếp Nhật Bản',
-      description: 'Luyện tập kỹ năng giao tiếp hàng ngày.',
-      image:
-        'https://static.unica.vn/upload/images/2019/06/tieng-nhat-so-cap-cho-nguoi-moi_1561450243.jpg',
-    },
-    {
-      id: 7,
-      title: 'Kanji Master',
-      description: 'Học chuyên sâu về chữ Hán trong tiếng Nhật.',
-      image:
-        'https://static.unica.vn/upload/images/2019/06/tieng-nhat-so-cap-cho-nguoi-moi_1561450243.jpg',
-    },
-  ]
+  const userId = '605c72ef5f5b2c1d4c8e1003' // chua xu ly login nen su dung tam 
+  const fetchCourses = async () => {
+    const res = await axiosInstance.get('/course/all')
+    if (res.data && res.data.success) {
+      return res.data.data.map((course) => ({
+        id: course._id,
+        title: course.name,
+        description: `${course.type} - Tác giả: ${course.author}`,
+        image: course.thumb,
+        isAvailable: course.enrolledStudents.some(
+          (student) => student._id === userId
+        ),
+      }))
+    } else {
+      throw new Error('Không thể lấy danh sách khóa học. Vui lòng thử lại.')
+    }
+  }
+
+  const {
+    data: courses,
+    isLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ['studentCourses'],
+    queryFn: fetchCourses,
+    staleTime: 1000 * 60 * 5,
+    retry: 2,
+  })
+
   return (
     <div className="w-full flex justify-center items-center">
       <div className="w-1200 py-9">
         <h1 className="text-2xl font-bold">Danh sách khóa học của tôi</h1>
-        {/* Render courses here */}
         <hr className="w-full my-5" />
-        <CourseList courses={sampleCourses} />
+
+        {isLoading ? (
+          <p>Đang tải khóa học...</p>
+        ) : isError ? (
+          <div className="text-red-500 font-semibold">
+            {error?.message || 'Đã xảy ra lỗi không xác định.'}
+          </div>
+        ) : courses?.length > 0 ? (
+          <CourseList courses={courses} />
+        ) : (
+          <p>Không có khóa học nào được tìm thấy.</p>
+        )}
       </div>
     </div>
   )

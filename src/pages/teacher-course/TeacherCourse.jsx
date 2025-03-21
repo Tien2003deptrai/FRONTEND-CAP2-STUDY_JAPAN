@@ -1,5 +1,5 @@
 import axiosInstance from '@/network/httpRequest'
-import { useAuthStore } from '@/store/useAuthStore'
+import useAuthStore from '@/store/useAuthStore'
 import { Add } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
