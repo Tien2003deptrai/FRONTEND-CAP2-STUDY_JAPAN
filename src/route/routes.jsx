@@ -1,4 +1,5 @@
 import MainLayout from '@/layout/MainLayout'
+import CourseDetail from '@/pages/details-course/DetailCoure'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import NewCourse from '@/pages/new-course/NewCourse'
@@ -26,7 +27,16 @@ export const studentRoutes = [
   {
     path: '/courses',
     element: <MainLayout />,
-    children: [{ index: true, element: <StudentCourse /> }],
+    children: [
+      {
+        index: true,
+        element: <StudentCourse />
+      }
+    ],
+  },
+  {
+    path: '/courses/:courseId',
+    element: <CourseDetail />,
   },
 ]
 

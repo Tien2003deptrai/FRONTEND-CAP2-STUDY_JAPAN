@@ -1,4 +1,12 @@
+import { useNavigate } from "react-router-dom"
+
 const CourseCard = ({ course }) => {
+  const navigate = useNavigate()
+
+  const handleJoinCourse = () => {
+    navigate(`/courses/${course.id}`) 
+  }
+
   return (
     <div className="bg-white cursor-pointer rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 relative border-2 border-red-600">
       <img
@@ -11,7 +19,9 @@ const CourseCard = ({ course }) => {
         <p className="text-gray-700 mt-3">{course.description}</p>
 
         {course.isAvailable ? (
-          <button className="mt-6 w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition">
+          <button
+          onClick={handleJoinCourse}
+            className="mt-6 w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition">
             🎯 Vào học
           </button>
         ) : (

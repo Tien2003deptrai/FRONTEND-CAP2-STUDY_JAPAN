@@ -15,6 +15,7 @@ function StudentCourse() {
         isAvailable: course.enrolledStudents.some(
           (student) => student._id === userId
         ),
+        slug: course.course_slug,
       }))
     } else {
       throw new Error('Không thể lấy danh sách khóa học. Vui lòng thử lại.')
