@@ -57,7 +57,7 @@ function ImageUpload({ onImageUpload }) {
                 htmlFor="thumbnail-upload"
                 className="primary-btn flex justify-center items-center gap-2 cursor-pointer"
             >
-                <Upload />
+                <Upload fontSize="small" />
                 {image ? 'Chọn ảnh khác' : 'Tải ảnh'}
             </label>
         </div>
