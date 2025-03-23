@@ -1,5 +1,5 @@
 function EditCourse() {
-    return <div>EditCourse</div>
+    return <div>hahaha</div>
 }
 
 export default EditCourse
