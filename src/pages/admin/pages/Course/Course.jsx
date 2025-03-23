@@ -1,15 +1,14 @@
-import React from 'react'
+import { useCourses } from '@/apis/Course/query'
+import useAuthStore from '@/store/useAuthStore'
 import {
     Add,
-    Edit,
     Delete,
-    Search,
+    Edit,
     FilterList,
     MoreVert,
+    Search,
 } from '@mui/icons-material'
-import { useCourses } from '@/apis/Course/query'
 import StatusBadge from '../../components/StatusBadge/StatusBadge'
-import useAuthStore from '@/store/useAuthStore'
 
 function Course() {
     const { user } = useAuthStore()
