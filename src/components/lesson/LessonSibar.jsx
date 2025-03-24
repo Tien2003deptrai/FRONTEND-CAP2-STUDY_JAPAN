@@ -15,7 +15,11 @@ function LessonSidebar({ lessons, currentLessonIndex, onSelectLesson }) {
             onClick={() => onSelectLesson(index)}
           >
             <span className="font-medium">{lesson.lesson_title}</span>
-            {index === currentLessonIndex ? <PlayCircleIcon color="error" /> : <CheckCircleIcon color="success" />}
+            {index === currentLessonIndex ? (
+              <PlayCircleIcon color="error" />
+            ) : (
+              <CheckCircleIcon color="success" />
+            )}
           </li>
         ))}
       </ul>
