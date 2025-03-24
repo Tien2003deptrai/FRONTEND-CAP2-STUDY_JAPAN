@@ -10,7 +10,6 @@ const useFetchLessonList = (course_id) => {
     return useQuery({
         queryKey: ['lessons'],
         queryFn: getLessons,
-        staleTime: 1000 * 60 * 5, // 5 minutes
         gcTime: 1000 * 60 * 5, // 5 minutes
         retry: 3,
     })

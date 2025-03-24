@@ -4,7 +4,7 @@ import { Outlet } from 'react-router-dom'
 function SidebarLayout() {
     return (
         <div className="flex h-screen">
-            <div className="w-64 bg-gray-800 text-white p-4">
+            <div className="w-1/4 p-4 border-r border-solid border-gray-300 overflow-y-scroll">
                 <EditCourseSidebar />
             </div>
 
