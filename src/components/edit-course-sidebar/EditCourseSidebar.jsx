@@ -29,6 +29,7 @@ function EditCourseSidebar() {
             <div className="w-full flex flex-col gap-3">
                 {lessonsData?.data?.lessons.map((lesson) => (
                     <Link
+                        key={lesson._id}
                         to={`/teacher/edit/${courseId}/${lesson._id}`}
                         className={`block w-full p-4 
                             ${lesson._id === lessonId ? 'font-bold bg-red-100 text-red-600' : ''} 
