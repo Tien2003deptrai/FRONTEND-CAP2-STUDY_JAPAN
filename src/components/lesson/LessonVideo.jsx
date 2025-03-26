@@ -2,7 +2,7 @@ import { CircularProgress } from '@mui/material'
 
 function VideoPlayer({ lesson, isLoading, isError, error }) {
   return (
-    <div className="flex-1 bg-black rounded-lg overflow-hidden relative">
+    <div className="flex-1 bg-black rounded-lg overflow-hidden relative min-h-[300px]">
       {isLoading ? (
         <div className="flex justify-center items-center h-full">
           <CircularProgress color="inherit" />
@@ -12,7 +12,11 @@ function VideoPlayer({ lesson, isLoading, isError, error }) {
       ) : lesson ? (
         <iframe
           className="w-full h-full"
-          src={lesson.video_url?.includes('watch?v=') ? lesson.video_url.replace('watch?v=', 'embed/') : lesson.video_url}
+          src={
+            lesson.video_url?.includes('watch?v=')
+              ? lesson.video_url.replace('watch?v=', 'embed/')
+              : lesson.video_url
+          }
           title={lesson.lesson_title}
           allowFullScreen
         />
