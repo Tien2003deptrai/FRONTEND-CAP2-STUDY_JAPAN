@@ -16,15 +16,17 @@ function Video({ url, setUrl }) {
     // Convert YouTube URL to embeddable format
     const getYouTubeEmbedURL = (url) => {
         try {
-            const videoId = new URL(url).searchParams.get('v') // Extract ID from standard URL
-            if (videoId) return `https://www.youtube.com/embed/${videoId}`
-
-            // Handle short URLs (youtu.be/xyz)
-            const shortId = url.split('/').pop()
-            return `https://www.youtube.com/embed/${shortId}`
+            if (url.includes('youtube.com')) {
+                const videoId = new URL(url).searchParams.get('v')
+                if (videoId) return `https://www.youtube.com/embed/${videoId}`
+            } else if (url.includes('youtu.be')) {
+                const shortId = url.split('/').pop().split('?')[0]
+                return `https://www.youtube.com/embed/${shortId}`
+            }
         } catch {
             return null
         }
+        return null
     }
 
     // Handle file selection & upload
@@ -47,7 +49,8 @@ function Video({ url, setUrl }) {
     // Handle paste YouTube URL
     const handlePasteYouTubeURL = () => {
         if (inputValue.trim() && isYouTubeURL(inputValue.trim())) {
-            setUrl(getYouTubeEmbedURL(inputValue.trim()))
+            const embedURL = getYouTubeEmbedURL(inputValue.trim())
+            if (embedURL) setUrl(embedURL)
         }
     }
 
@@ -68,12 +71,12 @@ function Video({ url, setUrl }) {
                 </button>
             </div>
 
-            {/* Video Display (Only Using iframe) */}
+            {/* Video Display */}
             {url ? (
-                <div className="relative w-full max-h-[500px]">
+                <div className="relative w-full max-h-[400px]">
                     <iframe
-                        className="w-full rounded-lg border h-[500px] object-contain"
-                        src={isYouTubeURL(url) ? url : url} // Uploaded video also uses iframe
+                        className="w-full rounded-lg border h-[400px] object-contain"
+                        src={isYouTubeURL(url) ? getYouTubeEmbedURL(url) : url}
                         title="Video Player"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen

@@ -6,6 +6,7 @@ import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
 import Teacher from '@/pages/admin/pages/Teacher/Teacher'
 import EditCourse from '@/pages/edit-course/EditCourse'
+import EditVocabulary from '@/pages/edit-course/EditVocabulary'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import Login from '@/pages/login/Login'
@@ -89,7 +90,11 @@ export const teacherRoutes = [
         element: <SidebarLayout />,
         children: [
             { index: true, element: <EditCourse /> },
-            { path: ':lessonId', element: <EditCourse /> },
+            {
+                path: ':lessonId',
+                element: <EditCourse />,
+            },
+            { path: ':lessonId/vocabulary', element: <EditVocabulary /> },
         ],
     },
 ]

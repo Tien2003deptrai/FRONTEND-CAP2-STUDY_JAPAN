@@ -8,7 +8,7 @@ function SidebarLayout() {
                 <EditCourseSidebar />
             </div>
 
-            <div className="fixed left-1/4 top-0 right-0 bottom-0 overflow-auto flex-1 p-4">
+            <div className="fixed left-1/4 top-0 right-0 bottom-0 overflow-auto flex-1 p-4 py-12">
                 <Outlet context="content" />
             </div>
         </div>

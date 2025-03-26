@@ -6,7 +6,6 @@ function EditCourseSidebar() {
     const { courseId, lessonId } = useParams()
     const navigate = useNavigate()
     const { data: lessonsData } = useFetchLessonList(courseId)
-    console.log(lessonsData)
     return (
         <div className="w-full flex flex-col gap-8">
             <div className="w-full flex">
