@@ -1,9 +1,11 @@
 import useFetchVocabulary from '@/hook/useFetchVocabulary'
+import axiosInstance from '@/network/httpRequest'
 import { uploadImage } from '@/util/firebase/firebaseUtils'
 import { Add, ArrowBack } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useNavigate, useParams } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
 
 function EditVocabulary() {
     const navigate = useNavigate()
@@ -48,8 +50,16 @@ function EditVocabulary() {
 
     const onSubmit = async (data) => {
         console.log('Submitted Words:', data.words)
-
-        // const res = await axiosInstance.patch()
+        const payload = {}
+        payload.lesson_id = lessonId
+        payload.vocabularies = data.words
+        const res = await axiosInstance.put(
+            `vocabulary/lesson/${lessonId}/batch`,
+            { ...payload }
+        )
+        if (res.status == 200) {
+            navigate(-1)
+        }
     }
 
     const { data: vocabularies, refetch } = useFetchVocabulary(lessonId)
@@ -65,11 +75,16 @@ function EditVocabulary() {
         if (!field?._id) {
             remove(index)
         } else {
+            const res = await axiosInstance.delete(`/vocabulary/${field._id}`)
+            toast.success('Đã xóa từ vựng')
+            console.log('Deleted:', res.data)
+            refetch()
         }
     }
 
     return (
         <div className="w-full mx-auto p-4">
+            <ToastContainer />
             <div className="flex justify-between items-center mb-3 gap-4">
                 <button
                     onClick={() => navigate(-1)}
