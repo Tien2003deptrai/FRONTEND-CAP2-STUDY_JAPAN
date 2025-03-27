@@ -6,6 +6,7 @@ import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
 import Teacher from '@/pages/admin/pages/Teacher/Teacher'
 import EditCourse from '@/pages/edit-course/EditCourse'
+import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
@@ -95,6 +96,7 @@ export const teacherRoutes = [
                 element: <EditCourse />,
             },
             { path: ':lessonId/vocabulary', element: <EditVocabulary /> },
+            { path: ':lessonId/grammar', element: <EditGrammar /> },
         ],
     },
 ]

@@ -1,4 +1,7 @@
-import Video from '@/components/edit-course/Video'
+import GrammarItem from '@/components/edit-course/grammar/GrammarItem'
+import Video from '@/components/edit-course/video/Video'
+import VocabularyItem from '@/components/edit-course/vocabulary/VocabularyItem'
+import useFetchGrammar from '@/hook/useFetchGrammar'
 import useFetchLessonList from '@/hook/useFetchLessonList'
 import useFetchVocabulary from '@/hook/useFetchVocabulary'
 import { useEffect, useState } from 'react'
@@ -39,6 +42,8 @@ function EditCourse() {
 
     console.log(selectedLesson)
     const { data: vocabularies = [] } = useFetchVocabulary(selectedLesson?._id)
+    const { data: grammars = [] } = useFetchGrammar(selectedLesson?._id)
+    console.log(grammars)
 
     return (
         <div className="w-full flex flex-col items-center">
@@ -72,58 +77,38 @@ function EditCourse() {
                     <div className="w-full">
                         {vocabularies.length > 0 ? (
                             vocabularies.map((vocab, index) => (
-                                <div
-                                    key={vocab._id}
-                                    className="border border-gray-200 p-4 rounded-md flex flex-col gap-2"
-                                >
-                                    <h3 className="w-fit text-lg font-semibold text-blue-500">
-                                        {index + 1}. {vocab.word}
-                                    </h3>
-                                    <div className="flex flex-col gap-2 px-5">
-                                        <p>
-                                            <strong>Phiên âm:</strong>{' '}
-                                            {vocab.word}
-                                        </p>
-                                        <p>
-                                            <strong>Kana:</strong> {vocab.kana}
-                                        </p>
-                                        <p>
-                                            <strong>Kanji:</strong>{' '}
-                                            {vocab.kanji}
-                                        </p>
-                                        <p>
-                                            <strong>Ý nghĩa:</strong>{' '}
-                                            {vocab.meaning}
-                                        </p>
-                                        <p>
-                                            <strong>Ghi chú:</strong>{' '}
-                                            {vocab.notes}
-                                        </p>
-                                        <p>
-                                            <strong>Ví dụ:</strong>{' '}
-                                            {vocab.example}
-                                        </p>
-
-                                        {/* Hiển thị audio nếu có */}
-                                        {vocab.audio && (
-                                            <div className="flex items-center gap-2">
-                                                <strong>Phát âm:</strong>
-                                                <audio controls>
-                                                    <source
-                                                        src={vocab.audio}
-                                                        type="audio/mpeg"
-                                                    />
-                                                    Trình duyệt của bạn không hỗ
-                                                    trợ phát âm thanh.
-                                                </audio>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
+                                <VocabularyItem vocab={vocab} index={index} />
                             ))
                         ) : (
                             <p className="text-gray-500">
                                 Không có từ vựng nào.
+                            </p>
+                        )}
+                    </div>
+                </div>
+                <hr className="w-full" />
+                <div className="w-full flex gap-3 flex-col mt-4">
+                    <div className="w-full flex justify-between items-center">
+                        <label className="block font-bold">
+                            Danh sách ngữ pháp ({vocabularies.length})
+                        </label>
+                        <Link
+                            to={'grammar'}
+                            className="primary-btn"
+                            state={lessonId}
+                        >
+                            Chỉnh sửa ngữ pháp
+                        </Link>
+                    </div>
+                    <hr className="w-full h-[1px]" />
+                    <div className="w-full">
+                        {grammars.length > 0 ? (
+                            grammars.map((grammar, index) => (
+                                <GrammarItem grammar={grammar} index={index} />
+                            ))
+                        ) : (
+                            <p className="text-gray-500">
+                                Không có từ ngữ pháp.
                             </p>
                         )}
                     </div>
