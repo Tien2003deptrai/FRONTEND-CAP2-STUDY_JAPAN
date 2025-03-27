@@ -50,22 +50,41 @@ function EditVocabulary() {
 
     const onSubmit = async (data) => {
         console.log('Submitted Words:', data.words)
-        const payload = {}
-        payload.lesson_id = lessonId
-        payload.vocabularies = data.words
-        const res = await axiosInstance.put(
-            `vocabulary/lesson/${lessonId}/batch`,
-            { ...payload }
-        )
-        if (res.status == 200) {
-            navigate(-1)
+
+        const payload = {
+            lesson_id: lessonId,
+            vocabularies: data.words.map((word) => ({
+                vocab_id: word.vocab_id || null,
+                word: word.word,
+                kanji: word.kanji,
+                kana: word.kana,
+                meaning: word.meaning,
+                audio: word.audio || '',
+                example: word.example || '',
+                notes: word.notes || '',
+            })),
+        }
+
+        try {
+            const res = await axiosInstance.put(
+                `vocabulary/lesson/${lessonId}/batch`,
+                payload
+            )
+
+            if (res.status === 200) {
+                toast.success('Đã cập nhật từ vựng thành công!')
+                navigate(-1)
+            }
+        } catch (error) {
+            console.error('Failed to update vocabulary:', error)
+            alert('Cập nhật thất bại! Vui lòng thử lại.')
         }
     }
 
     const { data: vocabularies, refetch } = useFetchVocabulary(lessonId)
 
     useEffect(() => {
-        if (vocabularies.length > 0) {
+        if (vocabularies?.length > 0) {
             setValue('words', vocabularies)
         }
     }, [vocabularies, setValue])
@@ -107,21 +126,25 @@ function EditVocabulary() {
                             className="grid grid-cols-2 gap-3 p-4 border rounded-lg shadow"
                         >
                             <input
+                                required
                                 className="border p-2 rounded"
                                 placeholder="Phiên âm"
                                 {...register(`words.${index}.word`)}
                             />
                             <input
+                                required
                                 className="border p-2 rounded"
                                 placeholder="Kanji"
                                 {...register(`words.${index}.kanji`)}
                             />
                             <input
+                                required
                                 className="border p-2 rounded"
                                 placeholder="Kana"
                                 {...register(`words.${index}.kana`)}
                             />
                             <input
+                                required
                                 className="border p-2 rounded"
                                 placeholder="Ý nghĩa"
                                 {...register(`words.${index}.meaning`)}
