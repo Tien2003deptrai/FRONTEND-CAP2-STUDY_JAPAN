@@ -17,10 +17,6 @@ function GrammarItem({ grammar }) {
                 <p>
                     <strong>Giải thích:</strong> {grammar.explain}
                 </p>
-                {/* <p>
-                    <strong>Trình độ:</strong> {grammar.level}
-                </p> */}
-                {/* Hiển thị ví dụ nếu có */}
                 {grammar.examples && grammar.examples.length > 0 && (
                     <div>
                         <strong>Ví dụ:</strong>
