@@ -85,13 +85,13 @@ time,
 mark,
 audio,
 video {
-  margin: 0;
-  padding: 0;
-  border: 0;
-  font-size: 100%;
-  font: inherit;
-  font-family: Arial, Helvetica, sans-serif;
-  vertical-align: baseline;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    font-family: Arial, Helvetica, sans-serif;
+    vertical-align: baseline;
 }
 
 /* HTML5 display-role reset for older browsers */
@@ -106,56 +106,60 @@ hgroup,
 menu,
 nav,
 section {
-  display: block;
+    display: block;
 }
 
 body {
-  line-height: 1;
+    line-height: 1;
 }
 
 ol,
 ul {
-  list-style: none;
+    list-style: none;
 }
 
 blockquote,
 q {
-  quotes: none;
+    quotes: none;
 }
 
 blockquote:before,
 blockquote:after,
 q:before,
 q:after {
-  content: '';
-  content: none;
+    content: '';
+    content: none;
 }
 
 table {
-  border-collapse: collapse;
-  border-spacing: 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+strong {
+    font-weight: 600;
 }
 
 @layer components {
-  .primary-btn {
-    @apply bg-primary text-white text-sm px-4 py-2 rounded-md border border-solid border-transparent shadow-sm cursor-pointer text-center;
-  }
-  .primary-btn:hover {
-    @apply bg-white text-primary duration-150 border border-solid border-primary;
-  }
-  .primary-btn:disabled {
-    @apply bg-slate-400 cursor-not-allowed;
-  }
+    .primary-btn {
+        @apply bg-primary text-white text-sm px-4 py-2 rounded-md border border-solid border-transparent shadow-sm cursor-pointer text-center;
+    }
+    .primary-btn:hover {
+        @apply bg-white text-primary duration-150 border border-solid border-primary;
+    }
+    .primary-btn:disabled {
+        @apply bg-slate-400 cursor-not-allowed;
+    }
 }
 
 @layer components {
-  .second-btn {
-    @apply bg-white text-primary text-sm px-4 py-2 rounded-md border border-solid border-primary shadow-sm cursor-pointer text-center;
-  }
-  .second-btn:hover {
-    @apply bg-primary text-white duration-150;
-  }
-  .second-btn:disabled {
-    @apply bg-slate-400 cursor-not-allowed;
-  }
+    .second-btn {
+        @apply bg-white text-primary text-sm px-4 py-2 rounded-md border border-solid border-primary shadow-sm cursor-pointer text-center;
+    }
+    .second-btn:hover {
+        @apply bg-primary text-white duration-150;
+    }
+    .second-btn:disabled {
+        @apply bg-slate-400 cursor-not-allowed;
+    }
 }
