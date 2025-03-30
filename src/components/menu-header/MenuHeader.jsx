@@ -15,6 +15,7 @@ function MenuHeader() {
     { label: 'Trang chủ', path: '/' },
     { label: 'Quản lý khóa học', path: '/teacher', role: 'teacher' },
     { label: 'Khóa học của bạn', path: '/student', role: 'student' },
+    { label: 'Luyện tập', path: '/practice', role: 'student' },
     { label: 'Admin', path: '/admin', role: 'admin' },
   ]
 

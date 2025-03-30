@@ -1,5 +1,6 @@
 import AdminLayOut from '@/layout/AdminLayout'
 import MainLayout from '@/layout/MainLayout'
+import PracticeLayout from '@/layout/PracticeLayout'
 import Course from '@/pages/admin/pages/Course/Course'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
@@ -10,8 +11,13 @@ import Login from '@/pages/login/Login'
 import ProfileUser from '@/pages/login/ProfileUser'
 import NewCourse from '@/pages/new-course/NewCourse'
 import PageNotFound from '@/pages/not-found/PageNotFound'
+import Exam from '@/pages/Practice/Exam'
+import Flashcard from '@/pages/Practice/Flashcard'
+import Translate from '@/pages/Practice/Translate'
+import Voice from '@/pages/Practice/Voice'
 import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
+import { Navigate } from 'react-router-dom'
 
 export const publicRoutes = [
   {
@@ -67,6 +73,40 @@ export const studentRoutes = [
     path: '/courses',
     element: <MainLayout />,
     children: [{ index: true, element: <StudentCourse /> }],
+  },
+]
+export const practiceRoutes = [
+  {
+    path: '/practice',
+    element: <MainLayout />, 
+    children: [
+      {
+        path: '',
+        element: <PracticeLayout />, 
+        children: [
+          {
+            index: true,
+            element: <Navigate to="flashcard" replace />
+          },
+          {
+            path: 'flashcard',
+            element: <Flashcard />
+          },
+          {
+            path: 'voice',
+            element: <Voice />
+          },
+          {
+            path: 'translate',
+            element: <Translate />
+          },
+          {
+            path: 'exam',
+            element: <Exam />
+          },
+        ],
+      },
+    ],
   },
 ]
 
