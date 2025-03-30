@@ -1,13 +1,10 @@
 import AdminLayOut from '@/layout/AdminLayout'
 import MainLayout from '@/layout/MainLayout'
-<<<<<<< HEAD
-import CourseDetail from '@/pages/details-course/DetailCoure'
-=======
 import Course from '@/pages/admin/pages/Course/Course'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
 import Teacher from '@/pages/admin/pages/Teacher/Teacher'
->>>>>>> bafeb376afce893c773c10c55e4bc2c9f80a09e4
+import CourseDetail from '@/pages/details-course/DetailCoure'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import Login from '@/pages/login/Login'

@@ -5,7 +5,7 @@ import useAuthStore from '@/store/useAuthStore'
 
 function StudentCourse() {
   const { user } = useAuthStore()
-
+  
   const fetchCourses = async () => {
     if (!user || !user._id) {
       throw new Error('Không tìm thấy thông tin người dùng.')

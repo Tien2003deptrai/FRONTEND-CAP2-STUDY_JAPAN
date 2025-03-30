@@ -14,7 +14,7 @@ function MenuHeader() {
   const menuItems = [
     { label: 'Trang chủ', path: '/' },
     { label: 'Quản lý khóa học', path: '/teacher', role: 'teacher' },
-    { label: 'Khóa học của bạn', path: '/student', role: 'student' },
+    { label: 'Khóa học của bạn', path: '/courses', role: 'student' },
     { label: 'Admin', path: '/admin', role: 'admin' },
   ]
 
