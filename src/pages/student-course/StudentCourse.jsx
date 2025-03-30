@@ -1,11 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import CourseList from '@/components/course/courseList'
 import axiosInstance from '@/network/httpRequest'
+import useAuthStore from '@/store/useAuthStore'
 
 function StudentCourse() {
-  const userId = '605c72ef5f5b2c1d4c8e1003' // chua xu ly login nen su dung tam 
+  const { user } = useAuthStore()
+
   const fetchCourses = async () => {
+    if (!user || !user._id) {
+      throw new Error('Không tìm thấy thông tin người dùng.')
+    }
+
     const res = await axiosInstance.get('/course/all')
+
     if (res.data && res.data.success) {
       return res.data.data.map((course) => ({
         id: course._id,
@@ -13,7 +20,7 @@ function StudentCourse() {
         description: `${course.type} - Tác giả: ${course.author}`,
         image: course.thumb,
         isAvailable: course.enrolledStudents.some(
-          (student) => student._id === userId
+          (student) => student._id === user._id
         ),
         slug: course.course_slug,
       }))
@@ -28,8 +35,9 @@ function StudentCourse() {
     isError,
     error,
   } = useQuery({
-    queryKey: ['studentCourses'],
+    queryKey: ['studentCourses', user?._id],
     queryFn: fetchCourses,
+    enabled: !!user,
     staleTime: 1000 * 60 * 5,
     retry: 2,
   })

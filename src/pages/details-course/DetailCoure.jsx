@@ -41,7 +41,6 @@ function CourseDetail() {
 
   return (
     <div className="relative h-screen w-screen bg-gray-100">
-      {/* Navbar */}
       <div className="absolute top-0 left-0 w-full flex items-center justify-between p-4 bg-red-500 text-white shadow-md z-10">
         <button onClick={() => navigate(-1)} className="flex items-center text-lg font-semibold">
           <ArrowBackIcon className="w-5 h-5 mr-2" /> {courseName}
@@ -49,7 +48,6 @@ function CourseDetail() {
         <span className="text-sm font-medium">Tiến độ: {progress}%</span>
       </div>
 
-      {/* Layout */}
       <div className="flex flex-row-reverse h-full pt-16">
         <LessonSidebar
           lessons={lessons}
@@ -67,7 +65,6 @@ function CourseDetail() {
 
           <LessonDetail lesson={lessons?.[currentLessonIndex]} />
 
-          {/* Nút tiếp theo */}
           {lessons && currentLessonIndex < lessons.length - 1 && (
             <button
               onClick={() => setCurrentLessonIndex(currentLessonIndex + 1)}

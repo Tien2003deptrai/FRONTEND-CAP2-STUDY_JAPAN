@@ -3,9 +3,9 @@ import { useNavigate } from "react-router-dom"
 const CourseCard = ({ course }) => {
   const navigate = useNavigate()
 
-  const handleJoinCourse = () => {
-    navigate(`/courses/${course.id}`) 
-  }
+  // const handleJoinCourse = () => {
+  
+  // }
 
   return (
     <div className="bg-white cursor-pointer rounded-xl shadow-lg overflow-hidden transform hover:scale-105 transition-all duration-300 relative border-2 border-red-600">
@@ -20,7 +20,7 @@ const CourseCard = ({ course }) => {
 
         {course.isAvailable ? (
           <button
-          onClick={handleJoinCourse}
+          onClick={()=>{  navigate(`/courses/${course.id}`) }}
             className="mt-6 w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700 transition">
             🎯 Vào học
           </button>
