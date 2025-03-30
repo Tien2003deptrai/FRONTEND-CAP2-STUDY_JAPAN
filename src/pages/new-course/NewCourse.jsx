@@ -1,9 +1,12 @@
 import ImageUpload from '@/components/image-upload/ImageUpload'
+import useFetchLessonList from '@/hook/useFetchLessonList'
 import axiosInstance from '@/network/httpRequest'
+import useAuthStore from '@/store/useAuthStore'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
+import { useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { v4 as uuidv4 } from 'uuid'
 import { z } from 'zod'
 
@@ -24,16 +27,20 @@ const courseSchema = z.object({
         .min(1, 'Phải có ít nhất một bài học'),
 })
 
-function NewCourse() {
+function NewCourse({ isEditMode }) {
+    const queryClient = useQueryClient()
+    const { user } = useAuthStore()
     const [submitting, setSubmitting] = useState(false)
     const [apiError, setApiError] = useState(null)
     const navigate = useNavigate()
     const [thumbnail, setThumbnail] = useState()
+    const { courseId } = useParams()
     const {
         register,
         control,
         handleSubmit,
         formState: { errors },
+        setValue,
     } = useForm({
         resolver: zodResolver(courseSchema),
         defaultValues: {
@@ -48,20 +55,42 @@ function NewCourse() {
         name: 'lessons',
     })
 
+    const { data: lessonList } = useFetchLessonList(courseId)
+
+    useEffect(() => {
+        if (isEditMode && lessonList) {
+            setValue('name', lessonList.data.course.name)
+            setValue('description', lessonList.data.course.description)
+            setValue('lessons', lessonList.data.lessons)
+            setThumbnail(lessonList.data.course?.thumb || null)
+        }
+    }, [isEditMode, lessonList, setValue])
+
     const onSubmit = async (data) => {
         setSubmitting(true)
         setApiError(null)
         data.thumb = thumbnail
         try {
-            const response = await axiosInstance.post('/course', {
-                ...data,
-            })
+            const response = isEditMode
+                ? await axiosInstance.put(`/course/${courseId}`, data)
+                : await axiosInstance.post('/course', data)
 
             if (!response.status == 200) {
-                throw new Error('Không thể tạo khóa học. Vui lòng thử lại!')
+                throw new Error(
+                    isEditMode
+                        ? 'Không thể lưu chỉnh sửa. Vui lòng thử lại!'
+                        : 'Không thể tạo khóa học. Vui lòng thử lại!'
+                )
             }
 
-            alert('Khóa học đã được tạo thành công!')
+            alert(
+                isEditMode
+                    ? 'Khóa học đã được cập nhật thành công!'
+                    : 'Khóa học đã được tạo thành công!'
+            )
+            queryClient.invalidateQueries({
+                queryKey: ['getCourseLecturer', user._id],
+            })
             navigate('/teacher')
         } catch (error) {
             setApiError(error.message)
@@ -72,7 +101,9 @@ function NewCourse() {
 
     return (
         <div className="p-10 w-full">
-            <h1 className="text-2xl font-bold mb-5">Tạo khóa học mới</h1>
+            <h1 className="text-2xl font-bold mb-5">
+                {isEditMode ? 'Chỉnh sửa khóa học' : 'Tạo khóa học mới'}
+            </h1>
             <hr className="w-full my-5" />
 
             <form onSubmit={handleSubmit(onSubmit)} className="w-full px-8">
@@ -109,7 +140,10 @@ function NewCourse() {
 
                 <div className="w-full flex gap-3 flex-col mt-4">
                     <label className="block font-bold">Hình ảnh khóa học</label>
-                    <ImageUpload onImageUpload={setThumbnail} />
+                    <ImageUpload
+                        thumb={thumbnail}
+                        onImageUpload={setThumbnail}
+                    />
                 </div>
 
                 <div className="mt-8 w-full">
@@ -190,7 +224,11 @@ function NewCourse() {
                     disabled={submitting}
                     className="primary-btn"
                 >
-                    {submitting ? 'Đang gửi...' : 'Tạo khóa học'}
+                    {submitting
+                        ? 'Đang lưu...'
+                        : isEditMode
+                          ? 'Lưu chỉnh sửa'
+                          : 'Tạo khóa học'}
                 </button>
             </form>
         </div>

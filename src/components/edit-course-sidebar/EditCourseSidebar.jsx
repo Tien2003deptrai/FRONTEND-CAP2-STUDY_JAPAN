@@ -6,6 +6,17 @@ function EditCourseSidebar() {
     const { data: lessonsData } = useFetchLessonList(courseId)
     return (
         <div className="w-full flex flex-col gap-8">
+            <div className="w-full flex flex-col gap-2">
+                <Link
+                    className="primary-btn"
+                    to={`/teacher/edit-course/${courseId}`}
+                >
+                    Chỉnh sửa cấu trúc khóa học
+                </Link>
+                <Link className="primary-btn">Quản lý học viên</Link>
+            </div>
+            <hr />
+
             <div className="w-full flex flex-col gap-3">
                 {lessonsData?.data?.lessons.map((lesson) => (
                     <Link

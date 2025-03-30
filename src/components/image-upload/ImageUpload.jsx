@@ -2,7 +2,7 @@ import { uploadImage } from '@/util/firebase/firebaseUtils'
 import { Upload } from '@mui/icons-material'
 import { useState } from 'react'
 
-function ImageUpload({ onImageUpload }) {
+function ImageUpload({ thumb, onImageUpload }) {
     const [image, setImage] = useState(null)
     const [preview, setPreview] = useState(null)
     const [progress, setProgress] = useState(0)
@@ -31,9 +31,9 @@ function ImageUpload({ onImageUpload }) {
         <div className="w-full flex flex-col justify-center items-start gap-3 mt-5">
             <label className="block font-bold">Thumbnail</label>
 
-            {preview && (
+            {(thumb || preview) && (
                 <img
-                    src={preview}
+                    src={thumb || preview}
                     alt="Thumbnail preview"
                     className="w-32 h-32 object-cover rounded border"
                 />

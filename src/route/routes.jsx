@@ -82,7 +82,11 @@ export const teacherRoutes = [
             { index: true, element: <TeacherCourse /> },
             {
                 path: 'new-course',
-                element: <NewCourse />,
+                element: <NewCourse isEditMode={false} />,
+            },
+            {
+                path: 'edit-course/:courseId',
+                element: <NewCourse isEditMode={true} />,
             },
         ],
     },
