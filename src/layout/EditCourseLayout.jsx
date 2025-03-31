@@ -20,6 +20,7 @@ function EditCourseLayout() {
         if (lessons.length > 0 && !selectedLesson) {
             setSelectedLesson(lessons[0]._id)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [lessons])
 
     const handleLessonSelect = (lessonId) => {
@@ -42,7 +43,7 @@ function EditCourseLayout() {
                     href="/"
                     className="font-mono text-2xl font-extrabold text-white flex items-center ml-8"
                 >
-                    {'Study Japan'}
+                    {lessonList?.data?.course?.name || 'Study Japan'}
                 </a>
             </header>
 
