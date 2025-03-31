@@ -22,13 +22,11 @@ function EditCourseSidebar({ lessonId, onSelectLesson }) {
             <div className="w-full flex flex-col gap-3">
                 {lessons
                     .sort((a, b) => a.index - b.index)
-                    .map((lesson, index) => (
+                    .map((lesson) => (
                         <p
                             key={lesson._id}
-                            className={`block w-full p-4 
-                            ${lesson._id === lessonId ? 'font-bold bg-red-100 text-red-600' : ''} 
-                            rounded-md truncate hover:text-primary duration-150 cursor-pointer`}
-                            onClick={() => onSelectLesson(index)}
+                            className={`block w-full p-4 ${lessonId === lesson._id ? 'font-bold bg-red-100 text-red-600' : ''} rounded-md truncate hover:text-primary duration-150 cursor-pointer`}
+                            onClick={() => onSelectLesson(lesson._id)}
                         >
                             {lesson.lesson_title}
                         </p>
