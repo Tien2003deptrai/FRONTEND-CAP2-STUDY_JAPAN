@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import {
     List,
     ListItemButton,
@@ -12,60 +12,69 @@ import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver'
 import GTranslateIcon from '@mui/icons-material/GTranslate'
 import QuizIcon from '@mui/icons-material/Quiz'
 
-const menuItems = [
-    { label: 'Flashcard', path: 'flashcard', icon: <SchoolIcon /> },
-    { label: 'Voice', path: 'voice', icon: <RecordVoiceOverIcon /> },
-    { label: 'Translate', path: 'translate', icon: <GTranslateIcon /> },
-    { label: 'Exam', path: 'exam', icon: <QuizIcon /> },
-]
-
 export default function PracticeSidebar() {
+    const location = useLocation()
+
+    const menuItems = [
+        { label: 'Flashcard', path: 'flashcard', icon: <SchoolIcon /> },
+        { label: 'Voice', path: 'voice', icon: <RecordVoiceOverIcon /> },
+        { label: 'Translate', path: 'translate', icon: <GTranslateIcon /> },
+        { label: 'Exam', path: 'exam', icon: <QuizIcon /> },
+    ]
+
+    const isActive = (path) => location.pathname.includes(`/practice/${path}`)
+
     return (
         <div className="w-64 min-h-screen bg-white border-r shadow-sm px-4 py-6">
-            <div className="text-red-500 font-extrabold mb-6 text-2xl">
+            <Typography
+                variant="h6"
+                color="error"
+                fontWeight="bold"
+                mb={2}
+                fontSize={22}
+            >
                 Luyện tập
-            </div>
+            </Typography>
             <Divider />
 
             <List>
-                {menuItems.map((item) => (
-                    <NavLink
-                        key={item.path}
-                        to={item.path}
-                        style={{ textDecoration: 'none', color: 'inherit' }}
-                    >
-                        {({ isActive }) => (
+                {menuItems.map((item) => {
+                    const active = isActive(item.path)
+                    return (
+                        <NavLink
+                            key={item.path}
+                            to={item.path}
+                            style={{ textDecoration: 'none', color: 'inherit' }}
+                        >
                             <ListItemButton
-                                selected={isActive}
+                                selected={active}
                                 sx={{
                                     borderRadius: 2,
                                     mb: 1,
-                                    backgroundColor: isActive
+                                    backgroundColor: active
                                         ? '#ffe4e6'
                                         : 'transparent',
-                                    color: isActive ? '#d32f2f' : '#333',
+                                    color: active ? '#d32f2f' : '#333',
                                     '&:hover': {
                                         backgroundColor: '#fce4ec',
                                     },
                                 }}
                             >
                                 <ListItemIcon
-                                    sx={{
-                                        color: isActive ? '#d32f2f' : '#888',
-                                    }}
+                                    sx={{ color: active ? '#d32f2f' : '#888' }}
                                 >
                                     {item.icon}
                                 </ListItemIcon>
                                 <ListItemText
                                     primary={item.label}
                                     primaryTypographyProps={{
-                                        fontWeight: isActive ? '600' : '500',
+                                        fontWeight: active ? '600' : '500',
                                     }}
                                 />
                             </ListItemButton>
-                        )}
-                    </NavLink>
-                ))}
+                        </NavLink>
+                    )
+                })}
             </List>
         </div>
     )
