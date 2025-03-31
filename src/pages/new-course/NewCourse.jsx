@@ -61,7 +61,10 @@ function NewCourse({ isEditMode }) {
         if (isEditMode && lessonList) {
             setValue('name', lessonList.data.course.name)
             setValue('description', lessonList.data.course.description)
-            setValue('lessons', lessonList.data.lessons)
+            setValue(
+                'lessons',
+                lessonList.data.lessons.sort((a, b) => a.index - b.index)
+            )
             setThumbnail(lessonList.data.course?.thumb || null)
         }
     }, [isEditMode, lessonList, setValue])
@@ -70,6 +73,8 @@ function NewCourse({ isEditMode }) {
         setSubmitting(true)
         setApiError(null)
         data.thumb = thumbnail
+        console.log(data)
+
         try {
             const response = isEditMode
                 ? await axiosInstance.put(`/course/${courseId}`, data)
@@ -98,6 +103,8 @@ function NewCourse({ isEditMode }) {
             setSubmitting(false)
         }
     }
+
+    console.log(fields.sort((a, b) => a.index - b.index))
 
     return (
         <div className="p-10 w-full">
@@ -152,47 +159,49 @@ function NewCourse({ isEditMode }) {
                     </h2>
                     <hr className="w-full my-5" />
 
-                    {fields.map((lesson, index) => (
-                        <div
-                            key={lesson.id}
-                            className="border p-3 rounded mb-3"
-                        >
-                            <div className="w-full flex gap-3 flex-col">
-                                <label className="block font-bold">
-                                    Tên bài học{' '}
-                                    <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    {...register(
-                                        `lessons.${index}.lesson_title`
-                                    )}
-                                    className="border p-2 w-full rounded py-4 px-4"
-                                    placeholder="Nhập tên bài học"
-                                />
-                                {errors.lessons?.[index]?.lesson_title && (
-                                    <p className="text-red-500">
-                                        {
-                                            errors.lessons[index].lesson_title
-                                                ?.message
-                                        }
-                                    </p>
-                                )}
-                            </div>
-                            <input
-                                type="hidden"
-                                {...register(`lessons.${index}.index`)}
-                                value={index}
-                            />
-
-                            <button
-                                type="button"
-                                onClick={() => remove(index)}
-                                className="bg-blue-100 rounded text-sm px-4 py-2 mt-2 text-blue-700 hover:bg-blue-300 duration-150"
+                    {fields
+                        .sort((a, b) => a.index - b.index)
+                        .map((lesson, index) => (
+                            <div
+                                key={lesson.id}
+                                className="border p-3 rounded mb-3"
                             >
-                                Xóa bài học
-                            </button>
-                        </div>
-                    ))}
+                                <div className="w-full flex gap-3 flex-col">
+                                    <label className="block font-bold">
+                                        Tên bài học{' '}
+                                        <span className="text-red-500">*</span>
+                                    </label>
+                                    <input
+                                        {...register(
+                                            `lessons.${index}.lesson_title`
+                                        )}
+                                        className="border p-2 w-full rounded py-4 px-4"
+                                        placeholder="Nhập tên bài học"
+                                    />
+                                    {errors.lessons?.[index]?.lesson_title && (
+                                        <p className="text-red-500">
+                                            {
+                                                errors.lessons[index]
+                                                    .lesson_title?.message
+                                            }
+                                        </p>
+                                    )}
+                                </div>
+                                <input
+                                    type="hidden"
+                                    {...register(`lessons.${index}.index`)}
+                                    value={index}
+                                />
+
+                                <button
+                                    type="button"
+                                    onClick={() => remove(index)}
+                                    className="bg-blue-100 rounded text-sm px-4 py-2 mt-2 text-blue-700 hover:bg-blue-300 duration-150"
+                                >
+                                    Xóa bài học
+                                </button>
+                            </div>
+                        ))}
 
                     {errors.lessons && (
                         <p className="text-red-500">{errors.lessons.message}</p>
@@ -204,7 +213,7 @@ function NewCourse({ isEditMode }) {
                             append({
                                 lesson_id: uuidv4(),
                                 lesson_title: '',
-                                index: fields.length,
+                                index: fields.length + 1,
                             })
                         }
                         className="mt-3 second-btn"

@@ -1,6 +1,6 @@
 import AdminLayOut from '@/layout/AdminLayout'
+import EditCourseLayout from '@/layout/EditCourseLayout'
 import MainLayout from '@/layout/MainLayout'
-import SidebarLayout from '@/layout/SidebarLayout'
 import Course from '@/pages/admin/pages/Course/Course'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
@@ -92,15 +92,11 @@ export const teacherRoutes = [
     },
     {
         path: '/teacher/edit/:courseId',
-        element: <SidebarLayout />,
+        element: <EditCourseLayout />,
         children: [
             { index: true, element: <EditCourse /> },
-            {
-                path: ':lessonId',
-                element: <EditCourse />,
-            },
-            { path: ':lessonId/vocabulary', element: <EditVocabulary /> },
-            { path: ':lessonId/grammar', element: <EditGrammar /> },
+            { path: 'vocabulary', element: <EditVocabulary /> },
+            { path: 'grammar', element: <EditGrammar /> },
         ],
     },
 ]

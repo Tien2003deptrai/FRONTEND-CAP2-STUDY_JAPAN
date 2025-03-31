@@ -1,11 +1,11 @@
-function GrammarItem({ grammar }) {
+function GrammarItem({ grammar, index }) {
     return (
         <div
             key={grammar._id}
             className="border border-gray-200 p-4 rounded-md flex flex-col gap-2"
         >
             <h3 className="w-fit text-lg font-semibold text-green-500">
-                {grammar.title} ({grammar.structure})
+                {index + 1}. {grammar.title} ({grammar.structure})
             </h3>
             <div className="flex flex-col gap-4 px-5">
                 <p>

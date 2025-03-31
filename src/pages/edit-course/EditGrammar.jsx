@@ -4,12 +4,13 @@ import axiosInstance from '@/network/httpRequest'
 import { Add, ArrowBack } from '@mui/icons-material'
 import { useEffect } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 
 function EditGrammar() {
     const navigate = useNavigate()
-    const { lessonId } = useParams()
+    const { state } = useLocation()
+    const lessonId = state?.lessonId
 
     const { control, handleSubmit, register, setValue } = useForm({
         defaultValues: {
