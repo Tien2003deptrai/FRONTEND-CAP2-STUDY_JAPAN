@@ -1,9 +1,11 @@
-import useFetchLessonList from '@/hook/useFetchLessonList'
+import useFetchLessonList from '@/hooks/useFetchLessonList'
 import { Link, useParams } from 'react-router-dom'
 
-function EditCourseSidebar() {
-    const { courseId, lessonId } = useParams()
+function EditCourseSidebar({ lessonId, onSelectLesson }) {
+    const { courseId } = useParams()
     const { data: lessonsData } = useFetchLessonList(courseId)
+    const lessons = lessonsData?.data?.lessons || []
+
     return (
         <div className="w-full flex flex-col gap-8">
             <div className="w-full flex flex-col gap-2">
@@ -18,22 +20,17 @@ function EditCourseSidebar() {
             <hr />
 
             <div className="w-full flex flex-col gap-3">
-                {lessonsData?.data?.lessons.map((lesson) => (
-                    <Link
-                        key={lesson._id}
-                        to={`/teacher/edit/${courseId}/${lesson._id}`}
-                        className={`block w-full p-4 
-                            ${lesson._id === lessonId ? 'font-bold bg-red-100 text-red-600' : ''} 
-                            rounded-md truncate hover:text-primary duration-150 `}
-                        state={lesson}
-                    >
-                        {lesson.lesson_title} Lorem ipsum, dolor sit amet
-                        consectetur adipisicing elit. Ea natus reprehenderit cum
-                        facilis sed dolor. Qui beatae aliquid ab, sed,
-                        doloremque impedit aspernatur, maxime repellat eaque
-                        quis autem. Repellendus, cupiditate?
-                    </Link>
-                ))}
+                {lessons
+                    .sort((a, b) => a.index - b.index)
+                    .map((lesson) => (
+                        <p
+                            key={lesson._id}
+                            className={`block w-full p-4 ${lessonId === lesson._id ? 'font-bold bg-red-100 text-red-600' : ''} rounded-md truncate hover:text-primary duration-150 cursor-pointer`}
+                            onClick={() => onSelectLesson(lesson._id)}
+                        >
+                            {lesson.lesson_title}
+                        </p>
+                    ))}
             </div>
         </div>
     )

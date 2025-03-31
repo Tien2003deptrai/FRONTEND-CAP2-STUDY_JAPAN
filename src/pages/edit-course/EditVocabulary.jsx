@@ -1,15 +1,18 @@
-import useFetchVocabulary from '@/hook/useFetchVocabulary'
+import useFetchVocabulary from '@/hooks/useFetchVocabulary'
 import axiosInstance from '@/network/httpRequest'
 import { uploadImage } from '@/util/firebase/firebaseUtils'
 import { Add, ArrowBack } from '@mui/icons-material'
 import { useEffect, useState } from 'react'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 
 function EditVocabulary() {
     const navigate = useNavigate()
-    const { lessonId } = useParams()
+    const { state } = useLocation()
+    const lessonId = state?.lessonId
+    console.log(lessonId)
+
     const { control, handleSubmit, register, setValue, watch } = useForm({
         defaultValues: {
             words: [
@@ -103,7 +106,11 @@ function EditVocabulary() {
 
     return (
         <div className="w-full mx-auto p-4">
-            <ToastContainer />
+            <ToastContainer
+                hideProgressBar
+                autoClose={3000}
+                style={{ marginTop: '80px' }}
+            />
             <div className="flex justify-between items-center mb-3 gap-4">
                 <button
                     onClick={() => navigate(-1)}
@@ -123,7 +130,7 @@ function EditVocabulary() {
                     return (
                         <div
                             key={field.id}
-                            className="grid grid-cols-2 gap-3 p-4 border rounded-lg shadow"
+                            className="grid grid-cols-2 gap-3 p-4 border border-solid border-gray-400 rounded-lg shadow"
                         >
                             <input
                                 required
