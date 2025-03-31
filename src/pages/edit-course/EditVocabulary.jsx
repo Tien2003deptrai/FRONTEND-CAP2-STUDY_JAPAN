@@ -1,4 +1,4 @@
-import useFetchVocabulary from '@/hook/useFetchVocabulary'
+import useFetchVocabulary from '@/hooks/useFetchVocabulary'
 import axiosInstance from '@/network/httpRequest'
 import { uploadImage } from '@/util/firebase/firebaseUtils'
 import { Add, ArrowBack } from '@mui/icons-material'

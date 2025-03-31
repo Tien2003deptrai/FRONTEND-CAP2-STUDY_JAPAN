@@ -1,9 +1,9 @@
 import GrammarItem from '@/components/edit-course/grammar/GrammarItem'
 import Video from '@/components/edit-course/video/Video'
 import VocabularyItem from '@/components/edit-course/vocabulary/VocabularyItem'
-import useFetchGrammar from '@/hook/useFetchGrammar'
-import useFetchLessonList from '@/hook/useFetchLessonList'
-import useFetchVocabulary from '@/hook/useFetchVocabulary'
+import useFetchGrammar from '@/hooks/useFetchGrammar'
+import useFetchLessonList from '@/hooks/useFetchLessonList'
+import useFetchVocabulary from '@/hooks/useFetchVocabulary'
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 

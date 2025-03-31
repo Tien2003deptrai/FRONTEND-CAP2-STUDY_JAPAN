@@ -1,4 +1,4 @@
-import useFetchLessonList from '@/hook/useFetchLessonList'
+import useFetchLessonList from '@/hooks/useFetchLessonList'
 import { Link, useParams } from 'react-router-dom'
 
 function EditCourseSidebar() {

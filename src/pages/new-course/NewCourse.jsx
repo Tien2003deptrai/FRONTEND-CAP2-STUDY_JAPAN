@@ -1,5 +1,5 @@
 import ImageUpload from '@/components/image-upload/ImageUpload'
-import useFetchLessonList from '@/hook/useFetchLessonList'
+import useFetchLessonList from '@/hooks/useFetchLessonList'
 import axiosInstance from '@/network/httpRequest'
 import useAuthStore from '@/store/useAuthStore'
 import { zodResolver } from '@hookform/resolvers/zod'

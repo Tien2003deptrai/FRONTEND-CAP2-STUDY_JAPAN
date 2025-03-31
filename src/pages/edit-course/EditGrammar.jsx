@@ -1,5 +1,5 @@
 import ExamplesField from '@/components/edit-course/grammar/ExamplesField'
-import useFetchGrammar from '@/hook/useFetchGrammar'
+import useFetchGrammar from '@/hooks/useFetchGrammar'
 import axiosInstance from '@/network/httpRequest'
 import { Add, ArrowBack } from '@mui/icons-material'
 import { useEffect } from 'react'
