@@ -5,6 +5,7 @@ import Course from '@/pages/admin/pages/Course/Course'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
 import Teacher from '@/pages/admin/pages/Teacher/Teacher'
+import CourseDetail from '@/pages/details-course/DetailCoure'
 import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
@@ -67,11 +68,20 @@ export const publicRoutes = [
 ]
 
 export const studentRoutes = [
-    {
-        path: '/courses',
-        element: <MainLayout />,
-        children: [{ index: true, element: <StudentCourse /> }],
-    },
+  {
+    path: '/courses',
+    element: <MainLayout />,
+    children: [
+      {
+        index: true,
+        element: <StudentCourse />
+      }
+    ],
+  },
+  {
+    path: '/courses/:courseId',
+    element: <CourseDetail />,
+  },
 ]
 
 export const teacherRoutes = [
