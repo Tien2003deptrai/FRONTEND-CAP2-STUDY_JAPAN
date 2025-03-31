@@ -1,45 +1,87 @@
+import { useEffect, useState } from 'react'
+import { Link, useOutletContext, useParams } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
 import GrammarItem from '@/components/edit-course/grammar/GrammarItem'
 import Video from '@/components/edit-course/video/Video'
 import VocabularyItem from '@/components/edit-course/vocabulary/VocabularyItem'
 import useFetchGrammar from '@/hooks/useFetchGrammar'
 import useFetchLessonList from '@/hooks/useFetchLessonList'
 import useFetchVocabulary from '@/hooks/useFetchVocabulary'
-import { useEffect, useState } from 'react'
-import { Link, useOutletContext, useParams } from 'react-router-dom'
+import axiosInstance from '@/network/httpRequest'
 
 function EditCourse() {
     const { selectedLesson } = useOutletContext()
-    console.log(selectedLesson)
-
     const { courseId } = useParams()
-    const { data: lessonList } = useFetchLessonList(courseId)
+    const { data: lessonList, refetch } = useFetchLessonList(courseId)
 
     const [videoUrl, setVideoUrl] = useState('')
+    const [description, setDescription] = useState('')
+
     const lesson = lessonList?.data?.lessons.find(
         (l) => l._id === selectedLesson
     )
 
     useEffect(() => {
         setVideoUrl(lesson?.video_url || '')
+        setDescription(lesson?.description || '')
     }, [lesson])
 
     const { data: vocabularies = [] } = useFetchVocabulary(lesson?._id)
     const { data: grammars = [] } = useFetchGrammar(lesson?._id)
-    console.log(lesson)
 
     const onSaveLessonContent = async () => {
-        const payload = {}
-        payload.lesson_id = lesson?._id
-        payload.video_url = videoUrl
-        console.log(payload)
+        try {
+            if (!lesson?._id) {
+                toast.error('Không tìm thấy bài học để cập nhật!')
+                return
+            }
+
+            const payload = {
+                lesson_id: lesson._id,
+                video_url: videoUrl,
+                description: description,
+            }
+
+            const res = await axiosInstance.put(
+                `/lesson/${lesson.lesson_id}`,
+                payload
+            )
+
+            if (res.status === 200) {
+                toast.success('Cập nhật bài học thành công!')
+                refetch()
+            } else {
+                toast.error('Cập nhật thất bại, vui lòng thử lại!')
+            }
+        } catch (error) {
+            if (error.response) {
+                toast.error(
+                    error.response.data.message ||
+                        'Lỗi máy chủ, vui lòng thử lại!'
+                )
+            } else if (error.request) {
+                toast.error(
+                    'Không thể kết nối đến server, vui lòng kiểm tra mạng!'
+                )
+            } else {
+                toast.error('Đã xảy ra lỗi, vui lòng thử lại!')
+            }
+        }
     }
 
     return (
         <div className="w-full flex flex-col items-center">
+            <ToastContainer
+                hideProgressBar
+                autoClose={3000}
+                style={{ marginTop: '80px' }}
+            />
             <div className="flex-1 w-full p-6 overflow-auto flex flex-col justify-center">
                 <div className="max-w-[900px] w-full flex flex-col gap-6">
                     <h1 className="text-2xl font-bold text-primary">
-                        {lesson?.lesson_title}
+                        {lesson?.lesson_title || 'Chưa có tiêu đề'}
                     </h1>
                     <hr className="w-full" />
 
@@ -49,7 +91,8 @@ function EditCourse() {
                             className="border p-2 w-full rounded py-4 px-4"
                             placeholder="Nhập mô tả bài học"
                             rows={4}
-                            defaultValue={lesson?.description || ''}
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                         />
                     </div>
 
@@ -114,7 +157,7 @@ function EditCourse() {
                                 ))
                             ) : (
                                 <p className="text-gray-500">
-                                    Không có từ ngữ pháp.
+                                    Không có ngữ pháp nào.
                                 </p>
                             )}
                         </div>

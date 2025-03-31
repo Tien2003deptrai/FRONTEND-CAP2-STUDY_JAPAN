@@ -106,7 +106,11 @@ function EditVocabulary() {
 
     return (
         <div className="w-full mx-auto p-4">
-            <ToastContainer />
+            <ToastContainer
+                hideProgressBar
+                autoClose={3000}
+                style={{ marginTop: '80px' }}
+            />
             <div className="flex justify-between items-center mb-3 gap-4">
                 <button
                     onClick={() => navigate(-1)}
