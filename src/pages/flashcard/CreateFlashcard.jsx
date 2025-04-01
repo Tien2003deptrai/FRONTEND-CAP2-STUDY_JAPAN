@@ -1,158 +1,65 @@
-import React, { useState } from 'react'
-import SearchIcon from '@mui/icons-material/Search'
+import useFetchAllGrammars from '@/hooks/useFetchAllGrammars'
+import useFetchAllVocabularies from '@/hooks/useFetchAllVocabularies'
+import axiosInstance from '@/network/httpRequest'
+import { LoadingOverlay } from '@mantine/core'
 import AddIcon from '@mui/icons-material/Add'
-import SaveIcon from '@mui/icons-material/Save'
-import CloseIcon from '@mui/icons-material/Close'
 import ArrowBackIcon from '@mui/icons-material/ArrowBack'
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward'
-import EditIcon from '@mui/icons-material/Edit'
-import DeleteIcon from '@mui/icons-material/Delete'
 import BookIcon from '@mui/icons-material/Book'
 import ChatBubbleIcon from '@mui/icons-material/ChatBubble'
-import { Create } from '@mui/icons-material'
+import CloseIcon from '@mui/icons-material/Close'
+import SaveIcon from '@mui/icons-material/Save'
+import SearchIcon from '@mui/icons-material/Search'
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const CreateFlashcard = () => {
+    const navigate = useNavigate()
     const [searchTerm, setSearchTerm] = useState('')
-    const [selectedVocab, setSelectedVocab] = useState([])
+    const [selectedItem, setSelectedItem] = useState([])
     const [flashcards, setFlashcards] = useState([])
     const [currentCardIndex, setCurrentCardIndex] = useState(0)
     const [isFlipped, setIsFlipped] = useState(false)
     const [deckName, setDeckName] = useState('')
-    const [view, setView] = useState('create') // 'create', 'preview', 'manage'
+    const [view, setView] = useState('create')
     const [flashcardType, setFlashcardType] = useState('vocabulary') // 'vocabulary' or 'grammar'
+    const [isSaving, setIsSaving] = useState(false)
 
-    // Sample vocabulary data
-    const sampleVocabulary = [
-        {
-            id: 1,
-            word: '猫',
-            reading: 'ねこ',
-            meaning: 'Cat',
-            example: '猫が好きです。',
-        },
-        {
-            id: 2,
-            word: '犬',
-            reading: 'いぬ',
-            meaning: 'Dog',
-            example: '犬を飼っています。',
-        },
-        {
-            id: 3,
-            word: '家',
-            reading: 'いえ',
-            meaning: 'House',
-            example: '家に帰ります。',
-        },
-        {
-            id: 4,
-            word: '学校',
-            reading: 'がっこう',
-            meaning: 'School',
-            example: '学校へ行きます。',
-        },
-        {
-            id: 5,
-            word: '本',
-            reading: 'ほん',
-            meaning: 'Book',
-            example: '本を読みます。',
-        },
-        {
-            id: 6,
-            word: '水',
-            reading: 'みず',
-            meaning: 'Water',
-            example: '水を飲みます。',
-        },
-        {
-            id: 7,
-            word: '食べる',
-            reading: 'たべる',
-            meaning: 'To eat',
-            example: 'ご飯を食べます。',
-        },
-        {
-            id: 8,
-            word: '飲む',
-            reading: 'のむ',
-            meaning: 'To drink',
-            example: 'お茶を飲みます。',
-        },
-    ]
-
-    // Sample grammar data
-    const sampleGrammar = [
-        {
-            id: 101,
-            pattern: 'Nは Nが あります/います',
-            level: 'N5',
-            meaning: 'Có (cái gì đó/ai đó) ở (đâu đó)',
-            example: '部屋には机があります。',
-            translation: 'Trong phòng có bàn.',
-        },
-        {
-            id: 102,
-            pattern: 'Nを Vます',
-            level: 'N5',
-            meaning: 'Động từ tác động lên đối tượng',
-            example: 'りんごを食べます。',
-            translation: 'Tôi ăn táo.',
-        },
-        {
-            id: 103,
-            pattern: 'Nに Vます',
-            level: 'N5',
-            meaning: 'Đi đến (địa điểm)',
-            example: '学校に行きます。',
-            translation: 'Tôi đi đến trường.',
-        },
-        {
-            id: 104,
-            pattern: 'Vて、Vます',
-            level: 'N5',
-            meaning: 'Làm việc này rồi làm việc kia',
-            example: '朝ご飯を食べて、学校に行きます。',
-            translation: 'Tôi ăn sáng rồi đi học.',
-        },
-        {
-            id: 105,
-            pattern: 'Vない形 + ければなりません',
-            level: 'N4',
-            meaning: 'Phải làm (nghĩa vụ)',
-            example: '明日は早く起きなければなりません。',
-            translation: 'Ngày mai tôi phải dậy sớm.',
-        },
-        {
-            id: 106,
-            pattern: 'Vた + ことがあります',
-            level: 'N4',
-            meaning: 'Đã từng làm gì đó',
-            example: '日本に行ったことがあります。',
-            translation: 'Tôi đã từng đi Nhật Bản.',
-        },
-    ]
+    const { data: vocabularies = [], isLoading: isLoadingVocab } =
+        useFetchAllVocabularies()
+    const { data: grammars = [], isLoading: isLoadingGrammar } =
+        useFetchAllGrammars()
+    console.log(vocabularies, grammars)
 
     // Filter data based on search term and type
     const getFilteredData = () => {
         if (flashcardType === 'vocabulary') {
-            return sampleVocabulary.filter(
+            return vocabularies?.filter(
                 (item) =>
-                    item.word.includes(searchTerm) ||
-                    item.reading.includes(searchTerm) ||
+                    item.vocabulary
+                        ?.toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    item.reading
+                        ?.toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
                     item.meaning
-                        .toLowerCase()
+                        ?.toLowerCase()
                         .includes(searchTerm.toLowerCase())
             )
         } else {
             // grammar
-            return sampleGrammar.filter(
+            return grammars?.filter(
                 (item) =>
-                    item.pattern.includes(searchTerm) ||
-                    item.meaning
-                        .toLowerCase()
+                    item.title
+                        ?.toLowerCase()
                         .includes(searchTerm.toLowerCase()) ||
-                    item.level.includes(searchTerm.toUpperCase())
+                    item.structure
+                        ?.toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    item.explain
+                        ?.toLowerCase()
+                        .includes(searchTerm.toLowerCase()) ||
+                    item.level?.toLowerCase().includes(searchTerm.toLowerCase())
             )
         }
     }
@@ -161,37 +68,37 @@ const CreateFlashcard = () => {
 
     // Add item to selected list
     const addToSelected = (item) => {
-        if (!selectedVocab.find((selected) => selected.id === item.id)) {
-            setSelectedVocab([...selectedVocab, item])
+        if (!selectedItem.find((selected) => selected._id === item._id)) {
+            setSelectedItem([...selectedItem, item])
         }
     }
 
     // Remove item from selected list
     const removeFromSelected = (id) => {
-        setSelectedVocab(selectedVocab.filter((item) => item.id !== id))
+        setSelectedItem(selectedItem.filter((item) => item._id !== id))
     }
 
     // Create flashcards from selected items
     const createFlashcards = () => {
-        if (selectedVocab.length === 0 || !deckName) return
+        if (selectedItem?.length === 0 || !deckName) return
 
         let newCards
 
         if (flashcardType === 'vocabulary') {
-            newCards = selectedVocab.map((vocab) => ({
-                id: vocab.id,
+            newCards = selectedItem.map((vocab) => ({
+                id: vocab._id,
                 front: { text: vocab.word, subtext: vocab.reading },
                 back: { text: vocab.meaning, example: vocab.example },
             }))
         } else {
             // grammar
-            newCards = selectedVocab.map((grammar) => ({
-                id: grammar.id,
-                front: { text: grammar.pattern, subtext: grammar.level },
+            newCards = selectedItem.map((grammar) => ({
+                id: grammar._id,
+                front: { text: grammar.title, subtext: grammar.level },
                 back: {
-                    text: grammar.meaning,
-                    example: grammar.example,
-                    translation: grammar.translation,
+                    text: grammar.explain,
+                    example: grammar.examples?.[0]?.j || '',
+                    translation: grammar.examples?.[0]?.v || '',
                 },
             }))
         }
@@ -205,7 +112,7 @@ const CreateFlashcard = () => {
     // Change flashcard type
     const changeFlashcardType = (type) => {
         setFlashcardType(type)
-        setSelectedVocab([])
+        setSelectedItem([])
         setSearchTerm('')
     }
 
@@ -224,9 +131,46 @@ const CreateFlashcard = () => {
         }
     }
 
+    const handleSaveFlashCard = async () => {
+        try {
+            setIsSaving(true)
+            const payload = {
+                deck_title: deckName,
+                type: flashcardType,
+                [flashcardType === 'vocabulary' ? 'vocab' : 'grammar']:
+                    selectedItem.map((item) => item._id),
+            }
+
+            const res = await axiosInstance.post('/flashcard', payload)
+
+            if (res.status === 200) {
+                alert('Tạo deck flashcards thành công!')
+                navigate(-1)
+            } else {
+                alert('Không thể tạo flashcard, vui lòng thử lại!')
+            }
+        } catch (error) {
+            if (error.response) {
+                alert(
+                    error.response.data.message ||
+                        'Lỗi máy chủ, vui lòng thử lại!'
+                )
+            } else if (error.request) {
+                alert('Không thể kết nối đến server, vui lòng kiểm tra mạng!')
+            } else {
+                alert('Đã xảy ra lỗi, vui lòng thử lại!')
+            }
+        } finally {
+            setIsSaving(false)
+        }
+    }
     // Render based on current view
     return (
-        <div className="w-full min-h-screen bg-gray-50">
+        <div className="w-full min-h-screen bg-gray-50 relative">
+            <LoadingOverlay
+                visible={isLoadingVocab || isLoadingGrammar || isSaving}
+                overlayBlur={2}
+            />
             <div className="w-full max-w-[1440px] mx-auto px-4 py-6">
                 <div className="bg-white shadow-sm rounded-lg">
                     {/* Header */}
@@ -319,10 +263,10 @@ const CreateFlashcard = () => {
                                         </h2>
                                     </div>
                                     <div className="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
-                                        {filteredData.length > 0 ? (
+                                        {filteredData?.length > 0 ? (
                                             filteredData.map((item) => (
                                                 <div
-                                                    key={item.id}
+                                                    key={item._id}
                                                     className="flex items-center justify-between p-4 hover:bg-gray-50"
                                                 >
                                                     <div>
@@ -330,18 +274,21 @@ const CreateFlashcard = () => {
                                                             {flashcardType ===
                                                             'vocabulary'
                                                                 ? item.word
-                                                                : item.pattern}{' '}
+                                                                : item.title}{' '}
                                                             <span className="text-gray-500">
                                                                 (
                                                                 {flashcardType ===
                                                                 'vocabulary'
-                                                                    ? item.reading
+                                                                    ? item.kanji
                                                                     : item.level}
                                                                 )
                                                             </span>
                                                         </div>
                                                         <div className="text-gray-500 text-sm">
-                                                            {item.meaning}
+                                                            {flashcardType ===
+                                                            'vocabulary'
+                                                                ? item.meaning
+                                                                : item.explain}
                                                         </div>
                                                     </div>
                                                     <button
@@ -369,14 +316,14 @@ const CreateFlashcard = () => {
                                             {flashcardType === 'vocabulary'
                                                 ? 'Từ vựng đã chọn'
                                                 : 'Ngữ pháp đã chọn'}{' '}
-                                            ({selectedVocab.length})
+                                            ({selectedItem.length})
                                         </h2>
                                     </div>
                                     <div className="divide-y divide-gray-200 max-h-[600px] overflow-y-auto">
-                                        {selectedVocab.length > 0 ? (
-                                            selectedVocab.map((item) => (
+                                        {selectedItem.length > 0 ? (
+                                            selectedItem.map((item) => (
                                                 <div
-                                                    key={item.id}
+                                                    key={item._id}
                                                     className="flex items-center justify-between p-4 hover:bg-gray-50"
                                                 >
                                                     <div>
@@ -384,24 +331,27 @@ const CreateFlashcard = () => {
                                                             {flashcardType ===
                                                             'vocabulary'
                                                                 ? item.word
-                                                                : item.pattern}{' '}
+                                                                : item.title}{' '}
                                                             <span className="text-gray-500">
                                                                 (
                                                                 {flashcardType ===
                                                                 'vocabulary'
-                                                                    ? item.reading
+                                                                    ? item.kanji
                                                                     : item.level}
                                                                 )
                                                             </span>
                                                         </div>
                                                         <div className="text-gray-500 text-sm">
-                                                            {item.meaning}
+                                                            {flashcardType ===
+                                                            'vocabulary'
+                                                                ? item.meaning
+                                                                : item.explain}
                                                         </div>
                                                     </div>
                                                     <button
                                                         onClick={() =>
                                                             removeFromSelected(
-                                                                item.id
+                                                                item._id
                                                             )
                                                         }
                                                         className="p-1.5 rounded-full bg-red-600 text-white hover:bg-red-700"
@@ -424,12 +374,12 @@ const CreateFlashcard = () => {
                                 <button
                                     onClick={createFlashcards}
                                     disabled={
-                                        selectedVocab.length === 0 || !deckName
+                                        selectedItem.length === 0 || !deckName
                                     }
-                                    className={`w-full py-3 rounded-lg font-medium ${
-                                        selectedVocab.length === 0 || !deckName
-                                            ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                            : 'bg-red-600 text-white hover:bg-red-700'
+                                    className={`w-full ${
+                                        selectedItem.length === 0 || !deckName
+                                            ? 'primary-btn bg-gray-100 text-white cursor-not-allowed'
+                                            : 'primary-btn'
                                     }`}
                                 >
                                     Tạo Flashcards{' '}
@@ -456,178 +406,178 @@ const CreateFlashcard = () => {
                                         Chỉnh sửa
                                     </button>
                                     <button
-                                        onClick={() => setView('manage')}
-                                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center"
+                                        onClick={handleSaveFlashCard}
+                                        disabled={isSaving}
+                                        className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center disabled:opacity-50 disabled:cursor-not-allowed"
                                     >
-                                        <SaveIcon className="h-5 w-5 mr-2" />
-                                        Lưu
+                                        {isSaving ? (
+                                            <SaveIcon className="h-5 w-5 mr-2" />
+                                        ) : (
+                                            <SaveIcon className="h-5 w-5 mr-2" />
+                                        )}
+                                        {isSaving ? 'Đang lưu...' : 'Lưu'}
                                     </button>
                                 </div>
                             </div>
 
                             {flashcards.length > 0 && (
-                                <>
-                                    {/* Flashcard Preview */}
-                                    <div
-                                        className={`relative h-[500px] w-full mb-6 cursor-pointer transition-all duration-300 ${
-                                            isFlipped ? 'rotate-y-180' : ''
-                                        }`}
-                                        onClick={() => setIsFlipped(!isFlipped)}
-                                    >
-                                        {/* Front of card */}
-                                        <div
-                                            className={`absolute inset-0 flex flex-col items-center justify-center bg-white rounded-lg border border-gray-200 p-8 ${
-                                                isFlipped
-                                                    ? 'opacity-0'
-                                                    : 'opacity-100'
-                                            } transition-opacity duration-300`}
-                                        >
-                                            <div className="text-4xl font-bold mb-4">
-                                                {
-                                                    flashcards[currentCardIndex]
-                                                        .front.text
-                                                }
-                                            </div>
-                                            <div className="text-xl text-gray-600">
-                                                {
-                                                    flashcards[currentCardIndex]
-                                                        .front.subtext
-                                                }
-                                            </div>
-                                            <div className="absolute bottom-4 right-4 text-gray-400 text-sm">
-                                                Nhấn để lật
-                                            </div>
-                                        </div>
-
-                                        {/* Back of card */}
-                                        <div
-                                            className={`absolute inset-0 flex flex-col items-center justify-center bg-gray-50 rounded-lg border border-gray-200 p-8 ${
-                                                isFlipped
-                                                    ? 'opacity-100'
-                                                    : 'opacity-0'
-                                            } transition-opacity duration-300`}
-                                        >
-                                            <div className="text-2xl font-bold mb-4 text-center">
-                                                {
-                                                    flashcards[currentCardIndex]
-                                                        .back.text
-                                                }
-                                            </div>
-                                            <div className="text-lg text-gray-700 italic text-center mb-4">
-                                                {
-                                                    flashcards[currentCardIndex]
-                                                        .back.example
-                                                }
-                                            </div>
-                                            {flashcardType === 'grammar' && (
-                                                <div className="text-gray-600 text-center">
-                                                    {
-                                                        flashcards[
-                                                            currentCardIndex
-                                                        ].back.translation
+                                <div className="flex flex-col items-center justify-center min-h-[500px]">
+                                    {/* Flashcard Container */}
+                                    <div className="w-full max-w-[600px] mx-auto">
+                                        {/* Flashcard Preview */}
+                                        <div className="relative h-[300px] mb-6">
+                                            <div className="flip-card w-full h-full">
+                                                <div
+                                                    className={`flip-card-inner w-full h-full ${isFlipped ? 'flipped' : ''}`}
+                                                    onClick={() =>
+                                                        setIsFlipped(!isFlipped)
                                                     }
+                                                    role="button"
+                                                    tabIndex={0}
+                                                    onKeyDown={(e) => {
+                                                        if (
+                                                            e.key === 'Enter' ||
+                                                            e.key === ' '
+                                                        ) {
+                                                            setIsFlipped(
+                                                                !isFlipped
+                                                            )
+                                                        }
+                                                    }}
+                                                >
+                                                    {/* Front of card */}
+                                                    <div className="flip-card-front w-full h-full">
+                                                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-red-600 to-red-700 text-white rounded-xl shadow-lg p-8">
+                                                            <div className="text-4xl font-bold mb-4 text-center">
+                                                                {
+                                                                    flashcards[
+                                                                        currentCardIndex
+                                                                    ].front.text
+                                                                }
+                                                            </div>
+                                                            <div className="text-xl opacity-90">
+                                                                {
+                                                                    flashcards[
+                                                                        currentCardIndex
+                                                                    ].front
+                                                                        .subtext
+                                                                }
+                                                            </div>
+                                                            <div className="absolute bottom-4 right-4 text-white/50 text-sm">
+                                                                Nhấn để lật
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Back of card */}
+                                                    <div className="flip-card-back w-full h-full">
+                                                        <div className="w-full h-full flex flex-col items-center justify-center bg-white rounded-xl shadow-lg p-8">
+                                                            <div className="text-2xl font-bold mb-4 text-center text-gray-800">
+                                                                {
+                                                                    flashcards[
+                                                                        currentCardIndex
+                                                                    ].back.text
+                                                                }
+                                                            </div>
+                                                            <div className="text-lg text-gray-600 italic text-center mb-4">
+                                                                {
+                                                                    flashcards[
+                                                                        currentCardIndex
+                                                                    ].back
+                                                                        .example
+                                                                }
+                                                            </div>
+                                                            {flashcardType ===
+                                                                'grammar' && (
+                                                                <div className="text-gray-500 text-center">
+                                                                    {
+                                                                        flashcards[
+                                                                            currentCardIndex
+                                                                        ].back
+                                                                            .translation
+                                                                    }
+                                                                </div>
+                                                            )}
+                                                            <div className="absolute bottom-4 right-4 text-gray-400 text-sm">
+                                                                Nhấn để lật
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            )}
-                                            <div className="absolute bottom-4 right-4 text-gray-400 text-sm">
-                                                Nhấn để lật
                                             </div>
                                         </div>
-                                    </div>
 
-                                    {/* Navigation Controls */}
-                                    <div className="flex justify-center space-x-4">
-                                        <button
-                                            onClick={prevCard}
-                                            disabled={currentCardIndex === 0}
-                                            className={`p-2 rounded-full ${
-                                                currentCardIndex === 0
-                                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                    : 'bg-red-600 text-white hover:bg-red-700'
-                                            }`}
-                                        >
-                                            <ArrowBackIcon className="h-6 w-6" />
-                                        </button>
-                                        <button
-                                            onClick={nextCard}
-                                            disabled={
-                                                currentCardIndex ===
-                                                flashcards.length - 1
-                                            }
-                                            className={`p-2 rounded-full ${
-                                                currentCardIndex ===
-                                                flashcards.length - 1
-                                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                                                    : 'bg-red-600 text-white hover:bg-red-700'
-                                            }`}
-                                        >
-                                            <ArrowForwardIcon className="h-6 w-6" />
-                                        </button>
+                                        {/* Navigation Controls */}
+                                        <div className="flex justify-center space-x-6">
+                                            <button
+                                                onClick={prevCard}
+                                                disabled={
+                                                    currentCardIndex === 0
+                                                }
+                                                className={`p-3 rounded-full transition-all duration-200 ${
+                                                    currentCardIndex === 0
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                        : 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg'
+                                                }`}
+                                            >
+                                                <ArrowBackIcon className="h-6 w-6" />
+                                            </button>
+                                            <button
+                                                onClick={nextCard}
+                                                disabled={
+                                                    currentCardIndex ===
+                                                    flashcards.length - 1
+                                                }
+                                                className={`p-3 rounded-full transition-all duration-200 ${
+                                                    currentCardIndex ===
+                                                    flashcards.length - 1
+                                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                                        : 'bg-red-600 text-white hover:bg-red-700 hover:shadow-lg'
+                                                }`}
+                                            >
+                                                <ArrowForwardIcon className="h-6 w-6" />
+                                            </button>
+                                        </div>
                                     </div>
-                                </>
+                                </div>
                             )}
-                        </div>
-                    )}
-
-                    {view === 'manage' && (
-                        <div className="p-6">
-                            <div className="mb-6 flex items-center justify-between">
-                                <h2 className="text-xl font-medium">
-                                    Quản lý Flashcards
-                                </h2>
-                                <button
-                                    onClick={() => setView('preview')}
-                                    className="px-4 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
-                                >
-                                    Quay lại
-                                </button>
-                            </div>
-
-                            <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-                                <div className="flex items-center text-green-700">
-                                    <SaveIcon className="h-5 w-5 mr-2" />
-                                    <span>
-                                        Đã lưu bộ flashcard "{deckName}" thành
-                                        công! ({flashcards.length} thẻ)
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div className="border border-gray-200 rounded-lg">
-                                <div className="bg-gray-50 p-4 border-b border-gray-200">
-                                    <h3 className="font-medium text-gray-900">
-                                        Các bộ flashcard của bạn
-                                    </h3>
-                                </div>
-                                <div className="divide-y divide-gray-200">
-                                    <div className="p-4 flex items-center justify-between hover:bg-gray-50">
-                                        <div>
-                                            <div className="font-medium text-gray-900">
-                                                {deckName}
-                                            </div>
-                                            <div className="text-sm text-gray-500">
-                                                {flashcards.length} thẻ •{' '}
-                                                {flashcardType === 'vocabulary'
-                                                    ? 'Từ vựng'
-                                                    : 'Ngữ pháp'}{' '}
-                                                • Tạo ngày{' '}
-                                                {new Date().toLocaleDateString()}
-                                            </div>
-                                        </div>
-                                        <div className="flex space-x-2">
-                                            <button className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg">
-                                                <EditIcon className="h-5 w-5" />
-                                            </button>
-                                            <button className="p-2 text-red-600 hover:bg-red-50 rounded-lg">
-                                                <DeleteIcon className="h-5 w-5" />
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     )}
                 </div>
             </div>
+
+            {/* Add these styles to your global CSS */}
+            <style jsx>{`
+                .flip-card {
+                    perspective: 1000px;
+                    cursor: pointer;
+                }
+
+                .flip-card-inner {
+                    position: relative;
+                    width: 100%;
+                    height: 100%;
+                    text-align: center;
+                    transition: transform 0.6s;
+                    transform-style: preserve-3d;
+                }
+
+                .flip-card-inner.flipped {
+                    transform: rotateY(180deg);
+                }
+
+                .flip-card-front,
+                .flip-card-back {
+                    position: absolute;
+                    width: 100%;
+                    height: 100%;
+                    backface-visibility: hidden;
+                }
+
+                .flip-card-back {
+                    transform: rotateY(180deg);
+                }
+            `}</style>
         </div>
     )
 }
