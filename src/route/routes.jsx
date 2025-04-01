@@ -9,6 +9,8 @@ import CourseDetail from '@/pages/details-course/DetailCoure'
 import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
+import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
+import ManageDocument from '@/pages/flashcard/ManageDocument'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import Login from '@/pages/login/Login'
@@ -68,20 +70,20 @@ export const publicRoutes = [
 ]
 
 export const studentRoutes = [
-  {
-    path: '/courses',
-    element: <MainLayout />,
-    children: [
-      {
-        index: true,
-        element: <StudentCourse />
-      }
-    ],
-  },
-  {
-    path: '/courses/:courseId',
-    element: <CourseDetail />,
-  },
+    {
+        path: '/courses',
+        element: <MainLayout />,
+        children: [
+            {
+                index: true,
+                element: <StudentCourse />,
+            },
+        ],
+    },
+    {
+        path: '/courses/:courseId',
+        element: <CourseDetail />,
+    },
 ]
 
 export const teacherRoutes = [
@@ -107,6 +109,17 @@ export const teacherRoutes = [
             { index: true, element: <EditCourse /> },
             { path: 'vocabulary', element: <EditVocabulary /> },
             { path: 'grammar', element: <EditGrammar /> },
+        ],
+    },
+    {
+        path: '/manage-document',
+        element: <MainLayout />,
+        children: [
+            { index: true, element: <ManageDocument /> },
+            {
+                path: 'create-flashcard',
+                element: <CreateFlashcard />,
+            },
         ],
     },
 ]
