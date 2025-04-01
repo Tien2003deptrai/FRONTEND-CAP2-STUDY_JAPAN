@@ -1,9 +1,6 @@
-import React from 'react'
-import AddIcon from '@mui/icons-material/Add'
-import { useStudents } from '../../../../hooks/useStudents'
-import StudentCard from '../../../../components/StudentCard'
-import useTeachers from '@/hooks/useTeacher'
 import TeacherCard from '@/components/TeacherCard'
+import useTeachers from '@/hooks/useTeacher'
+import AddIcon from '@mui/icons-material/Add'
 
 const Teacher = () => {
     const { data: teachers, isLoading, error } = useTeachers()

@@ -1,5 +1,5 @@
 import ImageUpload from '@/components/image-upload/ImageUpload'
-import useFetchLessonList from '@/hooks/useFetchLessonList'
+import useFetchLessonData from '@/hooks/useFetchLessonData'
 import axiosInstance from '@/network/httpRequest'
 import useAuthStore from '@/store/useAuthStore'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -55,7 +55,7 @@ function NewCourse({ isEditMode }) {
         name: 'lessons',
     })
 
-    const { data: lessonList } = useFetchLessonList(courseId)
+    const { data: lessonList } = useFetchLessonData(courseId)
 
     useEffect(() => {
         if (isEditMode && lessonList) {
