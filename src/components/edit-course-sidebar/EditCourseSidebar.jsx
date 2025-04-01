@@ -1,9 +1,9 @@
-import useFetchLessonList from '@/hooks/useFetchLessonList'
+import useFetchLessonData from '@/hooks/useFetchLessonData'
 import { Link, useParams } from 'react-router-dom'
 
 function EditCourseSidebar({ lessonId, onSelectLesson }) {
     const { courseId } = useParams()
-    const { data: lessonsData } = useFetchLessonList(courseId)
+    const { data: lessonsData } = useFetchLessonData(courseId)
     const lessons = lessonsData?.data?.lessons || []
 
     return (

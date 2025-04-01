@@ -7,14 +7,14 @@ import GrammarItem from '@/components/edit-course/grammar/GrammarItem'
 import Video from '@/components/edit-course/video/Video'
 import VocabularyItem from '@/components/edit-course/vocabulary/VocabularyItem'
 import useFetchGrammar from '@/hooks/useFetchGrammar'
-import useFetchLessonList from '@/hooks/useFetchLessonList'
+import useFetchLessonData from '@/hooks/useFetchLessonData'
 import useFetchVocabulary from '@/hooks/useFetchVocabulary'
 import axiosInstance from '@/network/httpRequest'
 
 function EditCourse() {
     const { selectedLesson } = useOutletContext()
     const { courseId } = useParams()
-    const { data: lessonList, refetch } = useFetchLessonList(courseId)
+    const { data: lessonList, refetch } = useFetchLessonData(courseId)
 
     const [videoUrl, setVideoUrl] = useState('')
     const [description, setDescription] = useState('')
