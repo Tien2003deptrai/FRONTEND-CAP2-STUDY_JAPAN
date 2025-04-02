@@ -1,0 +1,133 @@
+import { Box, Button, Paper, Stack, Typography, useTheme } from '@mui/material'
+import { useState } from 'react'
+
+function FlashcardViewer({ flashcards }) {
+    const theme = useTheme()
+    const [index, setIndex] = useState(0)
+    const [flipped, setFlipped] = useState(false)
+
+    const card = flashcards[index]
+
+    // const handleAudio = () => {
+    //     if (card.vocab.audio) {
+    //         const audio = new Audio(card.vocab.audio)
+    //         audio.play()
+    //     }
+    // }
+
+    const nextCard = () => {
+        setFlipped(false)
+        setIndex((prev) => (prev + 1) % flashcards.length)
+    }
+
+    const prevCard = () => {
+        setFlipped(false)
+        setIndex((prev) => (prev - 1 + flashcards.length) % flashcards.length)
+    }
+
+    return (
+        <Box display="flex" flexDirection="column" alignItems="center" gap={4}>
+            <Typography variant="h6" color="text.secondary">
+                {index + 1} / {flashcards.length}
+            </Typography>
+
+            <Box
+                sx={{
+                    width: { xs: '100%', sm: 500, md: 600 },
+                    height: { xs: 300, sm: 350, md: 400 },
+                    perspective: '1000px',
+                    cursor: 'pointer',
+                }}
+                onClick={() => setFlipped(!flipped)}
+            >
+                <Box
+                    sx={{
+                        position: 'relative',
+                        width: '100%',
+                        height: '100%',
+                        transformStyle: 'preserve-3d',
+                        transition: 'transform 0.6s',
+                        transform: flipped ? 'rotateY(180deg)' : 'none',
+                    }}
+                >
+                    {/* Front side*/}
+                    <Paper
+                        elevation={6}
+                        sx={{
+                            position: 'absolute',
+                            width: '100%',
+                            height: '100%',
+                            backfaceVisibility: 'hidden',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            p: 3,
+                            borderRadius: 3,
+                            bgcolor:
+                                theme.palette.mode === 'dark'
+                                    ? '#1e1e1e'
+                                    : '#DC2626',
+                        }}
+                    >
+                        <Typography
+                            variant="h3"
+                            fontWeight="bold"
+                            textAlign="center"
+                            color="white"
+                        >
+                            {card.front}
+                        </Typography>
+                    </Paper>
+
+                    {/* Back side */}
+                    <Paper
+                        elevation={6}
+                        sx={{
+                            position: 'absolute',
+                            width: '100%',
+                            height: '100%',
+                            backfaceVisibility: 'hidden',
+                            transform: 'rotateY(180deg)',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            p: 3,
+                            borderRadius: 3,
+                            bgcolor:
+                                theme.palette.mode === 'dark'
+                                    ? '#2b2b2b'
+                                    : '#fff7e6',
+                        }}
+                    >
+                        <Typography variant="h4" textAlign="center">
+                            {card.back}
+                        </Typography>
+                    </Paper>
+                </Box>
+            </Box>
+
+            <Stack direction="row" spacing={3}>
+                <Button
+                    variant="outlined"
+                    color="error"
+                    size="large"
+                    onClick={prevCard}
+                >
+                    ⬅️ Trước
+                </Button>
+                <Button
+                    variant="contained"
+                    color="error"
+                    size="large"
+                    onClick={nextCard}
+                >
+                    Tiếp ➡️
+                </Button>
+            </Stack>
+        </Box>
+    )
+}
+
+export default FlashcardViewer

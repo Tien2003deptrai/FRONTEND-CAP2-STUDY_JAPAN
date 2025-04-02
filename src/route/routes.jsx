@@ -1,6 +1,7 @@
 import AdminLayOut from '@/layout/AdminLayout'
 import EditCourseLayout from '@/layout/EditCourseLayout'
 import MainLayout from '@/layout/MainLayout'
+import PracticeLayout from '@/layout/PracticeLayout'
 import Course from '@/pages/admin/pages/Course/Course'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
@@ -17,8 +18,17 @@ import Login from '@/pages/login/Login'
 import ProfileUser from '@/pages/login/ProfileUser'
 import NewCourse from '@/pages/new-course/NewCourse'
 import PageNotFound from '@/pages/not-found/PageNotFound'
+import ExamDetailPage from '@/pages/Practice/Exam/examDetail'
+import ExamDoingPage from '@/pages/Practice/Exam/examDoing'
+import ExamList from '@/pages/Practice/Exam/examList'
+import ExamResultPage from '@/pages/Practice/Exam/examResults'
+import Deck from '@/pages/Practice/flashcard/Deck'
+import Flashcard from '@/pages/Practice/flashcard/Flashcard'
+import Translate from '@/pages/Practice/Translate'
+import Voice from '@/pages/Practice/Voice'
 import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
+import { Navigate } from 'react-router-dom'
 
 export const publicRoutes = [
     {
@@ -83,6 +93,49 @@ export const studentRoutes = [
     {
         path: '/courses/:courseId',
         element: <CourseDetail />,
+    },
+]
+export const practiceRoutes = [
+    {
+        path: '/practice',
+        element: <MainLayout />,
+        children: [
+            {
+                path: '',
+                element: <PracticeLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to="flashcard" replace />,
+                    },
+                    { path: 'flashcard', element: <Deck /> },
+                    { path: 'flashcard/:deckId', element: <Flashcard /> },
+                    { path: 'voice', element: <Voice /> },
+                    { path: 'translate', element: <Translate /> },
+                    {
+                        path: 'exam',
+                        children: [
+                            {
+                                index: true,
+                                element: <ExamList />,
+                            },
+                            {
+                                path: ':exam_id',
+                                element: <ExamDetailPage />,
+                            },
+                            {
+                                path: 'doing/:attemptId',
+                                element: <ExamDoingPage />,
+                            },
+                            {
+                                path: 'result/:attemptId',
+                                element: <ExamResultPage />,
+                            },
+                        ],
+                    },
+                ],
+            },
+        ],
     },
 ]
 

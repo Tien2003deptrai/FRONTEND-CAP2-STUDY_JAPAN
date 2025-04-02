@@ -1,7 +1,6 @@
-import axiosInstance from '@/network/httpRequest'
+import useFetchAllDecks from '@/hooks/useFetchAllDecks'
 import { LoadingOverlay } from '@mantine/core'
 import { Add, Book, Delete, Edit, PlayArrow, Search } from '@mui/icons-material'
-import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
@@ -9,13 +8,7 @@ function ManageDocument() {
     const [visibleItems, setVisibleItems] = useState(5)
     const [searchTerm, setSearchTerm] = useState('')
 
-    const { data: decks, isLoading } = useQuery({
-        queryKey: ['decks'],
-        queryFn: async () => {
-            const response = await axiosInstance.get('/deck/all')
-            return response.data.data
-        },
-    })
+    const { data: decks, isLoading } = useFetchAllDecks()
 
     const showMore = () => {
         setVisibleItems((prev) => prev + 5)
