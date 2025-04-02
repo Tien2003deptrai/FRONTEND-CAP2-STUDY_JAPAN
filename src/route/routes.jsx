@@ -96,44 +96,44 @@ export const studentRoutes = [
     },
 ]
 export const practiceRoutes = [
-  {
-    path: '/practice',
-    element: <MainLayout />,
-    children: [
-      {
-        path: '',
-        element: <PracticeLayout />,
-        children: [
-          { index: true, element: <Navigate to="flashcard" replace /> },
-          { path: 'flashcard', element: <Flashcard /> },
-          { path: 'voice', element: <Voice /> },
-          { path: 'translate', element: <Translate /> },
-
-          // Exam routes
-          {
-            path: 'exam',
-            children: [
-              {
-                index: true,
-                element: <ExamList />
-              },
-              {
-                path: ':exam_id',
-                element: <ExamDetailPage />
-              },
-              {
-                path: 'doing/:attemptId',
-                element: <ExamDoingPage />
-              },
-              {
-                path: 'result/:attemptId',
-                element: <ExamResultPage />
-              }
-            ],
-          },
-        ],
+    {
+      path: '/practice',
+      element: <MainLayout />,
+      children: [
+        {
+          path: '',
+          element: <PracticeLayout />,
+          children: [
+            { index: true, element: <Navigate to="flashcard" replace /> },
+            { path: 'flashcard', element: <Flashcard /> },
+            { path: 'voice', element: <Voice /> },
+            { path: 'translate', element: <Translate /> },
+            {
+              path: 'exam',
+              children: [
+                {
+                  index: true,
+                  element: <ExamList />
+                },
+                {
+                  path: ':exam_id',
+                  element: <ExamDetailPage />
+                },
+                {
+                  path: 'doing/:attemptId',
+                  element: <ExamDoingPage />
+                },
+                {
+                  path: 'result/:attemptId',
+                  element: <ExamResultPage />
+                }
+              ],
+            },
+          ],
+        },
+      ],
     },
-]
+  ];
 
 export const teacherRoutes = [
     {
