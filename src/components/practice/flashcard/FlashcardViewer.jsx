@@ -1,14 +1,5 @@
+import { Box, Button, Paper, Stack, Typography, useTheme } from '@mui/material'
 import { useState } from 'react'
-import {
-    Box,
-    Typography,
-    IconButton,
-    Button,
-    Stack,
-    Paper,
-    useTheme,
-} from '@mui/material'
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 
 function FlashcardViewer({ flashcards }) {
     const theme = useTheme()
@@ -17,12 +8,12 @@ function FlashcardViewer({ flashcards }) {
 
     const card = flashcards[index]
 
-    const handleAudio = () => {
-        if (card.vocab.audio) {
-            const audio = new Audio(card.vocab.audio)
-            audio.play()
-        }
-    }
+    // const handleAudio = () => {
+    //     if (card.vocab.audio) {
+    //         const audio = new Audio(card.vocab.audio)
+    //         audio.play()
+    //     }
+    // }
 
     const nextCard = () => {
         setFlipped(false)
@@ -36,6 +27,10 @@ function FlashcardViewer({ flashcards }) {
 
     return (
         <Box display="flex" flexDirection="column" alignItems="center" gap={4}>
+            <Typography variant="h6" color="text.secondary">
+                {index + 1} / {flashcards.length}
+            </Typography>
+
             <Box
                 sx={{
                     width: { xs: '100%', sm: 500, md: 600 },
@@ -55,6 +50,7 @@ function FlashcardViewer({ flashcards }) {
                         transform: flipped ? 'rotateY(180deg)' : 'none',
                     }}
                 >
+                    {/* Front side*/}
                     <Paper
                         elevation={6}
                         sx={{
@@ -71,37 +67,20 @@ function FlashcardViewer({ flashcards }) {
                             bgcolor:
                                 theme.palette.mode === 'dark'
                                     ? '#1e1e1e'
-                                    : '#ffffff',
+                                    : '#DC2626',
                         }}
                     >
                         <Typography
                             variant="h3"
                             fontWeight="bold"
                             textAlign="center"
+                            color="white"
                         >
-                            {card.vocab.word}
+                            {card.front}
                         </Typography>
-                        <Typography
-                            variant="h5"
-                            color="text.secondary"
-                            textAlign="center"
-                        >
-                            {card.vocab.kana}
-                        </Typography>
-                        {card.vocab.audio && (
-                            <IconButton
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    handleAudio()
-                                }}
-                                color="error"
-                                sx={{ mt: 2 }}
-                            >
-                                <VolumeUpIcon fontSize="large" />
-                            </IconButton>
-                        )}
                     </Paper>
 
+                    {/* Back side */}
                     <Paper
                         elevation={6}
                         sx={{
@@ -123,15 +102,7 @@ function FlashcardViewer({ flashcards }) {
                         }}
                     >
                         <Typography variant="h4" textAlign="center">
-                            {card.vocab.meaning}
-                        </Typography>
-                        <Typography
-                            variant="body1"
-                            color="text.secondary"
-                            mt={2}
-                            sx={{ textAlign: 'center', fontStyle: 'italic' }}
-                        >
-                            {card.vocab.example}
+                            {card.back}
                         </Typography>
                     </Paper>
                 </Box>

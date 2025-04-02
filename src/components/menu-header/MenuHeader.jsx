@@ -19,7 +19,7 @@ function MenuHeader() {
             path: '/manage-document',
             role: 'teacher',
         },
-        { label: 'Khóa học của bạn', path: '/courses', role: 'student' },
+        { label: 'Khóa học của tôi', path: '/courses', role: 'student' },
         { label: 'Luyện tập', path: '/practice', role: 'student' },
         { label: 'Admin', path: '/admin', role: 'admin' },
     ]

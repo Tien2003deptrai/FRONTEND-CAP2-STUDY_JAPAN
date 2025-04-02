@@ -140,11 +140,12 @@ const CreateFlashcard = () => {
                 [flashcardType === 'vocabulary' ? 'vocab' : 'grammar']:
                     selectedItem.map((item) => item._id),
             }
+            console.log(payload)
 
             const res = await axiosInstance.post('/flashcard', payload)
 
             if (res.status === 200) {
-                alert('Tạo deck flashcards thành công!')
+                alert('Tạo flashcards thành công!')
                 navigate(-1)
             } else {
                 alert('Không thể tạo flashcard, vui lòng thử lại!')
