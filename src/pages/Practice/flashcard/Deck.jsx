@@ -1,64 +1,9 @@
-<<<<<<< Updated upstream
-import { useEffect, useState } from 'react'
-import axiosInstance from '@/network/httpRequest'
-import { Box, Typography } from '@mui/material'
-import DeckSelector from '@/components/practice/flashcard/DeckSelector'
-import FlashcardViewer from '@/components/practice/flashcard/FlashcardViewer'
-
-function Flashcard() {
-    const [decks, setDecks] = useState([])
-    const [selectedDeck, setSelectedDeck] = useState(null)
-    const [flashcards, setFlashcards] = useState([])
-
-    // Get decks
-    useEffect(() => {
-        axiosInstance.get('/deck/user').then((res) => {
-            if (res.data.success) {
-                setDecks(res.data.data)
-                setSelectedDeck(res.data.data[0]?._id || null)
-            }
-        })
-    }, [])
-
-    useEffect(() => {
-        if (selectedDeck) {
-            axiosInstance.get(`/flashcard/${selectedDeck}`).then((res) => {
-                if (res.data.success) {
-                    setFlashcards(res.data.data.flashcard)
-                }
-            })
-        }
-    }, [selectedDeck])
-
-    return (
-        <Box textAlign="center">
-            <Typography variant="h4" fontWeight="bold" color="error" mb={4}>
-                🃏 Luyện tập Flashcard
-            </Typography>
-
-            <DeckSelector
-                decks={decks}
-                selectedId={selectedDeck}
-                onChange={(id) => setSelectedDeck(id)}
-            />
-
-            <Box mt={5}>
-                {flashcards.length > 0 ? (
-                    <FlashcardViewer flashcards={flashcards} />
-                ) : (
-                    <Typography color="text.secondary" fontStyle="italic">
-                        Chưa có thẻ trong bộ này.
-                    </Typography>
-                )}
-            </Box>
-        </Box>
-=======
 import useFetchAllDecks from '@/hooks/useFetchAllDecks'
 import { LoadingOverlay } from '@mantine/core'
 import { Book, PlayArrow } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 
-function Flashcard() {
+function Deck() {
     const { data: decks, isLoading } = useFetchAllDecks()
 
     return (
@@ -75,11 +20,7 @@ function Flashcard() {
             {/* Grid of Decks */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {decks?.map((deck) => (
-                    <Link
-                        key={deck._id}
-                        to={`/study/${deck._id}`}
-                        className="group"
-                    >
+                    <Link key={deck._id} to={`${deck._id}`} className="group">
                         <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-6">
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="p-2 bg-red-50 text-red-600 rounded-lg">
@@ -117,8 +58,7 @@ function Flashcard() {
                 </div>
             )}
         </div>
->>>>>>> Stashed changes
     )
 }
 
-export default Flashcard
+export default Deck
