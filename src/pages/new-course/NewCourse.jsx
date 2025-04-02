@@ -94,7 +94,7 @@ function NewCourse({ isEditMode }) {
                     : 'Khóa học đã được tạo thành công!'
             )
             queryClient.invalidateQueries({
-                queryKey: ['getCourseLecturer', user._id],
+                queryKey: ['getCourseLecturer', user?._id],
             })
             navigate('/teacher')
         } catch (error) {
