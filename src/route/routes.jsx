@@ -1,4 +1,5 @@
 import AdminLayOut from '@/layout/AdminLayout'
+import EditCourseLayout from '@/layout/EditCourseLayout'
 import MainLayout from '@/layout/MainLayout'
 import PracticeLayout from '@/layout/PracticeLayout'
 import SidebarLayout from '@/layout/SidebarLayout'
@@ -6,9 +7,12 @@ import Course from '@/pages/admin/pages/Course/Course'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
 import Teacher from '@/pages/admin/pages/Teacher/Teacher'
+import CourseDetail from '@/pages/details-course/DetailCoure'
 import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
+import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
+import ManageDocument from '@/pages/flashcard/ManageDocument'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import Login from '@/pages/login/Login'
@@ -79,7 +83,16 @@ export const studentRoutes = [
     {
         path: '/courses',
         element: <MainLayout />,
-        children: [{ index: true, element: <StudentCourse /> }],
+        children: [
+            {
+                index: true,
+                element: <StudentCourse />,
+            },
+        ],
+    },
+    {
+        path: '/courses/:courseId',
+        element: <CourseDetail />,
     },
 ]
 export const practiceRoutes = [
@@ -119,9 +132,7 @@ export const practiceRoutes = [
             ],
           },
         ],
-      },
-    ],
-  },
+    },
 ]
 
 export const teacherRoutes = [
@@ -142,15 +153,22 @@ export const teacherRoutes = [
     },
     {
         path: '/teacher/edit/:courseId',
-        element: <SidebarLayout />,
+        element: <EditCourseLayout />,
         children: [
             { index: true, element: <EditCourse /> },
+            { path: 'vocabulary', element: <EditVocabulary /> },
+            { path: 'grammar', element: <EditGrammar /> },
+        ],
+    },
+    {
+        path: '/manage-document',
+        element: <MainLayout />,
+        children: [
+            { index: true, element: <ManageDocument /> },
             {
-                path: ':lessonId',
-                element: <EditCourse />,
+                path: 'create-flashcard',
+                element: <CreateFlashcard />,
             },
-            { path: ':lessonId/vocabulary', element: <EditVocabulary /> },
-            { path: ':lessonId/grammar', element: <EditGrammar /> },
         ],
     },
 ]
