@@ -92,38 +92,38 @@ export const studentRoutes = [
     },
 ]
 export const practiceRoutes = [
-  {
-    path: '/practice',
-    element: <MainLayout />, 
-    children: [
-      {
-        path: '',
-        element: <PracticeLayout />, 
+    {
+        path: '/practice',
+        element: <MainLayout />,
         children: [
-          {
-            index: true,
-            element: <Navigate to="flashcard" replace />
-          },
-          {
-            path: 'flashcard',
-            element: <Flashcard />
-          },
-          {
-            path: 'voice',
-            element: <Voice />
-          },
-          {
-            path: 'translate',
-            element: <Translate />
-          },
-          {
-            path: 'exam',
-            element: <Exam />
-          },
+            {
+                path: '',
+                element: <PracticeLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to="flashcard" replace />,
+                    },
+                    {
+                        path: 'flashcard',
+                        element: <Flashcard />,
+                    },
+                    {
+                        path: 'voice',
+                        element: <Voice />,
+                    },
+                    {
+                        path: 'translate',
+                        element: <Translate />,
+                    },
+                    {
+                        path: 'exam',
+                        element: <Exam />,
+                    },
+                ],
+            },
         ],
-      },
-    ],
-  },
+    },
 ]
 
 export const teacherRoutes = [
