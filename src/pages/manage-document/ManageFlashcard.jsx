@@ -4,7 +4,7 @@ import { Add, Book, Delete, Edit, PlayArrow, Search } from '@mui/icons-material'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 
-function ManageDocument() {
+function ManageFlashcard() {
     const [visibleItems, setVisibleItems] = useState(5)
     const [searchTerm, setSearchTerm] = useState('')
 
@@ -139,4 +139,4 @@ function ManageDocument() {
     )
 }
 
-export default ManageDocument
+export default ManageFlashcard
