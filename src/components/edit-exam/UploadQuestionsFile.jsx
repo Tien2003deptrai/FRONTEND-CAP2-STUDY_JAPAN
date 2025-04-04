@@ -106,7 +106,7 @@ function UploadQuestionsFile({ onSaveCallback }) {
     console.log(questions)
 
     const onSaveQuestions = async () => {
-        const res = await axiosInstance.put(`exam/${examId}/questions`, {
+        const res = await axiosInstance.post(`exam/${examId}/questions`, {
             questions: questions.questions,
         })
         if (res.status == 200) {
