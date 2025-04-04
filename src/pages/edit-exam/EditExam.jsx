@@ -1,8 +1,10 @@
+import QuestionInputForm from '@/components/edit-exam/QuestionInputForm'
 import UploadQuestionsFile from '@/components/edit-exam/UploadQuestionsFile'
 import axiosInstance from '@/network/httpRequest'
 import { Delete, Edit } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
 import Swal from 'sweetalert2'
 
 function EditExam() {
@@ -36,23 +38,24 @@ function EditExam() {
             cancelButtonText: 'Hủy',
         }).then(async (result) => {
             if (result.isConfirmed) {
-                await axiosInstance.delete(
+                const res = await axiosInstance.delete(
                     `exam/${examId}/question/${questionId}`
                 )
-                Swal.fire({
-                    title: 'Đã xóa!',
-                    text: 'Câu hỏi của bạn đã bị xóa.',
-                    icon: 'success',
-                    didClose: () => {
-                        refetch()
-                    },
-                })
+                if (res.status === 200) {
+                    refetch()
+                    toast.success('Xóa câu hỏi thành công!')
+                }
             }
         })
     }
 
     return (
-        <div className="w-full">
+        <div className="w-full py-8">
+            <ToastContainer
+                hideProgressBar
+                autoClose={3000}
+                style={{ marginTop: '80px' }}
+            />
             <label className="font-bold text-2xl">Tên thư mục:</label>
             <label className="font-bold text-primary text-2xl ml-2">
                 {examData?.title}
@@ -60,9 +63,14 @@ function EditExam() {
             <hr className="my-4" />
             <div>
                 <label className="font-bold text-lg">
-                    Upload câu hỏi (Word, .docx):
+                    Upload câu hỏi từ Microsoft Word(.doc, .docx):
                 </label>
                 <UploadQuestionsFile onSaveCallback={refetch} />
+            </div>
+            <hr className="my-4" />
+            <div>
+                <label className="font-bold text-lg">Nhập câu hỏi:</label>
+                <QuestionInputForm onSaveCallback={refetch} />
             </div>
             <hr className="my-4" />
             <div>

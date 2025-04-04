@@ -21,7 +21,7 @@ const DocumentSidebar = () => {
     }
 
     return (
-        <div className="w-full py-5 px-3 bg-white border-r border-solid border-gray-300 h-screen">
+        <div className="w-full py-5 px-3 bg-white border-r border-solid border-gray-300 h-full">
             <nav className="flex w-full flex-col gap-3">
                 {menuItems.map((item) => (
                     <Link

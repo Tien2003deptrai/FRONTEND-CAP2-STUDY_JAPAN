@@ -101,6 +101,7 @@ function UploadQuestionsFile({ onSaveCallback }) {
         if (file) {
             handleFileUpload()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [file])
 
     console.log(questions)
@@ -125,7 +126,7 @@ function UploadQuestionsFile({ onSaveCallback }) {
     }
 
     return (
-        <div>
+        <div className="my-3">
             <input
                 ref={fileInputRef} // Gán ref vào input file
                 type="file"
