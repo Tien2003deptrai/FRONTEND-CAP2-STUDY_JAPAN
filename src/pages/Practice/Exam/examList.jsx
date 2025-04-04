@@ -23,11 +23,11 @@ const ExamListPage = () => {
 
             <div className="space-y-2 text-sm text-gray-500">
               <p>Thời gian: {exam.time_limit} phút</p>
-              <p>Điểm đạt: {exam.passingScore} điểm</p>
-              <p>
+              <p>Điểm đạt: {exam.total_points} điểm</p>
+              {/* <p>
                 Số câu hỏi:{' '}
                 {exam.sections.reduce((total, section) => total + (section.questions?.length || 0), 0)}
-              </p>
+              </p> */}
             </div>
 
             <button
