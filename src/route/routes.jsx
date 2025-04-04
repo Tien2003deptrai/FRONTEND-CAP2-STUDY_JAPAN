@@ -11,6 +11,8 @@ import CourseDetail from '@/pages/details-course/DetailCoure'
 import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
+import EditExam from '@/pages/edit-exam/EditExam'
+import EditQuestion from '@/pages/edit-exam/EditQuestion'
 import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
@@ -184,6 +186,11 @@ export const teacherRoutes = [
                         element: <CreateFlashcard />,
                     },
                     { path: 'exam', element: <ManageExam /> },
+                    { path: 'exam/edit/:examId', element: <EditExam /> },
+                    {
+                        path: 'exam/edit/:examId/:questionId',
+                        element: <EditQuestion />,
+                    },
                 ],
             },
         ],

@@ -1,51 +1,41 @@
-import React, { useState } from 'react'
 import { MenuBook, Quiz } from '@mui/icons-material'
+import { Link, useLocation } from 'react-router-dom'
 
 const DocumentSidebar = () => {
-    const [activeItem, setActiveItem] = useState('flashcard')
-
+    const location = useLocation()
     const menuItems = [
         {
-            id: 'flashcard',
             label: 'Flashcard',
             icon: <MenuBook />,
-            path: '/flashcard',
+            path: '/manage-document/flashcard',
         },
         {
-            id: 'exam',
             label: 'Exam',
             icon: <Quiz />,
-            path: '/exam',
+            path: '/manage-document/exam',
         },
     ]
 
-    const handleItemClick = (itemId) => {
-        setActiveItem(itemId)
+    const isActive = (path) => {
+        return location.pathname.includes(path)
     }
 
     return (
-        <div className="bg-red-50 h-screen fixed left-0 w-64">
-            {/* Brand header */}
-
-            {/* Navigation menu */}
-            <nav className="flex flex-col">
+        <div className="w-full py-5 px-3 bg-white border-r border-solid border-gray-300 h-screen">
+            <nav className="flex w-full flex-col gap-3">
                 {menuItems.map((item) => (
-                    <a
-                        key={item.id}
-                        href={item.path}
-                        className={`flex items-center px-6 py-3 text-gray-700 hover:bg-red-100 transition-colors duration-200 ${
-                            activeItem === item.id
+                    <Link
+                        key={item.label}
+                        className={`flex items-center px-6 py-3 text-gray-700 rounded-lg hover:bg-red-100 transition-colors duration-200 ${
+                            isActive(item.path)
                                 ? 'bg-red-100 border-l-4 border-red-600'
                                 : ''
                         }`}
-                        onClick={(e) => {
-                            e.preventDefault()
-                            handleItemClick(item.id)
-                        }}
+                        to={item.path}
                     >
                         <span
                             className={`${
-                                activeItem === item.id
+                                isActive(item.path)
                                     ? 'text-red-600'
                                     : 'text-gray-500'
                             } mr-3`}
@@ -53,14 +43,9 @@ const DocumentSidebar = () => {
                             {item.icon}
                         </span>
                         <span className="font-medium">{item.label}</span>
-                    </a>
+                    </Link>
                 ))}
             </nav>
-
-            {/* Footer */}
-            <div className="mt-auto fixed bottom-0 w-64 p-4 text-xs text-gray-500 border-t border-gray-200">
-                <p>© 2025 Study Japan</p>
-            </div>
         </div>
     )
 }

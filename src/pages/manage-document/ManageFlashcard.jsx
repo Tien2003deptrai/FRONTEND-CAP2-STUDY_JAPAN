@@ -23,7 +23,7 @@ function ManageFlashcard() {
     const hasMore = filteredDecks?.length > visibleItems
 
     return (
-        <div className="py-12 w-[1200px] mx-auto">
+        <div className="p-6 mx-auto">
             <LoadingOverlay visible={isLoading} overlayBlur={2} />
 
             {/* Header */}
@@ -40,12 +40,12 @@ function ManageFlashcard() {
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             placeholder="Tìm kiếm flashcards..."
-                            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500 transition-colors"
+                            className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500 transition-colors"
                         />
                     </div>
                     <Link
                         to={'create-flashcard'}
-                        className="primary-btn flex items-center gap-2"
+                        className="second-btn flex items-center gap-2"
                     >
                         <Add /> Tạo flashcards
                     </Link>
