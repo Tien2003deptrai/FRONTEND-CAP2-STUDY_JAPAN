@@ -1,6 +1,7 @@
 import AdminLayOut from '@/layout/AdminLayout'
 import EditCourseLayout from '@/layout/EditCourseLayout'
 import MainLayout from '@/layout/MainLayout'
+import ManageDocumentLayout from '@/layout/ManageDocumentLayout'
 import PracticeLayout from '@/layout/PracticeLayout'
 import Course from '@/pages/admin/pages/Course/Course'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
@@ -10,12 +11,15 @@ import CourseDetail from '@/pages/details-course/DetailCoure'
 import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
+import EditExam from '@/pages/edit-exam/EditExam'
+import EditQuestion from '@/pages/edit-exam/EditQuestion'
 import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
-import ManageDocument from '@/pages/flashcard/ManageDocument'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import Login from '@/pages/login/Login'
 import ProfileUser from '@/pages/login/ProfileUser'
+import ManageExam from '@/pages/manage-document/ManageExam'
+import ManageFlashcard from '@/pages/manage-document/ManageFlashcard'
 import NewCourse from '@/pages/new-course/NewCourse'
 import PageNotFound from '@/pages/not-found/PageNotFound'
 import ExamDetailPage from '@/pages/Practice/Exam/examDetail'
@@ -168,10 +172,26 @@ export const teacherRoutes = [
         path: '/manage-document',
         element: <MainLayout />,
         children: [
-            { index: true, element: <ManageDocument /> },
             {
-                path: 'create-flashcard',
-                element: <CreateFlashcard />,
+                path: '',
+                element: <ManageDocumentLayout />,
+                children: [
+                    {
+                        index: true,
+                        element: <Navigate to="flashcard" replace />,
+                    },
+                    { path: 'flashcard', element: <ManageFlashcard /> },
+                    {
+                        path: 'flashcard/create-flashcard',
+                        element: <CreateFlashcard />,
+                    },
+                    { path: 'exam', element: <ManageExam /> },
+                    { path: 'exam/edit/:examId', element: <EditExam /> },
+                    {
+                        path: 'exam/edit/:examId/:questionId',
+                        element: <EditQuestion />,
+                    },
+                ],
             },
         ],
     },

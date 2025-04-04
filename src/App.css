@@ -160,6 +160,6 @@ strong {
         @apply bg-primary text-white duration-150;
     }
     .second-btn:disabled {
-        @apply bg-slate-400 cursor-not-allowed;
+        @apply bg-slate-400 cursor-not-allowed border-transparent text-white;
     }
 }

@@ -1,11 +1,13 @@
 import FlashcardViewer from '@/components/practice/flashcard/FlashcardViewer'
 import axiosInstance from '@/network/httpRequest'
+import { ArrowBack } from '@mui/icons-material'
 import { Box, Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 function Flashcard() {
     const { deckId } = useParams()
+    const navigate = useNavigate()
     const getFlashcardsByDeckId = async () => {
         const res = await axiosInstance.get(`/flashcard/${deckId}`)
         return res.data.data
@@ -18,11 +20,21 @@ function Flashcard() {
     return (
         <div>
             <Box textAlign="center">
-                <Typography variant="h4" fontWeight="bold" color="error" mb={4}>
-                    🃏 Flashcard {deckData?.deck_title}
-                </Typography>
-
-                <Box mt={5}>
+                <div className="w-full flex items-center gap-4">
+                    <button
+                        onClick={() => {
+                            navigate(-1)
+                        }}
+                        className="hover:text-red-700 transition-colors duration-200 p-4"
+                    >
+                        <ArrowBack />
+                    </button>
+                    <Typography variant="h5" fontWeight="bold" color="error">
+                        Flashcard {deckData?.deck_title}
+                    </Typography>
+                </div>
+                <hr className="my-5" />
+                <Box>
                     {deckData?.flashcard.length > 0 ? (
                         <FlashcardViewer flashcards={deckData.flashcard} />
                     ) : (
