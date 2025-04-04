@@ -128,7 +128,7 @@ function UploadQuestionsFile({ onSaveCallback }) {
     return (
         <div className="my-3">
             <input
-                ref={fileInputRef} // Gán ref vào input file
+                ref={fileInputRef}
                 type="file"
                 accept=".docx"
                 onChange={(e) => setFile(e.target.files?.[0])}

@@ -18,7 +18,7 @@ const questionSchema = z.object({
     correctAnswer: z.string().min(1, 'Phải chọn một đáp án đúng'),
 })
 
-function QuestionInputForm({ onSaveCallback }) {
+function QuestionInputForm({ question = null, onSaveCallback }) {
     const { examId } = useParams()
     const {
         register,
@@ -31,9 +31,9 @@ function QuestionInputForm({ onSaveCallback }) {
     } = useForm({
         resolver: zodResolver(questionSchema),
         defaultValues: {
-            content: '',
-            options: [],
-            correctAnswer: '',
+            content: question?.content || '',
+            options: question?.options || [],
+            correctAnswer: question?.correctAnswer || '',
         },
     })
 
@@ -51,9 +51,19 @@ function QuestionInputForm({ onSaveCallback }) {
     const onSubmit = async (data) => {
         console.log([data])
         data.type = 'multiple_choice'
-        const res = await axiosInstance.post(`exam/${examId}/questions`, {
-            questions: [data],
-        })
+
+        let res = null
+
+        if (question) {
+            res = await axiosInstance.put(
+                `exam/${examId}/question/${question.id}`,
+                data
+            )
+        } else {
+            res = await axiosInstance.post(`exam/${examId}/questions`, {
+                questions: [data],
+            })
+        }
         if (res.status == 200) {
             alert('Question saved successfully')
             reset()

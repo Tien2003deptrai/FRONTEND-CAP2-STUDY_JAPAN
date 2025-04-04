@@ -1,15 +1,15 @@
 import QuestionInputForm from '@/components/edit-exam/QuestionInputForm'
 import UploadQuestionsFile from '@/components/edit-exam/UploadQuestionsFile'
 import axiosInstance from '@/network/httpRequest'
-import { Delete, Edit } from '@mui/icons-material'
+import { ArrowBack, Delete, Edit } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import Swal from 'sweetalert2'
 
 function EditExam() {
     const { examId } = useParams()
-
+    const navigate = useNavigate()
     const { data: examData, refetch } = useQuery({
         queryKey: ['exam data', examId],
         queryFn: async () => {
@@ -17,13 +17,6 @@ function EditExam() {
             return response.data.data
         },
     })
-
-    const onSave = async () => {
-        const payload = {
-            questions: [...examData.questions],
-        }
-        console.log(payload)
-    }
 
     const onDelete = (questionId) => {
         console.log(questionId)
@@ -50,20 +43,31 @@ function EditExam() {
     }
 
     return (
-        <div className="w-full py-8">
+        <div className="w-full py-4">
             <ToastContainer
                 hideProgressBar
                 autoClose={3000}
                 style={{ marginTop: '80px' }}
             />
-            <label className="font-bold text-2xl">Tên thư mục:</label>
-            <label className="font-bold text-primary text-2xl ml-2">
-                {examData?.title}
-            </label>
+            <div className="flex items-center gap-4">
+                <button
+                    className="p-4 text-primary rounded-full shadow-sm"
+                    onClick={() => navigate(-1)}
+                    title="Quay lại"
+                >
+                    <ArrowBack />
+                </button>
+                <div>
+                    <label className="font-bold text-2xl">Tên thư mục:</label>
+                    <label className="font-bold text-primary text-2xl ml-2">
+                        {examData?.title}
+                    </label>
+                </div>
+            </div>
             <hr className="my-4" />
             <div>
                 <label className="font-bold text-lg">
-                    Upload câu hỏi từ Microsoft Word(.doc, .docx):
+                    Upload câu hỏi từ Microsoft Word (.doc, .docx):
                 </label>
                 <UploadQuestionsFile onSaveCallback={refetch} />
             </div>
@@ -94,6 +98,7 @@ function EditExam() {
                         <div className="flex gap-4 ">
                             <Link
                                 to={`${question._id}`}
+                                state={question}
                                 title="Chỉnh sửa"
                                 className="rounded-full hover:bg-gray-200 p-2 duration-150 text-blue-600"
                             >
@@ -110,11 +115,7 @@ function EditExam() {
                     </div>
                 ))}
             </div>
-            {examData?.questions?.length > 0 ? (
-                <button className="primary-btn" onClick={onSave}>
-                    Lưu
-                </button>
-            ) : (
+            {examData?.questions?.length <= 0 && (
                 <div className="text-gray-500 text-sm mt-2">
                     Không có câu hỏi nào trong danh sách.
                 </div>
