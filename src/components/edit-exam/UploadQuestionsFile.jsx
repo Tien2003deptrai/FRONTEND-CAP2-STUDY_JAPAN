@@ -1,11 +1,15 @@
+import axiosInstance from '@/network/httpRequest'
 import mammoth from 'mammoth'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useParams } from 'react-router-dom'
 
-function UploadQuestionsFile() {
+function UploadQuestionsFile({ onSaveCallback }) {
     const [questions, setQuestions] = useState([])
+    const [file, setFile] = useState(null)
+    const fileInputRef = useRef(null)
+    const { examId } = useParams()
 
-    const handleFileUpload = (event) => {
-        const file = event.target.files?.[0]
+    const handleFileUpload = () => {
         if (file) {
             const reader = new FileReader()
             reader.onload = async (e) => {
@@ -31,7 +35,6 @@ function UploadQuestionsFile() {
         const lines = text.split('\n').filter((line) => line.trim() !== '')
         const parsedData = []
         let currentQuestion = null
-        let questionCount = 1
         let collectingQuestionText = false
 
         lines.forEach((line) => {
@@ -42,16 +45,13 @@ function UploadQuestionsFile() {
             if (questionMatch) {
                 if (currentQuestion) parsedData.push(currentQuestion)
 
-                const questionId = `q${String(questionCount).padStart(3, '0')}`
                 currentQuestion = {
-                    id: questionId,
                     type: 'multiple_choice',
                     content: '',
                     options: [],
                     correctAnswer: '',
                     point: 10,
                 }
-                questionCount++
                 collectingQuestionText = true
 
                 let questionText = questionMatch[2].trim()
@@ -93,14 +93,45 @@ function UploadQuestionsFile() {
         })
 
         if (currentQuestion) parsedData.push(currentQuestion)
-        console.log('Parsed Questions:', JSON.stringify(parsedData, null, 2)) // Debugging
+        console.log('Parsed Questions:', JSON.stringify(parsedData, null, 2))
         return { questions: parsedData }
     }
+
+    useEffect(() => {
+        if (file) {
+            handleFileUpload()
+        }
+    }, [file])
+
     console.log(questions)
+
+    const onSaveQuestions = async () => {
+        const res = await axiosInstance.put(`exam/${examId}/questions`, {
+            questions: questions.questions,
+        })
+        if (res.status == 200) {
+            alert('Questions saved successfully')
+            clearFileInput()
+            onSaveCallback()
+        }
+    }
+
+    const clearFileInput = () => {
+        setFile(null)
+        setQuestions([])
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+        }
+    }
 
     return (
         <div>
-            <input type="file" accept=".docx" onChange={handleFileUpload} />
+            <input
+                ref={fileInputRef} // Gán ref vào input file
+                type="file"
+                accept=".docx"
+                onChange={(e) => setFile(e.target.files?.[0])}
+            />
             <div className="flex flex-col gap-4 mt-4">
                 {questions?.questions?.map((question, index) => (
                     <div
@@ -127,12 +158,21 @@ function UploadQuestionsFile() {
                     </div>
                 ))}
             </div>
-            <button
-                onClick={() => console.log(questions)}
-                className="primary-btn mt-4"
-            >
-                Lưu bộ câu hỏi
-            </button>
+            {questions?.questions?.length > 0 && (
+                <div className="flex gap-4 mt-4">
+                    <button
+                        onClick={clearFileInput}
+                        className="primary-btn bg-blue-100 hover:bg-blue-200 text-blue-700
+                         hover:border-blue-200 hover:text-blue-700"
+                        title="Xóa bộ câu hỏi"
+                    >
+                        Xóa bộ câu hỏi
+                    </button>
+                    <button onClick={onSaveQuestions} className="primary-btn ">
+                        Lưu bộ câu hỏi
+                    </button>
+                </div>
+            )}
         </div>
     )
 }

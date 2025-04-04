@@ -62,7 +62,7 @@ function EditExam() {
                 <label className="font-bold text-lg">
                     Upload câu hỏi (Word, .docx):
                 </label>
-                <UploadQuestionsFile />
+                <UploadQuestionsFile onSaveCallback={refetch} />
             </div>
             <hr className="my-4" />
             <div>
@@ -102,9 +102,15 @@ function EditExam() {
                     </div>
                 ))}
             </div>
-            <button className="primary-btn" onClick={onSave}>
-                Lưu
-            </button>
+            {examData?.questions?.length > 0 ? (
+                <button className="primary-btn" onClick={onSave}>
+                    Lưu
+                </button>
+            ) : (
+                <div className="text-gray-500 text-sm mt-2">
+                    Không có câu hỏi nào trong danh sách.
+                </div>
+            )}
         </div>
     )
 }
