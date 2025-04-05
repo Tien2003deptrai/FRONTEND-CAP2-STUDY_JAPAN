@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useExamTake, useSubmitExam } from '@/hooks/useExam';
+import { useExamTake, useSubmitExam, examApi } from '@/hooks/useExam';
 import QuestionSection from '@/components/practice/question/QuestionSection';
 
 const ExamDoingPage = () => {
@@ -9,6 +9,7 @@ const ExamDoingPage = () => {
 
   const { data, isLoading } = useExamTake(attemptId);
   const exam = data?.exam;
+
   const { mutate: submitExam, isLoading: isSubmitting } = useSubmitExam();
 
   const [answers, setAnswers] = useState({});
@@ -16,18 +17,18 @@ const ExamDoingPage = () => {
   const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const [error, setError] = useState(null);
 
+  const clearTimerStorage = () => {
+    if (attemptId) {
+      localStorage.removeItem(`exam_timer_${attemptId}`);
+    }
+  };
+
   const groupQuestionsEvenly = (questions, sections) => {
     const grouped = sections.map(() => []);
     questions.forEach((q, i) => {
       grouped[i % sections.length].push(q);
     });
     return grouped;
-  };
-
-  const clearTimerStorage = () => {
-    if (attemptId) {
-      localStorage.removeItem(`exam_timer_${attemptId}`);
-    }
   };
 
   useEffect(() => {
@@ -99,40 +100,62 @@ const ExamDoingPage = () => {
     return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
-  const handleSubmit = useCallback(() => {
-    if (!attemptId || Object.keys(answers).length === 0) {
+  const handleSubmit = useCallback(async () => {
+    const formattedAnswers = Object.entries(answers)
+      .filter(([_, val]) => val !== undefined && val !== '')
+      .map(([questionId, answer]) => ({
+        questionId,
+        userAnswer: typeof answer === 'string' ? answer : String(answer).toUpperCase(),
+      }));
+  
+    if (!exam || !exam._id) {
+      console.warn('❌ Không có exam hoặc exam._id:', exam);
+      setError('Không xác định được bài kiểm tra để nộp.');
+      return;
+    }
+  
+    if (formattedAnswers.length === 0) {
       setError('Vui lòng trả lời ít nhất một câu.');
       return;
     }
-
-    const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
-      questionId,
-      answer: String(answer).toUpperCase(),
-    }));
-
+  
     clearTimerStorage();
-
-    submitExam(
-      { attemptId, answers: formattedAnswers },
-      {
-        onSuccess: (res) => {
-          if (res?.attemptId) {
-            navigate(`/practice/exam/result/${res.attemptId}`);
-          } else {
-            setError('Không thể nộp bài.');
-          }
-        },
-        onError: (err) => {
-          setError(err.message || 'Có lỗi xảy ra khi nộp bài.');
-        },
-      }
-    );
-  }, [attemptId, answers, submitExam, navigate]);
+  
+    try {
+      console.log('🔍 Gọi /exam/start với exam._id:', exam._id);
+  
+      const { attemptId: correctAttemptId } = await examApi.startExam(exam._id);
+  
+      console.log('📤 Submit với attemptId từ /exam/start:', correctAttemptId);
+  
+      submitExam(
+        { attemptId: correctAttemptId, answers: formattedAnswers },
+        {
+          onSuccess: (res) => {
+            if (res?.attemptId) {
+              navigate(`/practice/exam/result/${res.attemptId}`);
+            } else {
+              setError('Không thể nộp bài.');
+            }
+          },
+          onError: (err) => {
+            const msg = err?.response?.data?.message || err.message || 'Có lỗi xảy ra khi nộp bài.';
+            setError(msg);
+          },
+        }
+      );
+    } catch (error) {
+      console.error('❌ Lỗi khi gọi /exam/start/:exam_id:', error);
+      setError('Không thể lấy attemptId để nộp bài.');
+    }
+  }, [answers, exam, submitExam, navigate]);
 
   if (isLoading) return <div className="text-center py-10 text-gray-500">Đang tải bài thi...</div>;
   if (!exam) return <div className="text-center py-10 text-red-600">Không tìm thấy bài thi</div>;
 
-  const grouped = groupQuestionsEvenly(shuffledQuestions, exam.sections);
+  const grouped = exam?.sections && shuffledQuestions.length
+    ? groupQuestionsEvenly(shuffledQuestions, exam.sections)
+    : [];
 
   return (
     <div
@@ -142,10 +165,8 @@ const ExamDoingPage = () => {
       <div className="flex justify-between items-center px-6 py-4 bg-red-600 text-white mb-6 rounded-b shadow">
         <h1 className="text-2xl font-bold">{exam.title}</h1>
         <span className="text-lg font-semibold flex items-center gap-1">
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5"
-            viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round"
-              d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           <span className="font-bold">{formatTime(timeLeft || 0)}</span>
         </span>
@@ -156,23 +177,24 @@ const ExamDoingPage = () => {
       )}
 
       <div className="px-6 space-y-8">
-        {exam.sections.map((section, i) => {
-          const sectionQuestions = grouped[i];
-          if (!sectionQuestions || sectionQuestions.length === 0) return null;
+        {Array.isArray(exam?.sections) &&
+          exam.sections.map((section, i) => {
+            const sectionQuestions = grouped[i];
+            if (!sectionQuestions || sectionQuestions.length === 0) return null;
 
-          return (
-            <QuestionSection
-              key={section._id || i}
-              section={section}
-              sectionIndex={i}
-              questions={sectionQuestions}
-              answers={answers}
-              onAnswerChange={(qid, val) =>
-                setAnswers((prev) => ({ ...prev, [qid]: val }))
-              }
-            />
-          );
-        })}
+            return (
+              <QuestionSection
+                key={section._id || i}
+                section={section}
+                sectionIndex={i}
+                questions={sectionQuestions}
+                answers={answers}
+                onAnswerChange={(qid, val) =>
+                  setAnswers((prev) => ({ ...prev, [qid]: val }))
+                }
+              />
+            );
+          })}
       </div>
 
       <div className="px-6 mt-8 flex justify-end">

@@ -23,23 +23,24 @@ const examApi = {
 
     getExamTake: async (attemptId) => {
         const res = await axiosInstance.get(`/exam/take/${attemptId}`)
-        return res.data.data
+        const { exam, attemptId: realAttemptId } = res.data.data
+        return {
+            exam,
+            attemptId: realAttemptId,
+        }
     },
 
     startExam: async (examId) => {
         if (!examId) throw new Error('Exam ID is required')
-        const res = await axiosInstance.post(`/exam/start/${examId}`)
-        const data = res.data.data
-        if (!data?.attemptId) throw new Error('Server không trả về attemptId')
-        return data
+        const res = await axiosInstance.post(`/exam/start/${examId}`, {})
+        return res.data.data
     },
 
-    // ✅ Đã sửa đúng format answer
     submitExam: async ({ attemptId, answers }) => {
         const formattedAnswers = Object.entries(answers).map(
             ([questionId, answer]) => ({
                 questionId,
-                answer: String(answer).toUpperCase(), // đảm bảo gửi "A", "B", "C", "D"
+                userAnswer: String(answer).toUpperCase(),
             })
         )
         const res = await axiosInstance.post(`/exam/submit/${attemptId}`, {
@@ -57,7 +58,7 @@ const examApi = {
         const res = await axiosInstance.get(
             `/exam/history?examId=${examId}&status=completed`
         )
-        return res.data.data
+        return res.data.data.results || []
     },
 }
 
