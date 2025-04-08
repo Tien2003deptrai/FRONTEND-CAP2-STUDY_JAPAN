@@ -13,7 +13,7 @@ function StudentCourse() {
 
         const res = await axiosInstance.get('/course/enrolled')
 
-        console.log(res)
+        console.log(res.data)
         return res.data.data
     }
 
@@ -33,8 +33,8 @@ function StudentCourse() {
     return (
         <div className="w-full flex justify-center items-center">
             <div className="w-1200 py-9">
-                <h1 className="text-2xl font-bold">
-                    Danh sách khóa học của tôi
+                <h1 className="text-3xl font-extrabold text-center text-red-600 mb-5">
+                    🇯🇵 Các khóa học bạn đã đăng ký
                 </h1>
                 <hr className="w-full my-5" />
 
