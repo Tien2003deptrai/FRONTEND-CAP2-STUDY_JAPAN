@@ -1,6 +1,6 @@
 import EditCourseSidebar from '@/components/edit-course-sidebar/EditCourseSidebar'
 import ScrollToTop from '@/components/scroll-to-top/ScrollToTop'
-import useFetchLessonList from '@/hooks/useFetchLessonList'
+import useFetchLessonData from '@/hooks/useFetchLessonData'
 import { ArrowBack } from '@mui/icons-material'
 import { useEffect, useMemo, useState } from 'react'
 import { Outlet, useNavigate, useParams } from 'react-router-dom'
@@ -8,7 +8,7 @@ import { Outlet, useNavigate, useParams } from 'react-router-dom'
 function EditCourseLayout() {
     const { courseId } = useParams()
     const navigate = useNavigate()
-    const { data: lessonList } = useFetchLessonList(courseId)
+    const { data: lessonList } = useFetchLessonData(courseId)
 
     const lessons = useMemo(() => lessonList?.data?.lessons || [], [lessonList])
 
