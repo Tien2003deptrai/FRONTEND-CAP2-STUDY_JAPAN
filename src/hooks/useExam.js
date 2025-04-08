@@ -12,7 +12,7 @@ const EXAM_KEYS = {
 
 const examApi = {
     getExamList: async () => {
-        const res = await axiosInstance.get('/exam')
+        const res = await axiosInstance.get('/exam/enrolled')
         return res.data.data
     },
 
