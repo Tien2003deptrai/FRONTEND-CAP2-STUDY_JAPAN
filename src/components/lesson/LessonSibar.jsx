@@ -7,7 +7,7 @@ function LessonSidebar({ lessons, currentLessonIndex, onSelectLesson, maxUnlocke
     <div className="w-[25%] bg-white p-6 border-l overflow-y-auto shadow-md h-full">
       <h2 className="text-xl font-bold mb-4">Nội dung khóa học</h2>
       <ul className="space-y-3">
-        {lessons?.map((lesson, index) => {
+        {lessons.map((lesson, index) => {
           const isActive = index === currentLessonIndex
           const isUnlocked = index <= maxUnlockedLesson
           const isCompleted = index < maxUnlockedLesson
@@ -21,7 +21,6 @@ function LessonSidebar({ lessons, currentLessonIndex, onSelectLesson, maxUnlocke
               onClick={() => isUnlocked && onSelectLesson(index)}
             >
               <span className="font-medium">{lesson.lesson_title}</span>
-
               {isActive ? (
                 <PlayCircleIcon color="error" />
               ) : isCompleted ? (

@@ -4,19 +4,14 @@ import { useQuery } from '@tanstack/react-query'
 const useFetchLessonData = (course_id) => {
     const getLessons = async () => {
         const res = await axiosInstance.get(`lesson/all/course/${course_id}`)
-        if (res.data?.success) {
-            const { lessons, course } = res.data.data
-            return { lessons, course }
-        }
-        throw new Error('Không thể lấy danh sách bài học.')
+        return res.data
     }
 
     return useQuery({
-        queryKey: ['lessons', course_id],
+        queryKey: ['lessons'],
         queryFn: getLessons,
-        staleTime: 1000 * 60 * 5,
+        gcTime: 1000 * 60 * 5, // 5 minutes
         retry: 3,
-        enabled: !!course_id,
     })
 }
 
