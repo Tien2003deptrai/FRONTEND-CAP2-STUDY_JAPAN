@@ -56,7 +56,7 @@ function CourseDetail() {
 
     return (
         <div className="relative h-screen w-screen bg-gray-100">
-            <div className="absolute top-0 left-0 w-full flex items-center justify-between p-4 bg-red-500 text-white shadow-md z-10">
+            <div className="absolute top-0 left-0 w-full flex items-center justify-between p-3 bg-red-500 text-white shadow-md z-10">
                 <button
                     onClick={() => navigate(-1)}
                     className="flex items-center text-lg font-semibold"
