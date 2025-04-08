@@ -7,6 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
+import Swal from 'sweetalert2'
 
 function AdminCourseDetail() {
     const navigate = useNavigate()
@@ -44,6 +45,7 @@ function AdminCourseDetail() {
             if (response.status === 200) {
                 toast.success('Đã thêm học viên thành công!')
                 close()
+                setSearchTerm('')
                 setSelectedStudents([])
                 refetch()
             } else {
@@ -56,24 +58,39 @@ function AdminCourseDetail() {
     }
 
     const onUnrollStudent = async (studentId) => {
-        try {
-            const payload = {
-                courseId: course._id,
-                studentId,
-            }
-            const response = await axiosInstance.post(
-                `course/unenroll`,
-                payload
-            )
-            if (response.status === 200) {
-                toast.success('Đã xóa học viên thành công!')
-                refetch()
-            } else {
+        const confirmResult = await Swal.fire({
+            title: 'Xác nhận xóa học viên',
+            text: 'Bạn có chắc muốn xóa học viên này khỏi khóa học?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+        })
+
+        if (confirmResult.isConfirmed) {
+            try {
+                const payload = {
+                    courseId: course._id,
+                    studentId,
+                }
+                const response = await axiosInstance.post(
+                    `course/unenroll`,
+                    payload
+                )
+                if (response.status === 200) {
+                    toast.success('Đã xóa học viên thành công!')
+                    setSearchTerm('')
+                    setSelectedStudents([])
+                    refetch()
+                } else {
+                    toast.error('Có lỗi xảy ra, vui lòng thử lại!')
+                }
+            } catch (error) {
+                console.error(error)
                 toast.error('Có lỗi xảy ra, vui lòng thử lại!')
             }
-        } catch (error) {
-            console.error(error)
-            toast.error('Có lỗi xảy ra, vui lòng thử lại!')
         }
     }
 
