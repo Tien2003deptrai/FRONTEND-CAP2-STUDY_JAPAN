@@ -1,3 +1,4 @@
+import useFetchTeacherCourses from '@/hooks/useFetchTeacherCourses'
 import axiosInstance from '@/network/httpRequest'
 import useAuthStore from '@/store/useAuthStore'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -6,6 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
 import { z } from 'zod'
 
 const examFormSchema = z.object({
@@ -17,6 +19,7 @@ const examFormSchema = z.object({
         .string()
         .min(1, 'Mô tả không được để trống')
         .max(500, 'Mô tả không được quá 500 ký tự'),
+    courseId: z.string().min(1, 'Khóa học không được để trống'),
     time_limit: z.coerce
         .number()
         .min(1, 'Thời gian phải lớn hơn 0')
@@ -31,7 +34,6 @@ function ManageExam() {
     const [openDialog, setOpenDialog] = useState(false)
     const [selectedExam, setSelectedExam] = useState(null)
 
-    // Initialize React Hook Form with Zod resolver
     const {
         register,
         handleSubmit,
@@ -46,6 +48,8 @@ function ManageExam() {
         },
     })
 
+    const { data: coursesData } = useFetchTeacherCourses()
+
     const handleOpenDialog = (exam = null) => {
         if (exam) {
             setSelectedExam(exam)
@@ -53,6 +57,8 @@ function ManageExam() {
                 title: exam.title,
                 description: exam.description,
                 time_limit: exam.time_limit,
+                courseId: exam.course?._id,
+                level: exam.level,
             })
         } else {
             setSelectedExam(null)
@@ -60,6 +66,8 @@ function ManageExam() {
                 title: '',
                 description: '',
                 time_limit: '',
+                courseId: '',
+                level: 'N5',
             })
         }
         setOpenDialog(true)
@@ -72,18 +80,22 @@ function ManageExam() {
     }
 
     const onSubmit = async (data) => {
-        console.log(data)
-
         try {
             if (selectedExam) {
                 await axiosInstance.put(`exam/${selectedExam._id}`, data)
+                toast.success('Cập nhật bài thi thành công')
             } else {
                 await axiosInstance.post('exam', data)
+                toast.success('Tạo bài thi thành công')
             }
             refetch()
             handleCloseDialog()
         } catch (error) {
             console.error('Error submitting exam:', error)
+            toast.error(
+                error.response?.data?.message ||
+                    'Có lỗi xảy ra, vui lòng thử lại'
+            )
         }
     }
 
@@ -99,14 +111,22 @@ function ManageExam() {
     const onDelete = async (examId) => {
         try {
             await axiosInstance.delete(`exam/${examId}`)
+            toast.success('Xóa bài thi thành công')
             refetch()
         } catch (error) {
             console.error('Error deleting exam:', error)
         }
     }
 
+    console.log(exams)
+
     return (
         <div className="p-6">
+            <ToastContainer
+                hideProgressBar
+                autoClose={3000}
+                style={{ marginTop: '80px' }}
+            />
             <div className="flex justify-between items-center">
                 <h1 className="text-2xl font-bold text-gray-800">
                     Quản lý bài thi
@@ -215,6 +235,38 @@ function ManageExam() {
                                         {errors.description && (
                                             <p className="mt-1 text-sm text-red-500">
                                                 {errors.description.message}
+                                            </p>
+                                        )}
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Khóa học
+                                        </label>
+                                        <select
+                                            {...register('courseId')}
+                                            className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                                                errors.time_limit
+                                                    ? 'border-red-500 focus:ring-red-500'
+                                                    : 'border-gray-300 focus:ring-blue-500'
+                                            }`}
+                                            defaultChecked={
+                                                selectedExam?.course?._id || ''
+                                            }
+                                        >
+                                            {coursesData?.data?.map(
+                                                (course) => (
+                                                    <option
+                                                        key={course._id}
+                                                        value={course._id}
+                                                    >
+                                                        {course.name}
+                                                    </option>
+                                                )
+                                            )}
+                                        </select>
+                                        {errors.course && (
+                                            <p className="mt-1 text-sm text-red-500">
+                                                {errors.course.message}
                                             </p>
                                         )}
                                     </div>

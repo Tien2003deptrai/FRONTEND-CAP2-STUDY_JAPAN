@@ -15,7 +15,6 @@ function EditCourseSidebar({ lessonId, onSelectLesson }) {
                 >
                     Chỉnh sửa cấu trúc khóa học
                 </Link>
-                <Link className="primary-btn">Quản lý học viên</Link>
             </div>
             <hr />
 
