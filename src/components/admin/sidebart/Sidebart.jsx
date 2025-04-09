@@ -1,10 +1,14 @@
+import React from 'react'
 import {
-    BarChart,
-    Book,
     Menu,
-    Movie,
     People,
+    Book,
+    Movie,
+    Description,
+    EmojiEvents,
     Settings,
+    Logout,
+    BarChart,
 } from '@mui/icons-material'
 import { Link } from 'react-router-dom'
 
@@ -25,8 +29,8 @@ const Sidebar = ({ collapsed, toggleSidebar, activeTab, setActiveTab }) => {
             <nav className="mt-6">
                 <Link to={'/admin/main'}>
                     <div
-                        className={`flex items-center px-4 py-3 cursor-pointer ${activeTab === 'main' ? 'bg-red-900' : 'hover:bg-red-700'}`}
-                        onClick={() => setActiveTab('main')}
+                        className={`flex items-center px-4 py-3 cursor-pointer ${activeTab === 'dashboard' ? 'bg-red-900' : 'hover:bg-red-700'}`}
+                        onClick={() => setActiveTab('dashboard')}
                     >
                         <BarChart style={{ fontSize: 20 }} />
                         {!collapsed && <span className="ml-4">Tổng quan</span>}
@@ -63,6 +67,18 @@ const Sidebar = ({ collapsed, toggleSidebar, activeTab, setActiveTab }) => {
                         <Movie style={{ fontSize: 20 }} />
                         {!collapsed && (
                             <span className="ml-4">Quản lí khóa học</span>
+                        )}
+                    </div>
+                </Link>
+
+                <Link to={'/admin/create-account'}>
+                    <div
+                        className={`flex items-center px-4 py-3 cursor-pointer ${activeTab === 'videos' ? 'bg-red-900' : 'hover:bg-red-700'}`}
+                        onClick={() => setActiveTab('videos')}
+                    >
+                        <Movie style={{ fontSize: 20 }} />
+                        {!collapsed && (
+                            <span className="ml-4">Tạo tài khoản</span>
                         )}
                     </div>
                 </Link>

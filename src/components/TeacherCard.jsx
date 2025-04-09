@@ -1,12 +1,6 @@
-import React, { useState } from 'react'
-import MoreHorizIcon from '@mui/icons-material/MoreHoriz'
-import VisibilityIcon from '@mui/icons-material/Visibility'
+import React from 'react'
 
-const TeacherCard = ({ teacher, onView }) => {
-    const [showMenu, setShowMenu] = useState(false)
-
-    const toggleMenu = () => setShowMenu(!showMenu)
-
+const TeacherCard = ({ teacher }) => {
     const statusColors = {
         active: 'bg-green-100 text-green-800',
         pending: 'bg-yellow-100 text-yellow-800',
@@ -75,31 +69,8 @@ const TeacherCard = ({ teacher, onView }) => {
                             </div>
                         )}
                     </div>
-                    <button
-                        className="text-gray-400 hover:text-gray-600"
-                        onClick={toggleMenu}
-                    >
-                        <MoreHorizIcon fontSize="small" />
-                    </button>
                 </div>
             </div>
-
-            {showMenu && (
-                <div className="border-t border-gray-100">
-                    <div className="p-2 bg-blue-50">
-                        <button
-                            onClick={() => {
-                                onView(teacher)
-                                toggleMenu()
-                            }}
-                            className="w-full py-2 flex items-center text-sm text-blue-600 hover:bg-blue-100 rounded px-2"
-                        >
-                            <VisibilityIcon className="w-4 h-4 mr-2" />
-                            Xem chi tiết
-                        </button>
-                    </div>
-                </div>
-            )}
         </div>
     )
 }
