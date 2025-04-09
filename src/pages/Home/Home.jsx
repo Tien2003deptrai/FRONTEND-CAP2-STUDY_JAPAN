@@ -22,7 +22,7 @@ const NavLink = ({ children, isActive, onClick }) => {
         <a
             href="#"
             onClick={onClick}
-            className={`px-4 py-2 font-medium ${isActive ? 'text-red-600 border-b-2 border-blue-600' : 'text-gray-700 hover:text-blue-600'}`}
+            className={`px-4 py-2 font-medium ${isActive ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-700 hover:text-red-600'}`}
         >
             {children}
         </a>
@@ -33,7 +33,7 @@ const NavLink = ({ children, isActive, onClick }) => {
 const FeatureCard = ({ icon, title, description }) => {
     return (
         <div className="bg-white rounded-lg shadow p-6 hover:shadow-md transition-shadow">
-            <div className="text-blue-600 mb-4">{icon}</div>
+            <div className="text-red-600 mb-4">{icon}</div>
             <h3 className="font-bold text-lg mb-2">{title}</h3>
             <p className="text-gray-600">{description}</p>
         </div>
@@ -51,7 +51,7 @@ const CourseCard = ({ course }) => {
             />
             <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded">
+                    <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">
                         {course.level}
                     </span>
                     <span className="text-sm text-gray-500 flex items-center">
@@ -64,7 +64,7 @@ const CourseCard = ({ course }) => {
                     <span className="text-sm text-gray-500">
                         {course.lessons} bài học
                     </span>
-                    <button className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors">
+                    <button className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors">
                         Học ngay
                     </button>
                 </div>
@@ -136,7 +136,7 @@ export default function JapaneseLearningApp() {
 
     const jlptLevels = [
         { level: 'N5', description: 'Trình độ cơ bản', color: 'bg-green-500' },
-        { level: 'N4', description: 'Trình độ sơ cấp', color: 'bg-blue-500' },
+        { level: 'N4', description: 'Trình độ sơ cấp', color: 'bg-red-500' },
         {
             level: 'N3',
             description: 'Trình độ trung cấp',
@@ -147,7 +147,7 @@ export default function JapaneseLearningApp() {
             description: 'Trình độ trung cao cấp',
             color: 'bg-orange-500',
         },
-        { level: 'N1', description: 'Trình độ cao cấp', color: 'bg-red-500' },
+        { level: 'N1', description: 'Trình độ cao cấp', color: 'bg-red-600' },
     ]
 
     const toggleMenu = () => {
@@ -162,7 +162,7 @@ export default function JapaneseLearningApp() {
             <main className="container mx-auto px-4 py-8">
                 {/* Hero Section */}
                 <section className="mb-12">
-                    <div className="bg-gradient-to-r from-red-500 to-indigo-600 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between">
+                    <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between">
                         <div className="text-white mb-6 md:mb-0 md:max-w-lg">
                             <h1 className="text-3xl md:text-4xl font-bold mb-4">
                                 Học tiếng Nhật hiệu quả với STUDY JAPAN
@@ -173,7 +173,7 @@ export default function JapaneseLearningApp() {
                                 thực hành.
                             </p>
                             <div className="flex flex-wrap gap-4">
-                                <button className="bg-white text-red-600  px-6 py-3 rounded-lg font-bold hover:bg-blue-50 transition-colors">
+                                <button className="bg-white text-red-600  px-6 py-3 rounded-lg font-bold hover:bg-red-50 transition-colors">
                                     Bắt đầu học ngay
                                 </button>
                                 <button className="bg-transparent border border-white text-white px-6 py-3 rounded-lg font-bold hover:bg-white hover:bg-opacity-10 transition-colors">
@@ -287,7 +287,7 @@ export default function JapaneseLearningApp() {
                                 className={`p-4 flex items-center justify-between ${index !== popularLessons.length - 1 ? 'border-b' : ''}`}
                             >
                                 <div className="flex items-center">
-                                    <div className="bg-blue-100 text-blue-800 w-10 h-10 rounded-full flex items-center justify-center mr-4">
+                                    <div className="bg-red-100 text-red-800 w-10 h-10 rounded-full flex items-center justify-center mr-4">
                                         {index + 1}
                                     </div>
                                     <div>
@@ -300,7 +300,7 @@ export default function JapaneseLearningApp() {
                                         </div>
                                     </div>
                                 </div>
-                                <button className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                <button className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-md text-sm font-medium transition-colors">
                                     Học ngay
                                 </button>
                             </div>
@@ -387,17 +387,17 @@ export default function JapaneseLearningApp() {
                                         </div>
                                     </div>
                                 </div>
-                                <button className="mt-6 bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                                <button className="mt-6 bg-red-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-red-700 transition-colors">
                                     Xem chi tiết lộ trình
                                 </button>
                             </div>
-                            <div className="w-full md:w-1/3 bg-blue-50 rounded-lg p-6">
-                                <h3 className="text-lg font-bold mb-4 text-blue-800">
+                            <div className="w-full md:w-1/3 bg-red-50 rounded-lg p-6">
+                                <h3 className="text-lg font-bold mb-4 text-red-800">
                                     Thời gian ôn thi JLPT
                                 </h3>
                                 <div className="space-y-4">
                                     <div className="flex items-center">
-                                        <CalendarIcon className="text-blue-600 mr-3" />
+                                        <CalendarIcon className="text-red-600 mr-3" />
                                         <div>
                                             <p className="font-medium">
                                                 Kỳ thi tháng 7/2025
@@ -408,7 +408,7 @@ export default function JapaneseLearningApp() {
                                         </div>
                                     </div>
                                     <div className="flex items-center">
-                                        <CalendarIcon className="text-blue-600 mr-3" />
+                                        <CalendarIcon className="text-red-600 mr-3" />
                                         <div>
                                             <p className="font-medium">
                                                 Kỳ thi tháng 12/2025
@@ -418,9 +418,9 @@ export default function JapaneseLearningApp() {
                                             </p>
                                         </div>
                                     </div>
-                                    <div className="border-t border-blue-200 my-4"></div>
+                                    <div className="border-t border-red-200 my-4"></div>
                                     <div>
-                                        <h4 className="font-medium text-blue-800 mb-2">
+                                        <h4 className="font-medium text-red-800 mb-2">
                                             Khóa ôn thi chuyên sâu
                                         </h4>
                                         <ul className="space-y-2 text-sm">
