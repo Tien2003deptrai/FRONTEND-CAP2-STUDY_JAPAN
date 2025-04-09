@@ -5,6 +5,7 @@ import ManageDocumentLayout from '@/layout/ManageDocumentLayout'
 import PracticeLayout from '@/layout/PracticeLayout'
 import AdminCourseDetail from '@/pages/admin/pages/Course/AdminCourseDetail'
 import Course from '@/pages/admin/pages/Course/Course'
+import CreateAccount from '@/pages/admin/pages/CreateAccount/CreateAccount'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
 import Teacher from '@/pages/admin/pages/Teacher/Teacher'
@@ -82,6 +83,10 @@ export const publicRoutes = [
             {
                 path: 'courses', // Example of a dashboard page
                 element: <Course />,
+            },
+            {
+                path: 'create-account', // Example of a dashboard page
+                element: <CreateAccount />,
             },
             {
                 path: 'courses/:courseId', // Example of a dashboard page

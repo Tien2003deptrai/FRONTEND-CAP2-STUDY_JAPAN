@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import TeacherCard from '@/components/TeacherCard'
 import TeacherCoursesModal from '@/components/TeacherCoursesModal/TeacherCoursesModal'
 import TeacherDetailModal from '@/components/TeacherDetailModal/TeacherDetailModal'
@@ -5,7 +6,6 @@ import { useTeachers } from '@/hooks/useTeacher'
 import AddIcon from '@mui/icons-material/Add'
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks'
 import VisibilityIcon from '@mui/icons-material/Visibility'
-import { useState } from 'react'
 
 const transformTeacherData = (teacher) => ({
     id: teacher._id,
@@ -24,11 +24,16 @@ const transformTeacherData = (teacher) => ({
 
 const Teacher = () => {
     const { data, isLoading, error } = useTeachers()
-    const teachers = data?.map(transformTeacherData) || []
-
+    const [teachers, setTeachers] = useState([])
     const [selectedTeacher, setSelectedTeacher] = useState(null)
     const [showDetailModal, setShowDetailModal] = useState(false)
     const [showCoursesModal, setShowCoursesModal] = useState(false)
+
+    useEffect(() => {
+        if (data) {
+            setTeachers(data.map(transformTeacherData))
+        }
+    }, [data])
 
     const handleViewDetail = (teacher) => {
         setSelectedTeacher(teacher)
@@ -44,6 +49,15 @@ const Teacher = () => {
         setSelectedTeacher(null)
         setShowDetailModal(false)
         setShowCoursesModal(false)
+    }
+
+    // ✅ Hàm cập nhật status trong state
+    const handleStatusUpdated = (id, newStatus) => {
+        setTeachers((prev) =>
+            prev.map((teacher) =>
+                teacher.id === id ? { ...teacher, status: newStatus } : teacher
+            )
+        )
     }
 
     if (isLoading) {
@@ -86,7 +100,10 @@ const Teacher = () => {
                             key={teacher.id}
                             className="bg-white rounded-lg shadow-sm border p-4"
                         >
-                            <TeacherCard teacher={teacher} />
+                            <TeacherCard
+                                teacher={teacher}
+                                onStatusUpdated={handleStatusUpdated}
+                            />
                             <div className="mt-4 flex justify-between">
                                 <button
                                     onClick={() => handleViewDetail(teacher)}
@@ -95,7 +112,7 @@ const Teacher = () => {
                                     <VisibilityIcon
                                         fontSize="small"
                                         className="mr-1"
-                                    />{' '}
+                                    />
                                     Xem chi tiết
                                 </button>
                                 <button
@@ -105,7 +122,7 @@ const Teacher = () => {
                                     <LibraryBooksIcon
                                         fontSize="small"
                                         className="mr-1"
-                                    />{' '}
+                                    />
                                     Khoá học
                                 </button>
                             </div>
