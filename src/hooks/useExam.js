@@ -37,14 +37,8 @@ const examApi = {
     },
 
     submitExam: async ({ attemptId, answers }) => {
-        const formattedAnswers = Object.entries(answers).map(
-            ([questionId, answer]) => ({
-                questionId,
-                userAnswer: String(answer).toUpperCase(),
-            })
-        )
         const res = await axiosInstance.post(`/exam/submit/${attemptId}`, {
-            answers: formattedAnswers,
+            answers,
         })
         return res.data.data
     },
