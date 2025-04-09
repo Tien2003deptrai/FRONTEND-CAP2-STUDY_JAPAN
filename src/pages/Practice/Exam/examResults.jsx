@@ -18,7 +18,7 @@ const ExamResultPage = () => {
         <div className="grid grid-cols-2 gap-6 mb-8">
           <div className="bg-gray-50 p-4 rounded-lg">
             <h3 className="text-lg font-semibold mb-2">Điểm số</h3>
-            <p className="text-3xl font-bold text-blue-600">{result.score}</p>
+            <p className="text-3xl font-bold text-blue-600">{result.totalScore}</p>
           </div>
 
           <div className="bg-gray-50 p-4 rounded-lg">

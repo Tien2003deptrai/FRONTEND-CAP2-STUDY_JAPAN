@@ -1,96 +1,143 @@
-import React, { useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
-import { useExamById, useStartExam, useExamHistory } from '@/hooks/useExam';
+import React, { useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { useExamById, useExamHistory } from '@/hooks/useExam'
 
 const ExamDetailPage = () => {
-  const { exam_id } = useParams();
-  const { data: exam, isLoading: isExamLoading } = useExamById(exam_id);
-  const { data: history, isLoading: isHistoryLoading } = useExamHistory(exam_id);
-  const { mutate: startExam, isLoading: isStarting } = useStartExam();
-  const navigate = useNavigate();
-  const [error, setError] = useState(null);
+    const { exam_id } = useParams()
+    const navigate = useNavigate()
+    const [error, setError] = useState(null)
 
-  if (isExamLoading || isHistoryLoading) return <div>Đang tải chi tiết...</div>;
-  if (!exam) return <div>Không tìm thấy thông tin bài thi</div>;
+    const { data: exam, isLoading: isExamLoading } = useExamById(exam_id)
+    const { data: history, isLoading: isHistoryLoading } =
+        useExamHistory(exam_id)
 
-  const handleStartExam = () => {
-    if (!exam_id) {
-      setError('Không tìm thấy ID bài thi');
-      return;
+    if (isExamLoading || isHistoryLoading) {
+        return (
+            <div className="flex justify-center items-center h-[50vh]">
+                <p className="text-lg text-gray-600">
+                    Đang tải chi tiết bài thi...
+                </p>
+            </div>
+        )
     }
 
-    console.log('Starting exam with ID:', exam_id);
-    setError(null);
-    startExam(exam_id, {
-      onSuccess: (res) => {
-        console.log('Start exam response:', res);
-        if (res?.attemptId) {
-          navigate(`/practice/exam/doing/${res.attemptId}`);
-        } else {
-          setError('Phản hồi từ server không chứa attemptId. Vui lòng thử lại.');
+    if (!exam) {
+        return (
+            <div className="flex justify-center items-center h-[50vh]">
+                <p className="text-red-600 font-semibold">
+                    Không tìm thấy thông tin bài thi
+                </p>
+            </div>
+        )
+    }
+
+    const handleStartExam = () => {
+        if (!exam_id) {
+            setError('Không tìm thấy ID bài thi')
+            return
         }
-      },
-      onError: (error) => {
-        console.error('Start exam error:', error);
-        setError(error.message || 'Có lỗi xảy ra khi bắt đầu bài thi');
-      },
-    });
-  };
 
-  return (
-    <div className="p-4">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-4">{exam.title}</h1>
-        <p className="text-gray-700 mb-2">{exam.description}</p>
-        <p className="text-sm text-gray-500">Thời gian: {exam.time_limit} phút</p>
-        <p className="text-sm text-gray-500">Điểm đạt: {exam.passingScore} điểm</p>
+        setError(null)
+        navigate(`/practice/exam/doing/${exam_id}`)
+    }
 
-        {error && (
-          <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-lg">
-            {error}
-          </div>
-        )}
-
-        <button
-          onClick={handleStartExam}
-          disabled={isStarting}
-          className={`mt-4 px-4 py-2 rounded ${
-            isStarting
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-green-600 hover:bg-green-700'
-          } text-white`}
-        >
-          {isStarting ? 'Đang xử lý...' : 'Bắt đầu làm bài'}
-        </button>
-      </div>
-
-      {history?.length > 0 && (
-        <div>
-          <h2 className="text-xl font-bold mb-4">Lịch sử làm bài</h2>
-          <div className="space-y-4">
-            {history.map((attempt) => (
-              <div key={attempt._id} className="border p-4 rounded shadow-sm">
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-medium">Điểm số: {attempt.score}</p>
-                    <p className="text-sm text-gray-500">
-                      Thời gian nộp: {new Date(attempt.submittedAt).toLocaleString()}
+    return (
+        <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
+            <div className="mb-8">
+                <h1 className="text-3xl font-bold text-gray-800 mb-2">
+                    {exam.title}
+                </h1>
+                <p className="text-gray-600 text-base mb-3">
+                    {exam.description}
+                </p>
+                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+                    <p>
+                        🕒 Thời gian làm bài:{' '}
+                        <span className="font-medium">
+                            {exam.time_limit} phút
+                        </span>
                     </p>
-                  </div>
-                  <button
-                    onClick={() => navigate(`/practice/exam/result/${attempt._id}`)}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                  >
-                    Xem chi tiết
-                  </button>
+                    <p>
+                        🏁 Điểm đạt:{' '}
+                        <span className="font-medium">
+                            {exam.total_points} điểm
+                        </span>
+                    </p>
+                    <p>
+                        📘 Trình độ:{' '}
+                        <span className="font-medium">{exam.level}</span>
+                    </p>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
-export default ExamDetailPage;
+                {error && (
+                    <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-lg border border-red-300">
+                        {error}
+                    </div>
+                )}
+                {history && history.length >= 1 ? (
+                    <>
+                        <p className="mt-4 text-sm text-red-600">
+                            ❌ Bạn đã làm bài này rồi và không thể làm lại.
+                        </p>
+                        <button
+                            disabled
+                            className="mt-4 inline-block bg-gray-300 text-white px-6 py-3 rounded-lg font-semibold cursor-not-allowed opacity-50"
+                        >
+                            Bắt đầu làm bài
+                        </button>
+                    </>
+                ) : (
+                    <button
+                        onClick={handleStartExam}
+                        className="mt-6 inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300"
+                    >
+                        Bắt đầu làm bài
+                    </button>
+                )}
+            </div>
+
+            {history && history.length > 0 && (
+                <div>
+                    <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+                        📝 Lịch sử làm bài
+                    </h2>
+                    <div className="space-y-4">
+                        {history.map((attempt) => (
+                            <div
+                                key={attempt._id}
+                                className="border border-gray-200 p-4 rounded-lg shadow-sm flex justify-between items-center bg-gray-50"
+                            >
+                                <div>
+                                    <p className="font-medium text-gray-700">
+                                        Điểm số:{' '}
+                                        <span className="text-blue-600">
+                                            {attempt.totalScore}
+                                        </span>
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        Ngày nộp:{' '}
+                                        {new Date(
+                                            attempt.submittedAt
+                                        ).toLocaleString()}
+                                    </p>
+                                </div>
+                                <button
+                                    onClick={() =>
+                                        navigate(
+                                            `/practice/exam/result/${attempt._id}`
+                                        )
+                                    }
+                                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition duration-300"
+                                >
+                                    Xem kết quả
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+        </div>
+    )
+}
+
+export default ExamDetailPage
