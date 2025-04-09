@@ -1,23 +1,9 @@
-import axiosInstance from '@/network/httpRequest'
-import useAuthStore from '@/store/useAuthStore'
+import useFetchTeacherCourses from '@/hooks/useFetchTeacherCourses'
 import { Add } from '@mui/icons-material'
-import { useQuery } from '@tanstack/react-query'
 import { Link } from 'react-router-dom'
 
 function TeacherCourse() {
-    const { user } = useAuthStore()
-
-    const getCourse = async () => {
-        const res = await axiosInstance.get(`course/teacher/${user?._id}`)
-        return res.data
-    }
-
-    const { data } = useQuery({
-        queryKey: ['getCourseLecturer', user?._id],
-        queryFn: getCourse,
-        staleTime: 1000 * 60 * 5,
-        retry: 3,
-    })
+    const { data } = useFetchTeacherCourses()
 
     return (
         <div className="w-full flex justify-center items-center py-10">

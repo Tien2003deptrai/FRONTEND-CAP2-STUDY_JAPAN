@@ -1,32 +1,52 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useExamTake, useSubmitExam } from '@/hooks/useExam';
+import { useExamTake, useSubmitExam, examApi } from '@/hooks/useExam';
+import QuestionSection from '@/components/practice/question/QuestionSection';
 
 const ExamDoingPage = () => {
   const { attemptId } = useParams();
-  const { data, isLoading } = useExamTake(attemptId); // data = { exam, attemptId, startTime }
-  const exam = data?.exam;
-  const { mutate: submitExam, isLoading: isSubmitting } = useSubmitExam();
   const navigate = useNavigate();
+
+  const { data, isLoading } = useExamTake(attemptId);
+  const exam = data?.exam;
+
+  const { mutate: submitExam, isLoading: isSubmitting } = useSubmitExam();
 
   const [answers, setAnswers] = useState({});
   const [timeLeft, setTimeLeft] = useState(null);
+  const [shuffledQuestions, setShuffledQuestions] = useState([]);
   const [error, setError] = useState(null);
 
-  // ✅ Tính thời gian còn lại dựa trên startTime từ server
-  useEffect(() => {
-    if (data?.exam?.time_limit && data?.startTime) {
-      const now = Date.now();
-      const startTime = new Date(data.startTime).getTime();
-      const elapsedSeconds = Math.floor((now - startTime) / 1000);
-      const totalTime = data.exam.time_limit * 60;
-      const remaining = totalTime - elapsedSeconds;
-
-      setTimeLeft(remaining > 0 ? remaining : 0);
+  const clearTimerStorage = () => {
+    if (attemptId) {
+      localStorage.removeItem(`exam_timer_${attemptId}`);
     }
-  }, [data]);
+  };
 
-  // ⏳ Đồng hồ đếm lùi
+  const groupQuestionsEvenly = (questions, sections) => {
+    const grouped = sections.map(() => []);
+    questions.forEach((q, i) => {
+      grouped[i % sections.length].push(q);
+    });
+    return grouped;
+  };
+
+  useEffect(() => {
+    if (!exam?.time_limit || !attemptId) return;
+
+    const saved = localStorage.getItem(`exam_timer_${attemptId}`);
+    if (saved) {
+      const { startTime } = JSON.parse(saved);
+      const elapsed = Math.floor((Date.now() - startTime) / 1000);
+      const remaining = exam.time_limit * 60 - elapsed;
+      setTimeLeft(remaining > 0 ? remaining : 0);
+    } else {
+      const now = Date.now();
+      localStorage.setItem(`exam_timer_${attemptId}`, JSON.stringify({ startTime: now }));
+      setTimeLeft(exam.time_limit * 60);
+    }
+  }, [exam, attemptId]);
+
   useEffect(() => {
     if (timeLeft === null || timeLeft <= 0) return;
 
@@ -34,10 +54,11 @@ const ExamDoingPage = () => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
+          clearTimerStorage();
           if (Object.keys(answers).length > 0) {
-            handleSubmit(); // ✅ Chỉ submit nếu có trả lời
+            handleSubmit();
           } else {
-            setError('Bạn đã hết thời gian nhưng chưa trả lời câu nào.');
+            setError('⏰ Hết giờ nhưng bạn chưa trả lời câu nào.');
           }
           return 0;
         }
@@ -46,127 +67,145 @@ const ExamDoingPage = () => {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [timeLeft, answers]); 
+  }, [timeLeft, answers]);
 
-  // ⚠️ Cảnh báo sắp hết giờ
   useEffect(() => {
-    if (timeLeft === 300) {
-      alert('Chỉ còn 5 phút, hãy kiểm tra và nộp bài sớm!');
+    if (timeLeft === 180) {
+      alert('⚠️ Còn 3 phút! Hãy kiểm tra và nộp bài.');
     }
   }, [timeLeft]);
 
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const remainingSeconds = seconds % 60;
-    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+  useEffect(() => {
+    if (exam?.settings?.fullScreen) {
+      const elem = document.documentElement;
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen().catch(console.warn);
+      }
+    }
+  }, [exam]);
+
+  useEffect(() => {
+    if (exam?.questions) {
+      let qs = [...exam.questions];
+      if (exam.settings?.shuffleQuestions) {
+        qs.sort(() => Math.random() - 0.5);
+      }
+      setShuffledQuestions(qs);
+    }
+  }, [exam]);
+
+  const formatTime = (s) => {
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${sec.toString().padStart(2, '0')}`;
   };
 
-  const handleSubmit = useCallback(() => {
-    if (!attemptId || Object.keys(answers).length === 0) {
-      setError('Vui lòng chọn ít nhất một câu trả lời trước khi nộp bài');
+  const handleSubmit = useCallback(async () => {
+    const formattedAnswers = Object.entries(answers)
+      .filter(([_, val]) => val !== undefined && val !== '')
+      .map(([questionId, answer]) => ({
+        questionId,
+        userAnswer: typeof answer === 'string' ? answer : String(answer).toUpperCase(),
+      }));
+  
+    if (!exam || !exam._id) {
+      console.warn('❌ Không có exam hoặc exam._id:', exam);
+      setError('Không xác định được bài kiểm tra để nộp.');
       return;
     }
   
-    const formattedAnswers = Object.entries(answers).map(([questionId, answer]) => ({
-      questionId,
-      answer: String(answer).toUpperCase(), // "a" → "A"
-    }));
+    if (formattedAnswers.length === 0) {
+      setError('Vui lòng trả lời ít nhất một câu.');
+      return;
+    }
   
-    console.log('📝 Submit Payload:', {
-      attemptId,
-      answers: formattedAnswers,
-    });
+    clearTimerStorage();
   
-    submitExam(
-      { attemptId, answers: formattedAnswers }, // 👈 TRUYỀN formattedAnswers
-      {
-        onSuccess: (res) => {
-          if (res?.attemptId) {
-            navigate(`/practice/exam/result/${res.attemptId}`);
-          } else {
-            setError('Không thể nộp bài thi. Vui lòng thử lại.');
-          }
-        },
-        onError: (error) => {
-          setError(error.message || 'Có lỗi xảy ra khi nộp bài thi');
-        },
-      }
-    );
-  }, [attemptId, answers, submitExam, navigate]);
+    try {
+      console.log('🔍 Gọi /exam/start với exam._id:', exam._id);
+  
+      const { attemptId: correctAttemptId } = await examApi.startExam(exam._id);
+  
+      console.log('📤 Submit với attemptId từ /exam/start:', correctAttemptId);
+  
+      submitExam(
+        { attemptId: correctAttemptId, answers: formattedAnswers },
+        {
+          onSuccess: (res) => {
+            if (res?.attemptId) {
+              navigate(`/practice/exam/result/${res.attemptId}`);
+            } else {
+              setError('Không thể nộp bài.');
+            }
+          },
+          onError: (err) => {
+            const msg = err?.response?.data?.message || err.message || 'Có lỗi xảy ra khi nộp bài.';
+            setError(msg);
+          },
+        }
+      );
+    } catch (error) {
+      console.error('❌ Lỗi khi gọi /exam/start/:exam_id:', error);
+      setError('Không thể lấy attemptId để nộp bài.');
+    }
+  }, [answers, exam, submitExam, navigate]);
 
-  if (isLoading) return <div>Đang tải bài thi...</div>;
-  if (!exam) return <div>Không tìm thấy thông tin bài thi</div>;
+  if (isLoading) return <div className="text-center py-10 text-gray-500">Đang tải bài thi...</div>;
+  if (!exam) return <div className="text-center py-10 text-red-600">Không tìm thấy bài thi</div>;
+
+  const grouped = exam?.sections && shuffledQuestions.length
+    ? groupQuestionsEvenly(shuffledQuestions, exam.sections)
+    : [];
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-6">
+    <div
+      className="max-w-5xl mx-auto"
+      style={exam?.settings?.preventCopy ? { userSelect: 'none' } : {}}
+    >
+      <div className="flex justify-between items-center px-6 py-4 bg-red-600 text-white mb-6 rounded-b shadow">
         <h1 className="text-2xl font-bold">{exam.title}</h1>
-        <div className="text-xl font-semibold">
-          Thời gian còn lại: {formatTime(timeLeft)}
-        </div>
+        <span className="text-lg font-semibold flex items-center gap-1">
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6l4 2m6-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-bold">{formatTime(timeLeft || 0)}</span>
+        </span>
       </div>
 
       {error && (
-        <div className="mb-4 p-4 bg-red-100 text-red-700 rounded-lg">
-          {error}
-        </div>
+        <div className="mx-6 mb-4 p-4 bg-red-100 text-red-700 rounded border">{error}</div>
       )}
 
-      <div className="space-y-6">
-        {exam.sections?.map((section, sectionIndex) => (
-          <div key={section._id} className="border p-4 rounded">
-            <h2 className="text-xl font-semibold mb-4">
-              Phần {sectionIndex + 1}: {section.title}
-            </h2>
-            <div className="space-y-4">
-              {exam.questions
-                .filter((q) => q.type === section.type)
-                .map((question, questionIndex) => (
-                  <div key={question._id} className="border-l-4 border-blue-500 pl-4">
-                    <p className="font-medium mb-2">
-                      Câu {questionIndex + 1}: {question.content}
-                    </p>
-                    {question.readingPassage && (
-                      <div className="mb-2 text-sm italic bg-gray-100 p-2 rounded">
-                        {question.readingPassage}
-                      </div>
-                    )}
-                    <div className="space-y-2">
-                      {question.options.map((option) => (
-                        <label key={option._id} className="flex items-center space-x-2">
-                          <input
-                            type="radio"
-                            name={`question_${question._id}`}
-                            value={option.id} // ✅ A/B/C/D
-                            checked={answers[question._id] === option.id}
-                            onChange={() =>
-                              setAnswers((prev) => ({
-                                ...prev,
-                                [question._id]: option.id,
-                              }))
-                            }
-                            className="form-radio"
-                          />
-                          <span>{option.text || option.content}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-            </div>
-          </div>
-        ))}
+      <div className="px-6 space-y-8">
+        {Array.isArray(exam?.sections) &&
+          exam.sections.map((section, i) => {
+            const sectionQuestions = grouped[i];
+            if (!sectionQuestions || sectionQuestions.length === 0) return null;
+
+            return (
+              <QuestionSection
+                key={section._id || i}
+                section={section}
+                sectionIndex={i}
+                questions={sectionQuestions}
+                answers={answers}
+                onAnswerChange={(qid, val) =>
+                  setAnswers((prev) => ({ ...prev, [qid]: val }))
+                }
+              />
+            );
+          })}
       </div>
 
-      <div className="mt-6 flex justify-end">
+      <div className="px-6 mt-8 flex justify-end">
         <button
           onClick={handleSubmit}
           disabled={isSubmitting}
-          className={`px-6 py-2 rounded ${
+          className={`px-6 py-3 rounded text-white font-semibold transition ${
             isSubmitting
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-green-600 hover:bg-green-700'
-          } text-white`}
+          }`}
         >
           {isSubmitting ? 'Đang nộp bài...' : 'Nộp bài'}
         </button>

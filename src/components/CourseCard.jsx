@@ -1,7 +1,15 @@
 const CourseCard = ({ course }) => {
     return (
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="flex justify-between items-center p-4">
+            <img
+                src={
+                    course.thumbnail ||
+                    'https://placehold.co/600x400?text=Course+Thumbnail'
+                }
+                alt={course.name}
+                className="w-full h-40 object-cover object-center mb-4"
+            />
+            <div className="flex justify-between items-center px-4">
                 <h2 className="font-medium text-gray-800">{course.name}</h2>
                 <span
                     className={`text-xs px-2 py-1 rounded-full ${
@@ -13,15 +21,6 @@ const CourseCard = ({ course }) => {
                     Private
                 </span>
             </div>
-
-            <img
-                src={
-                    course.thumbnail ||
-                    'https://placehold.co/600x400?text=Course+Thumbnail'
-                }
-                alt={course.name}
-                className="w-full h-40 object-cover object-center"
-            />
 
             <div className="flex items-center justify-between gap-2 p-4">
                 <div>
