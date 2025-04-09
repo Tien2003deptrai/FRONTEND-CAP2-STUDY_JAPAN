@@ -1,7 +1,7 @@
-import axiosInstance from "@/network/httpRequest"
-import { useQuery } from "@tanstack/react-query"
+import axiosInstance from '@/network/httpRequest'
+import { useQuery } from '@tanstack/react-query'
 
-const useTeachers = () => {
+export const useTeachers = () => {
     const getTeachers = async () => {
         const response = await axiosInstance.get('/admin/teachers')
         return response.data.data
@@ -11,4 +11,24 @@ const useTeachers = () => {
         queryFn: getTeachers,
     })
 }
-export default useTeachers
+export const useTeacherById = (teacherId) => {
+    return useQuery({
+        queryKey: ['teacher', teacherId],
+        queryFn: async () => {
+            const res = await axiosInstance.get(`/admin/teachers/${teacherId}`)
+            return res.data.data
+        },
+        enabled: !!teacherId,
+    })
+}
+
+export const useTeacherCourses = (teacherId) => {
+    return useQuery({
+        queryKey: ['teacher-courses', teacherId],
+        queryFn: async () => {
+            const res = await axiosInstance.get(`/course/teacher/${teacherId}`)
+            return res.data.data
+        },
+        enabled: !!teacherId,
+    })
+}
