@@ -3,12 +3,18 @@ const CourseCard = ({ course }) => {
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
             <img
                 src={
-                    course.thumbnail ||
-                    'https://placehold.co/600x400?text=Course+Thumbnail'
+                    course.thumb ||
+                    'https://media.istockphoto.com/id/1298277940/vector/learn-japanese-language-isometric-concept-with-open-laptop-books-headphones-and-tea.jpg?s=612x612&w=0&k=20&c=RchsXoccKQFLHf6bmJiSx1fXX1JvX1l-uRPhiBxum4E='
                 }
                 alt={course.name}
                 className="w-full h-40 object-cover object-center mb-4"
+                onError={(e) => {
+                    e.target.onerror = null
+                    e.target.src =
+                        'https://media.istockphoto.com/id/1298277940/vector/learn-japanese-language-isometric-concept-with-open-laptop-books-headphones-and-tea.jpg?s=612x612&w=0&k=20&c=RchsXoccKQFLHf6bmJiSx1fXX1JvX1l-uRPhiBxum4E='
+                }}
             />
+
             <div className="flex justify-between items-center px-4">
                 <h2 className="font-medium text-gray-800">{course.name}</h2>
                 <span
