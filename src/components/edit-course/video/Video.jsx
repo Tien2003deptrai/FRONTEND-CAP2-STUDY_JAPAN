@@ -50,6 +50,8 @@ function Video({ url, setUrl }) {
     const handlePasteYouTubeURL = () => {
         if (inputValue.trim() && isYouTubeURL(inputValue.trim())) {
             const embedURL = getYouTubeEmbedURL(inputValue.trim())
+            console.log(embedURL)
+
             if (embedURL) setUrl(embedURL)
         }
     }
@@ -76,14 +78,22 @@ function Video({ url, setUrl }) {
                 <div className="relative w-full max-h-[400px]">
                     <iframe
                         className="w-full rounded-lg border h-[400px] object-contain"
-                        src={isYouTubeURL(url) ? getYouTubeEmbedURL(url) : url}
+                        src={
+                            isYouTubeURL(url)
+                                ? (getYouTubeEmbedURL(url) ?? url)
+                                : url
+                        }
                         title="Video Player"
                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                         allowFullScreen
                     />
+
                     {/* Remove Button */}
                     <button
-                        onClick={() => setUrl(null)}
+                        onClick={() => {
+                            setInputValue('')
+                            setUrl(null)
+                        }}
                         disabled={uploading}
                         className={`absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded ${
                             uploading && 'opacity-50 cursor-not-allowed'

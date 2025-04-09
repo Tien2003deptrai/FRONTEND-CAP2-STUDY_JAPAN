@@ -13,7 +13,7 @@ function TeacherCourse() {
     }
 
     const { data } = useQuery({
-        queryKey: ['getCourseLecturer', user._id],
+        queryKey: ['getCourseLecturer', user?._id],
         queryFn: getCourse,
         staleTime: 1000 * 60 * 5,
         retry: 3,

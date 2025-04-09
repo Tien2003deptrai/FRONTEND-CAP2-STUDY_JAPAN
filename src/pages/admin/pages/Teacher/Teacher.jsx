@@ -1,11 +1,11 @@
-import React, { useState } from 'react'
-import AddIcon from '@mui/icons-material/Add'
-import VisibilityIcon from '@mui/icons-material/Visibility'
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks'
 import TeacherCard from '@/components/TeacherCard'
 import TeacherCoursesModal from '@/components/TeacherCoursesModal/TeacherCoursesModal'
 import TeacherDetailModal from '@/components/TeacherDetailModal/TeacherDetailModal'
 import { useTeachers } from '@/hooks/useTeacher'
+import AddIcon from '@mui/icons-material/Add'
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks'
+import VisibilityIcon from '@mui/icons-material/Visibility'
+import { useState } from 'react'
 
 const transformTeacherData = (teacher) => ({
     id: teacher._id,
