@@ -1,29 +1,12 @@
 import useAuthStore from '@/store/useAuthStore'
-import AddIcon from '@mui/icons-material/Add'
+import { Link } from 'react-router-dom'
 import CourseCard from '../../../../components/CourseCard'
 import { useCourses } from '../../../../hooks/useCourses'
 
 const Course = () => {
-    // TODO: Replace with actual user ID from auth context
-    // const userId = '123' // This should come from your auth context
     const userId = useAuthStore((state) => state.user?._id)
     console.log('userId', userId)
     const { data: courses, isLoading, error } = useCourses(userId)
-
-    const handleViewCourse = (course) => {
-        // Implement view course logic
-        console.log('View course:', course)
-    }
-
-    const handleEditCourse = (course) => {
-        // Implement edit course logic
-        console.log('Edit course:', course)
-    }
-
-    const handleDeleteCourse = (course) => {
-        // Implement delete course logic
-        console.log('Delete course:', course)
-    }
 
     if (isLoading) {
         return (
@@ -55,21 +38,17 @@ const Course = () => {
                             {courses?.length || 0}
                         </span>
                     </div>
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
-                        <AddIcon fontSize="small" className="mr-1" />
-                        Thêm Khóa Học
-                    </button>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {courses?.map((course) => (
-                        <CourseCard
-                            key={course.id}
-                            course={course}
-                            onView={handleViewCourse}
-                            onEdit={handleEditCourse}
-                            onDelete={handleDeleteCourse}
-                        />
+                        <Link
+                            to={`/admin/courses/${course._id}`}
+                            key={course._id}
+                            state={{ course }}
+                        >
+                            <CourseCard key={course._id} course={course} />
+                        </Link>
                     ))}
                 </div>
             </div>

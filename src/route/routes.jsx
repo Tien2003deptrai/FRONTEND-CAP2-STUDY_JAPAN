@@ -3,6 +3,7 @@ import EditCourseLayout from '@/layout/EditCourseLayout'
 import MainLayout from '@/layout/MainLayout'
 import ManageDocumentLayout from '@/layout/ManageDocumentLayout'
 import PracticeLayout from '@/layout/PracticeLayout'
+import AdminCourseDetail from '@/pages/admin/pages/Course/AdminCourseDetail'
 import Course from '@/pages/admin/pages/Course/Course'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
@@ -63,6 +64,10 @@ export const publicRoutes = [
         element: <AdminLayOut />,
         children: [
             {
+                index: true, // Example of a dashboard page
+                element: <Navigate to="students" replace />,
+            },
+            {
                 path: 'main', // Example of a dashboard page
                 element: <MainDash />,
             },
@@ -77,6 +82,10 @@ export const publicRoutes = [
             {
                 path: 'courses', // Example of a dashboard page
                 element: <Course />,
+            },
+            {
+                path: 'courses/:courseId', // Example of a dashboard page
+                element: <AdminCourseDetail />,
             },
             // Add more admin routes here if necessary
         ],
