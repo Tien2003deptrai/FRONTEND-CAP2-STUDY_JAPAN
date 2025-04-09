@@ -17,14 +17,6 @@ const studentApi = {
         const response = await axiosInstance.get(`/admin/students/${studentId}`)
         return response.data
     },
-
-    updateStudentStatus: async (studentId, status) => {
-        const response = await axiosInstance.patch(
-            `/admin/students/${studentId}/status`,
-            { status }
-        )
-        return response.data
-    },
 }
 
 export const useStudents = () => {

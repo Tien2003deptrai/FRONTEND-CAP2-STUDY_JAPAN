@@ -32,3 +32,4 @@ export const useTeacherCourses = (teacherId) => {
         enabled: !!teacherId,
     })
 }
+

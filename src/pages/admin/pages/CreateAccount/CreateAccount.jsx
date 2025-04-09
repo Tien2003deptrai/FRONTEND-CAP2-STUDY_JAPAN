@@ -6,7 +6,8 @@ const CreateAccount = () => {
     const [formData, setFormData] = useState({
         name: '',
         email: '',
-        role: 'student',
+        phone: '',
+        roles: 'student',
     })
     const [loading, setLoading] = useState(false)
 
@@ -26,19 +27,20 @@ const CreateAccount = () => {
                 title: 'Tạo tài khoản thành công!',
                 html: `
                     <p>Email: <strong>${formData.email}</strong></p>
-                    <p>Mật khẩu đã được gửi vào email</p>
+                    <p>Mật khẩu đã được gửi tới email của bạn</p>
                 `,
                 confirmButtonColor: '#3085d6',
-                confirmButtonText: 'Đóng',
+                confirmButtonText: 'OK',
             })
 
-            setFormData({ name: '', email: '', role: 'student' })
+            setFormData({ name: '', email: '', phone: '', roles: 'student' })
         } catch (error) {
             Swal.fire({
                 icon: 'error',
-                title: 'Lỗi!',
+                title: 'Tạo tài khoản thất bại!',
                 text:
-                    error?.response?.data?.message || 'Không thể tạo tài khoản',
+                    error?.response?.data?.message ||
+                    'Đã xảy ra lỗi, vui lòng thử lại.',
                 confirmButtonColor: '#d33',
             })
         } finally {
@@ -62,8 +64,8 @@ const CreateAccount = () => {
                         value={formData.name}
                         onChange={handleChange}
                         required
+                        placeholder="Nguyễn Văn A"
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="Nhập họ tên..."
                     />
                 </div>
 
@@ -77,8 +79,22 @@ const CreateAccount = () => {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-red-500 focus:border-red-500"
                         placeholder="example@email.com"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-red-500 focus:border-red-500"
+                    />
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium text-gray-700">
+                        Số điện thoại
+                    </label>
+                    <input
+                        type="tel"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        placeholder="0357635003"
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-red-500 focus:border-red-500"
                     />
                 </div>
 
@@ -87,14 +103,13 @@ const CreateAccount = () => {
                         Vai trò
                     </label>
                     <select
-                        name="role"
-                        value={formData.role}
+                        name="roles"
+                        value={formData.roles}
                         onChange={handleChange}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white focus:ring-red-500 focus:border-red-500"
                     >
                         <option value="student">🎓 Học viên</option>
                         <option value="teacher">👩‍🏫 Giáo viên</option>
-                        <option value="admin">🛠 Admin</option>
                     </select>
                 </div>
 
