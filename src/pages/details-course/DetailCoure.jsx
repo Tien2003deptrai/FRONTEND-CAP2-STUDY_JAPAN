@@ -8,21 +8,30 @@ import VideoPlayer from '@/components/lesson/LessonVideo'
 import LessonDetail from '@/components/lesson/LessonDetails'
 import LessonSidebar from '@/components/lesson/LessonSibar'
 
+
+
 function CourseDetail() {
     const { courseId } = useParams()
     const navigate = useNavigate()
 
-    const getInitialLessonIndex = () => {
+    const getInitialLessonIndex = (courseId) => {
         const saved = localStorage.getItem(`lesson-progress-${courseId}`)
         return saved ? Number(saved) : 0
     }
-    // bai hoc tiep theo
-    const [currentLessonIndex, setCurrentLessonIndex] = useState(
-        getInitialLessonIndex
+    
+    const getInitialMaxUnlocked = (courseId) => {
+        const saved = localStorage.getItem(`max-unlocked-${courseId}`)
+        const initial = getInitialLessonIndex(courseId)
+        return saved ? Number(saved) : initial + 1
+    }
+
+    // lay bai hoc
+    const [currentLessonIndex, setCurrentLessonIndex] = useState(() =>
+        getInitialLessonIndex(courseId)
     )
-  // lock bai hoc thu n+2
-    const [maxUnlockedLesson, setMaxUnlockedLesson] = useState(
-        getInitialLessonIndex
+    //hoc bai 1 -> lock bai 3
+    const [maxUnlockedLesson, setMaxUnlockedLesson] = useState(() =>
+        getInitialMaxUnlocked(courseId)
     )
 
     const { data, isLoading, isError, error } = useFetchLessonData(courseId)
@@ -32,15 +41,22 @@ function CourseDetail() {
     const courseName = course.name || 'Khóa học'
 
     const totalLessons = lessons.length
-    const completedLessons = currentLessonIndex + 1
+    const completedLessons = Math.min(maxUnlockedLesson, totalLessons)
+    //%
     const progress = totalLessons
         ? Math.round((completedLessons / totalLessons) * 100)
         : 0
+    // next index
     const isNextLessonUnlocked = currentLessonIndex + 1 <= maxUnlockedLesson
-
+   
     useEffect(() => {
         localStorage.setItem(`lesson-progress-${courseId}`, currentLessonIndex)
-        setMaxUnlockedLesson((prev) => Math.max(prev, currentLessonIndex))
+
+        setMaxUnlockedLesson((prev) => {
+            const updated = Math.max(prev, currentLessonIndex + 1)
+            localStorage.setItem(`max-unlocked-${courseId}`, updated)
+            return updated
+        })
     }, [currentLessonIndex, courseId])
 
     if (!courseId) {
@@ -58,7 +74,7 @@ function CourseDetail() {
         <div className="relative h-screen w-screen bg-gray-100">
             <div className="absolute top-0 left-0 w-full flex items-center justify-between p-3 bg-red-500 text-white shadow-md z-10">
                 <button
-                    onClick={() => navigate(-1)}
+                    onClick={() => navigate(`/courses`)}
                     className="flex items-center text-lg font-semibold"
                 >
                     <ArrowBackIcon className="w-5 h-5 mr-2" />
@@ -88,9 +104,7 @@ function CourseDetail() {
                         if (index <= maxUnlockedLesson) {
                             setCurrentLessonIndex(index)
                         } else {
-                            alert(
-                                '⚠️ Bạn cần hoàn thành bài học trước đó để mở bài này.'
-                            )
+                            alert('⚠️ Bạn cần hoàn thành bài học trước đó để mở bài này.')
                         }
                     }}
                 />
