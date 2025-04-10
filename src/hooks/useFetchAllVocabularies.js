@@ -1,7 +1,7 @@
 import axiosInstance from '@/network/httpRequest'
 import { useQuery } from '@tanstack/react-query'
 
-const useFetchAllVocabularies = () => {
+export const useFetchAllVocabularies = () => {
     const getVocabulary = async () => {
         const res = await axiosInstance.get(`/vocabulary/all`)
         return res.data.data
