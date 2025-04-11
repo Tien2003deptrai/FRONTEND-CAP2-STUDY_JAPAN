@@ -4,12 +4,14 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 import GrammarItem from '@/components/edit-course/grammar/GrammarItem'
+import QuestionItem from '@/components/edit-course/question/QuestionItem'
 import Video from '@/components/edit-course/video/Video'
 import VocabularyItem from '@/components/edit-course/vocabulary/VocabularyItem'
 import useFetchGrammar from '@/hooks/useFetchGrammar'
 import useFetchLessonData from '@/hooks/useFetchLessonData'
 import useFetchVocabulary from '@/hooks/useFetchVocabulary'
 import axiosInstance from '@/network/httpRequest'
+import { useQuery } from '@tanstack/react-query'
 
 function EditCourse() {
     const { selectedLesson } = useOutletContext()
@@ -30,6 +32,14 @@ function EditCourse() {
 
     const { data: vocabularies = [] } = useFetchVocabulary(lesson?._id)
     const { data: grammars = [] } = useFetchGrammar(lesson?._id)
+    const { data: revisionQuestions = [] } = useQuery({
+        queryKey: ['revisionQuestions', lesson?._id],
+        queryFn: async () => {
+            const res = await axiosInstance.get(`/renshuu/${lesson?._id}`)
+            return res.data.data
+        },
+    })
+    console.log(revisionQuestions)
 
     const onSaveLessonContent = async () => {
         try {
@@ -155,6 +165,42 @@ function EditCourse() {
                                         index={index}
                                     />
                                 ))
+                            ) : (
+                                <p className="text-gray-500">
+                                    Không có ngữ pháp nào.
+                                </p>
+                            )}
+                        </div>
+                    </div>
+                    <hr className="w-full h-[1px]" />
+
+                    <div className="w-full flex gap-3 flex-col mt-4">
+                        <div className="w-full flex justify-between items-center">
+                            <label className="block font-bold">
+                                Câu hỏi ôn tập (
+                                {revisionQuestions?.questions?.length})
+                            </label>
+                            <Link
+                                to={`question/${lesson?._id}/${revisionQuestions?._id}`}
+                                className="primary-btn"
+                            >
+                                Thêm câu hỏi
+                            </Link>
+                        </div>
+                        <hr className="w-full h-[1px]" />
+                        <div className="w-full flex flex-col gap-4">
+                            {revisionQuestions?.questions?.length > 0 ? (
+                                revisionQuestions.questions.map(
+                                    (question, index) => (
+                                        <QuestionItem
+                                            key={index}
+                                            lessonId={lesson?._id}
+                                            renshuuId={revisionQuestions._id}
+                                            question={question}
+                                            index={index}
+                                        />
+                                    )
+                                )
                             ) : (
                                 <p className="text-gray-500">
                                     Không có ngữ pháp nào.

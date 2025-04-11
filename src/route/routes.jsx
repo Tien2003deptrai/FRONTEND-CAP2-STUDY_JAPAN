@@ -180,6 +180,10 @@ export const teacherRoutes = [
             { index: true, element: <EditCourse /> },
             { path: 'vocabulary', element: <EditVocabulary /> },
             { path: 'grammar', element: <EditGrammar /> },
+            {
+                path: 'question/:lessonId/:renshuuId',
+                element: <EditQuestion isRevisionMode={true} />,
+            },
         ],
     },
     {
