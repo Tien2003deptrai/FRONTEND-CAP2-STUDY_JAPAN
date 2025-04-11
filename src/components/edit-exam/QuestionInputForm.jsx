@@ -1,9 +1,14 @@
-import axiosInstance from '@/network/httpRequest'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Add, Delete } from '@mui/icons-material'
 import { useFieldArray, useForm } from 'react-hook-form'
 import { useParams } from 'react-router-dom'
 import { z } from 'zod'
+import {
+    createQuestionExam,
+    createQuestionRevision,
+    updateQuestionExam,
+    updateQuestionRevision,
+} from './api/questionService'
 
 const questionSchema = z.object({
     content: z.string().min(1, 'Câu hỏi không được để trống'),
@@ -18,8 +23,12 @@ const questionSchema = z.object({
     correctAnswer: z.string().min(1, 'Phải chọn một đáp án đúng'),
 })
 
-function QuestionInputForm({ question = null, onSaveCallback }) {
-    const { examId } = useParams()
+function QuestionInputForm({
+    question = null,
+    onSaveCallback,
+    isRevisionMode,
+}) {
+    const { examId, lessonId, renshuuId } = useParams()
     const {
         register,
         handleSubmit,
@@ -49,21 +58,36 @@ function QuestionInputForm({ question = null, onSaveCallback }) {
     }
 
     const onSubmit = async (data) => {
-        console.log([data])
         data.type = 'multiple_choice'
 
         let res = null
 
-        if (question) {
-            res = await axiosInstance.put(
-                `exam/${examId}/question/${question.id}`,
-                data
-            )
-        } else {
-            res = await axiosInstance.post(`exam/${examId}/questions`, {
-                questions: [data],
-            })
+        if (question && !isRevisionMode) {
+            res = await updateQuestionExam(examId, question?.id, data)
         }
+        if (!question && !isRevisionMode) {
+            res = await createQuestionExam(examId, data)
+        }
+
+        if (question && isRevisionMode) {
+            data._id = question?._id
+            const payload = {
+                lessonId: lessonId,
+                renshuuId: renshuuId,
+                question: data,
+            }
+            res = await updateQuestionRevision(payload)
+        }
+
+        if (!question && isRevisionMode) {
+            const payload = {
+                lessonId: lessonId,
+                question: data,
+            }
+
+            res = await createQuestionRevision(payload)
+        }
+
         if (res.status == 200) {
             alert('Question saved successfully')
             reset()
