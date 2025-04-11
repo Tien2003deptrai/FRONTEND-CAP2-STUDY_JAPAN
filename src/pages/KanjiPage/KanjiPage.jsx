@@ -15,7 +15,7 @@ const KanjiPage = () => {
                 {/* Loop through JLPT levels */}
                 {jlptLevels.map((level) => (
                     <div key={level} className="mb-12">
-                        <h2 className="text-3xl font-semibold text-center mb-4 text-gray-900">
+                        <h2 className="text-3xl font-semibold mb-4 text-gray-900">
                             Kanji {level}
                         </h2>
                         <KanjiLevel jlptLevel={level} />

@@ -22,6 +22,7 @@ import Home from '@/pages/home/Home'
 import KanjiDetail from '@/pages/KanjiDetail/KanjiDetail'
 import KanjiPage from '@/pages/KanjiPage/KanjiPage'
 import KanjiLevel from '@/pages/KanjiPage/KanjiPage'
+import KanjiStrokePractice from '@/pages/KanjiStrokePractice/KanjiStrokePractice'
 import Login from '@/pages/login/Login'
 import ProfileUser from '@/pages/login/ProfileUser'
 import ManageExam from '@/pages/manage-document/ManageExam'
@@ -130,6 +131,10 @@ export const kanjiRoutes = [
             {
                 path: '/kanji/:kanjiId',
                 element: <KanjiDetail />,
+            },
+            {
+                path: '/kanji/:kanjiId/stroke-practice',
+                element: <KanjiStrokePractice />, // Thêm route cho KanjiStrokePractice
             },
         ],
     },

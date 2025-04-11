@@ -42,17 +42,17 @@ const KanjiLevel = ({ jlptLevel }) => {
     }
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-xl">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
+        <div className="bg-white p-6 rounded-lg shadow-md">
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">
                 {kanjiData.map((kanji) => (
                     <Link
                         key={kanji._id}
-                        to={`/kanji/${kanji._id}`} // Using Link to navigate to the KanjiDetail page
-                        className="bg-white p-6 rounded-lg shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl"
+                        to={`/kanji/${kanji._id}`}
+                        className="flex items-center justify-center h-16 w-16 bg-white border border-gray-300 rounded-xl shadow hover:shadow-md hover:scale-105 transition duration-200"
                     >
-                        <div className="text-3xl font-semibold text-gray-800 mb-4">
+                        <span className="text-2xl font-bold text-gray-800">
                             {kanji.kanji}
-                        </div>
+                        </span>
                     </Link>
                 ))}
             </div>
