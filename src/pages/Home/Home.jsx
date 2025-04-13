@@ -1,33 +1,13 @@
-import React, { useState } from 'react'
 import {
     Book as BookIcon,
+    Event as CalendarIcon,
+    Check as CheckIcon,
+    ExpandMore as ChevronDownIcon,
     Description as FileTextIcon,
     Headphones as HeadphonesIcon,
     Chat as MessageSquareIcon,
-    Check as CheckIcon,
     Group as UsersIcon,
-    Event as CalendarIcon,
-    Search as SearchIcon,
-    ExpandMore as ChevronDownIcon,
-    Menu as MenuIcon,
-    Close as XIcon,
-    Home as HomeIcon,
-    Notifications as BellIcon,
-    Person as UserIcon,
 } from '@mui/icons-material'
-
-// Component NavLink
-const NavLink = ({ children, isActive, onClick }) => {
-    return (
-        <a
-            href="#"
-            onClick={onClick}
-            className={`px-4 py-2 font-medium ${isActive ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-700 hover:text-red-600'}`}
-        >
-            {children}
-        </a>
-    )
-}
 
 // Component FeatureCard
 const FeatureCard = ({ icon, title, description }) => {
@@ -75,9 +55,6 @@ const CourseCard = ({ course }) => {
 
 // Main Component
 export default function JapaneseLearningApp() {
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
-    const [activeTab, setActiveTab] = useState('home')
-
     const courses = [
         {
             id: 1,
@@ -150,10 +127,6 @@ export default function JapaneseLearningApp() {
         { level: 'N1', description: 'Trình độ cao cấp', color: 'bg-red-600' },
     ]
 
-    const toggleMenu = () => {
-        setIsMenuOpen(!isMenuOpen)
-    }
-
     return (
         <div className="min-h-screen bg-gray-50 font-sans">
             {/* Header */}
@@ -183,7 +156,7 @@ export default function JapaneseLearningApp() {
                         </div>
                         <div className="md:w-2/5">
                             <img
-                                src="/api/placeholder/500/300"
+                                src="https://wallpapercat.com/w/full/3/1/7/119871-3840x2160-desktop-4k-japan-wallpaper-image.jpg"
                                 alt="Học tiếng Nhật hiệu quả"
                                 className="rounded-lg w-full"
                             />

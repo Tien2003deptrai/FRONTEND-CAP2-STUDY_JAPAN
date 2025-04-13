@@ -28,9 +28,17 @@ function TeacherCourse() {
                         >
                             {course.thumb ? (
                                 <img
-                                    src={course.thumb}
+                                    src={
+                                        course.thumb ||
+                                        'https://media.istockphoto.com/id/1298277940/vector/learn-japanese-language-isometric-concept-with-open-laptop-books-headphones-and-tea.jpg?s=612x612&w=0&k=20&c=RchsXoccKQFLHf6bmJiSx1fXX1JvX1l-uRPhiBxum4E='
+                                    }
                                     alt={course.name}
                                     className="w-full h-40 object-cover"
+                                    onError={(e) => {
+                                        e.target.onerror = null // Prevent infinite loop
+                                        e.target.src =
+                                            'https://media.istockphoto.com/id/1298277940/vector/learn-japanese-language-isometric-concept-with-open-laptop-books-headphones-and-tea.jpg?s=612x612&w=0&k=20&c=RchsXoccKQFLHf6bmJiSx1fXX1JvX1l-uRPhiBxum4E='
+                                    }}
                                 />
                             ) : (
                                 <div className="w-full h-40 bg-gray-200 flex items-center justify-center text-gray-500">

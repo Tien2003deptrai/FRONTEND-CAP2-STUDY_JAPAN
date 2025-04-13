@@ -7,9 +7,17 @@ const CourseCard = ({ course }) => {
         <div className="rounded-2xl bg-white border border-gray-200 shadow-sm hover:shadow-md transition-all duration-300 group overflow-hidden">
             <div className="aspect-[16/9] bg-gray-100 overflow-hidden">
                 <img
-                    src={course.thumb}
+                    src={
+                        course.thumb ||
+                        'https://media.istockphoto.com/id/1298277940/vector/learn-japanese-language-isometric-concept-with-open-laptop-books-headphones-and-tea.jpg?s=612x612&w=0&k=20&c=RchsXoccKQFLHf6bmJiSx1fXX1JvX1l-uRPhiBxum4E='
+                    }
                     alt={course.name}
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    onError={(e) => {
+                        e.target.onerror = null
+                        e.target.src =
+                            'https://media.istockphoto.com/id/1298277940/vector/learn-japanese-language-isometric-concept-with-open-laptop-books-headphones-and-tea.jpg?s=612x612&w=0&k=20&c=RchsXoccKQFLHf6bmJiSx1fXX1JvX1l-uRPhiBxum4E='
+                    }}
                 />
             </div>
 
