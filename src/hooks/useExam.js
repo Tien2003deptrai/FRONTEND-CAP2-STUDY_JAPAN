@@ -18,7 +18,7 @@ const examApi = {
 
     getExamById: async (examId) => {
         const res = await axiosInstance.get(`/exam/take/${examId}`)
-        return res.data
+        return res.data.data
     },
 
     getExamTake: async (attemptId) => {

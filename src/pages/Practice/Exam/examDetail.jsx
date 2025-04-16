@@ -4,10 +4,11 @@ import { useExamById, useExamHistory } from '@/hooks/useExam'
 
 const ExamDetailPage = () => {
     const { exam_id } = useParams()
+
     const navigate = useNavigate()
     const [error, setError] = useState(null)
 
-    const { data: exam, isLoading: isExamLoading } = useExamById(exam_id)
+    const { data:exam, isLoading: isExamLoading } = useExamById(exam_id)
     const { data: history, isLoading: isHistoryLoading } =
         useExamHistory(exam_id)
 
@@ -40,34 +41,16 @@ const ExamDetailPage = () => {
         setError(null)
         navigate(`/practice/exam/doing/${exam_id}`)
     }
-
+    
     return (
         <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-6">
             <div className="mb-8">
                 <h1 className="text-3xl font-bold text-gray-800 mb-2">
-                    {exam.title}
+                    {exam?.exam?.title}
                 </h1>
                 <p className="text-gray-600 text-base mb-3">
-                    {exam.description}
+                    {exam?.exam?.description}
                 </p>
-                <div className="flex flex-wrap gap-4 text-sm text-gray-500">
-                    <p>
-                        🕒 Thời gian làm bài:{' '}
-                        <span className="font-medium">
-                            {exam.time_limit} phút
-                        </span>
-                    </p>
-                    <p>
-                        🏁 Điểm đạt:{' '}
-                        <span className="font-medium">
-                            {exam.total_points} điểm
-                        </span>
-                    </p>
-                    <p>
-                        📘 Trình độ:{' '}
-                        <span className="font-medium">{exam.level}</span>
-                    </p>
-                </div>
 
                 {error && (
                     <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-lg border border-red-300">
@@ -109,15 +92,20 @@ const ExamDetailPage = () => {
                             >
                                 <div>
                                     <p className="font-medium text-gray-700">
-                                        Điểm số:{' '}
-                                        <span className="text-blue-600">
-                                            {attempt.totalScore}
+                                        Số câu:{' '}
+                                        <span className="text-danger">
+                                            {
+                                                attempt.answers.filter(
+                                                    (a) => a.isCorrect
+                                                ).length
+                                            }{' '}
+                                            câu
                                         </span>
                                     </p>
                                     <p className="text-sm text-gray-500">
                                         Ngày nộp:{' '}
                                         {new Date(
-                                            attempt.submittedAt
+                                            attempt.endTime
                                         ).toLocaleString()}
                                     </p>
                                 </div>
