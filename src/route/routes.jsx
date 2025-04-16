@@ -1,5 +1,6 @@
 import AdminLayOut from '@/layout/AdminLayout'
 import EditCourseLayout from '@/layout/EditCourseLayout'
+import KanjiLayout from '@/layout/KanjiLayout'
 import MainLayout from '@/layout/MainLayout'
 import ManageDocumentLayout from '@/layout/ManageDocumentLayout'
 import PracticeLayout from '@/layout/PracticeLayout'
@@ -18,6 +19,10 @@ import EditQuestion from '@/pages/edit-exam/EditQuestion'
 import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
+import KanjiDetail from '@/pages/KanjiDetail/KanjiDetail'
+import KanjiPage from '@/pages/KanjiPage/KanjiPage'
+import KanjiLevel from '@/pages/KanjiPage/KanjiPage'
+import KanjiStrokePractice from '@/pages/KanjiStrokePractice/KanjiStrokePractice'
 import Login from '@/pages/login/Login'
 import ProfileUser from '@/pages/login/ProfileUser'
 import ManageExam from '@/pages/manage-document/ManageExam'
@@ -113,6 +118,28 @@ export const studentRoutes = [
         element: <CourseDetail />,
     },
 ]
+
+export const kanjiRoutes = [
+    {
+        path: '/kanji',
+        element: <KanjiLayout />,
+        children: [
+            {
+                index: true,
+                element: <KanjiPage />,
+            },
+            {
+                path: '/kanji/:kanjiId',
+                element: <KanjiDetail />,
+            },
+            {
+                path: '/kanji/:kanjiId/stroke-practice',
+                element: <KanjiStrokePractice />, // Thêm route cho KanjiStrokePractice
+            },
+        ],
+    },
+]
+
 export const practiceRoutes = [
     {
         path: '/practice',
