@@ -7,8 +7,9 @@ import useFetchLessonData from '@/hooks/useFetchLessonData'
 import VideoPlayer from '@/components/lesson/LessonVideo'
 import LessonDetail from '@/components/lesson/LessonDetails'
 import LessonSidebar from '@/components/lesson/LessonSibar'
-
-
+import LessonGrammar from '../LessonGrammar/LessonGrammar'
+import LessonVocabulary from '../LessonVocabulary/LessonVocabulary'
+import LessonHina from '../LessonHina/LessonHina'
 
 function CourseDetail() {
     const { courseId } = useParams()
@@ -18,7 +19,7 @@ function CourseDetail() {
         const saved = localStorage.getItem(`lesson-progress-${courseId}`)
         return saved ? Number(saved) : 0
     }
-    
+
     const getInitialMaxUnlocked = (courseId) => {
         const saved = localStorage.getItem(`max-unlocked-${courseId}`)
         const initial = getInitialLessonIndex(courseId)
@@ -37,6 +38,7 @@ function CourseDetail() {
     const { data, isLoading, isError, error } = useFetchLessonData(courseId)
 
     const lessons = data?.data?.lessons || []
+    console.log('lessons', lessons)
     const course = data?.data?.course || {}
     const courseName = course.name || 'Khóa học'
 
@@ -48,7 +50,7 @@ function CourseDetail() {
         : 0
     // next index
     const isNextLessonUnlocked = currentLessonIndex + 1 <= maxUnlockedLesson
-   
+
     useEffect(() => {
         localStorage.setItem(`lesson-progress-${courseId}`, currentLessonIndex)
 
@@ -104,7 +106,9 @@ function CourseDetail() {
                         if (index <= maxUnlockedLesson) {
                             setCurrentLessonIndex(index)
                         } else {
-                            alert('⚠️ Bạn cần hoàn thành bài học trước đó để mở bài này.')
+                            alert(
+                                '⚠️ Bạn cần hoàn thành bài học trước đó để mở bài này.'
+                            )
                         }
                     }}
                 />
@@ -118,6 +122,19 @@ function CourseDetail() {
                     />
 
                     <LessonDetail lesson={lessons[currentLessonIndex]} />
+
+                    <LessonGrammar
+                        lessonId={lessons[currentLessonIndex]?._id}
+                    />
+
+                    <LessonVocabulary
+                        lessonId={lessons[currentLessonIndex]?._id}
+                    />
+
+                    <LessonHina
+                        courseId={courseId}
+                        lessonId={lessons[currentLessonIndex]?._id}
+                    />
 
                     {lessons && currentLessonIndex < lessons.length - 1 && (
                         <button

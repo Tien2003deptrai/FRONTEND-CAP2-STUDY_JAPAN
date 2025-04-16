@@ -20,6 +20,7 @@ function MenuHeader() {
             role: 'teacher',
         },
         { label: 'Khóa học của tôi', path: '/courses', role: 'student' },
+        { label: 'Kanji', path: '/kanji', role: 'student' },
         { label: 'Luyện tập', path: '/practice', role: 'student' },
         { label: 'Admin', path: '/admin', role: 'admin' },
     ]
