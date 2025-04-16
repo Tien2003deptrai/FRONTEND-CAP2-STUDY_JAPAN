@@ -20,17 +20,7 @@ const ExamResultPage = () => {
             </div>
         )
 
-    const formatDateTime = (dt) =>
-        dt ? new Date(dt).toLocaleString('vi-VN') : 'Chưa có'
 
-    const formatDuration = (start, end) => {
-      const diff = new Date(end) - new Date(start);
-      if (diff < 1000) return 'Dưới 1 giây';
-  
-      const minutes = Math.floor(diff / 60000);
-      const seconds = Math.floor((diff % 60000) / 1000);
-      return `${minutes} phút ${seconds} giây`;
-  }
     return (
         <div className="p-6 max-w-5xl mx-auto text-gray-800">
             <div className="bg-white rounded-xl shadow-md p-8 border border-red-200">
@@ -42,10 +32,11 @@ const ExamResultPage = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="bg-red-50 p-5 rounded-lg shadow-inner">
                         <h3 className="text-lg font-semibold text-red-700 mb-2">
-                            🎯 Tổng điểm
+                            📊 Kết quả
                         </h3>
-                        <p className="text-4xl font-extrabold text-red-600">
-                            {result.totalScore}
+                        <p className="text-xl font-bold text-green-700">
+                            {result.answers.filter((a) => a.isCorrect).length} /{' '}
+                            {result.answers.length} câu
                         </p>
                     </div>
 
@@ -54,18 +45,11 @@ const ExamResultPage = () => {
                             🕒 Thời gian làm bài
                         </h3>
                         <p className="text-xl font-extrabold text-red-600">
-                            {formatDuration(result.startTime, result.endTime)}
+                            {result.time || 'Không xác định'}
                         </p>
                     </div>
 
-                    <div className="bg-red-50 p-5 rounded-lg shadow-inner">
-                        <h3 className="text-lg font-semibold text-red-700 mb-2">
-                            🕒 Thời gian bắt đầu
-                        </h3>
-                        <p className="text-base">
-                            {formatDateTime(result.startTime)}
-                        </p>
-                    </div>
+                    
                 </div>
 
                 {Array.isArray(result.answers) && result.answers.length > 0 ? (
@@ -73,44 +57,49 @@ const ExamResultPage = () => {
                         <h2 className="text-xl font-bold mb-2 text-red-600">
                             📋 Chi tiết từng câu hỏi
                         </h2>
-                        {result.answers.map((answer, index) => (
-                            <div
-                                key={index}
-                                className="border border-red-200 rounded-lg p-4 bg-white shadow"
-                            >
-                                <div className="flex justify-between items-center">
-                                    <p className="text-gray-800 font-medium">
-                                        Câu {index + 1} - ID:{' '}
-                                        <span className="text-sm text-gray-500">
-                                            {answer.questionId}
+                        {[...result.answers]
+                            .sort((a, b) =>
+                                a.questionId.localeCompare(b.questionId)
+                            )
+                            .map((answer, index) => (
+                                <div
+                                    key={index}
+                                    className="border border-red-200 rounded-lg p-4 bg-white shadow"
+                                >
+                                    <div className="flex justify-between items-center">
+                                        <p className="text-gray-800 font-medium">
+                                            Câu {index + 1} - ID:{' '}
+                                            <span className="text-sm text-gray-500">
+                                                {answer.questionId}
+                                            </span>
+                                        </p>
+                                        <span
+                                            className={`text-sm px-3 py-1 rounded-full font-semibold ${
+                                                answer.isCorrect
+                                                    ? 'bg-green-100 text-green-700'
+                                                    : 'bg-red-100 text-red-700'
+                                            }`}
+                                        >
+                                            {answer.isCorrect ? 'Đúng' : 'Sai'}
                                         </span>
-                                    </p>
-                                    <span
-                                        className={`text-sm px-3 py-1 rounded-full font-semibold ${
-                                            answer.isCorrect
-                                                ? 'bg-green-100 text-green-700'
-                                                : 'bg-red-100 text-red-700'
-                                        }`}
-                                    >
-                                        {answer.isCorrect ? 'Đúng' : 'Sai'}
-                                    </span>
+                                    </div>
+                                    <div className="mt-2 text-sm text-gray-600 space-y-1">
+                                        <p>
+                                            <strong>Đáp án của bạn:</strong>{' '}
+                                            <span className="font-mono text-gray-800">
+                                                {answer.userAnswer}
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <strong>Đáp án đúng:</strong>{' '}
+                                            <span className="font-mono text-green-700">
+                                                {answer.correctAnswer ||
+                                                    '(Không rõ)'}
+                                            </span>
+                                        </p>
+                                    </div>
                                 </div>
-                                <div className="mt-2 text-sm text-gray-600">
-                                    <p>
-                                        <strong>Đáp án của bạn:</strong>{' '}
-                                        <span className="font-mono text-gray-800">
-                                            {answer.userAnswer}
-                                        </span>
-                                    </p>
-                                    <p>
-                                        <strong>Điểm:</strong>{' '}
-                                        <span className="font-semibold">
-                                            {answer.score} điểm
-                                        </span>
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 ) : (
                     <div className="text-center mt-8 text-gray-600 italic">

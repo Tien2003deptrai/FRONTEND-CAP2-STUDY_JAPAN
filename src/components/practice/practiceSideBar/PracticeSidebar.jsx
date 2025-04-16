@@ -11,6 +11,8 @@ import SchoolIcon from '@mui/icons-material/School'
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver'
 import GTranslateIcon from '@mui/icons-material/GTranslate'
 import QuizIcon from '@mui/icons-material/Quiz'
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+
 
 export default function PracticeSidebar() {
     const location = useLocation()
@@ -18,8 +20,9 @@ export default function PracticeSidebar() {
     const menuItems = [
         { label: 'Flashcard', path: 'flashcard', icon: <SchoolIcon /> },
         { label: 'Voice', path: 'voice', icon: <RecordVoiceOverIcon /> },
-        { label: 'Translate', path: 'translate', icon: <GTranslateIcon /> },
-        { label: 'Exam', path: 'exam', icon: <QuizIcon /> },
+        { label: 'Từ Vựng', path: 'vocabulary', icon: <MenuBookIcon /> },
+        { label: 'Tra Cứu', path: 'translate', icon: <GTranslateIcon /> },
+        { label: 'Bài Tập', path: 'exam', icon: <QuizIcon /> },
     ]
 
     const isActive = (path) => location.pathname.includes(`/practice/${path}`)

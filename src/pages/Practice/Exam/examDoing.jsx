@@ -16,6 +16,10 @@ const ExamDoingPage = () => {
     const [timeLeft, setTimeLeft] = useState(null)
     const [shuffledQuestions, setShuffledQuestions] = useState([])
     const [error, setError] = useState(null)
+    const [showModal, setShowModal] = useState(false)
+    const [showSuccess, setShowSuccess] = useState(false)
+    const [showFail, setShowFail] = useState(false)
+    const [failMessage, setFailMessage] = useState('')
 
     const clearTimerStorage = () => {
         if (attemptId) {
@@ -106,8 +110,8 @@ const ExamDoingPage = () => {
 
     const handleSubmit = useCallback(async () => {
         if (!exam || !exam._id) {
-            console.warn('❌ Không có exam hoặc exam._id:', exam)
-            setError('Không xác định được bài kiểm tra để nộp.')
+            setFailMessage('Không xác định được bài kiểm tra để nộp.')
+            setShowFail(true)
             return
         }
 
@@ -138,7 +142,8 @@ const ExamDoingPage = () => {
             })
 
         if (formattedAnswers.length === 0) {
-            setError('Vui lòng trả lời ít nhất một câu.')
+            setFailMessage('Vui lòng trả lời ít nhất một câu.')
+            setShowFail(true)
             return
         }
 
@@ -154,9 +159,13 @@ const ExamDoingPage = () => {
                 {
                     onSuccess: (res) => {
                         if (res?.attemptId) {
-                            navigate(`/practice/exam/result/${res.attemptId}`)
+                            setShowSuccess(true)
+                            setTimeout(() => {
+                                navigate(`/practice/exam/result/${res.attemptId}`)
+                            }, 1500)
                         } else {
-                            setError('Không thể nộp bài.')
+                            setFailMessage('Không thể nộp bài. Hãy thử lại.')
+                            setShowFail(true)
                         }
                     },
                     onError: (err) => {
@@ -164,13 +173,15 @@ const ExamDoingPage = () => {
                             err?.response?.data?.message ||
                             err.message ||
                             'Có lỗi xảy ra khi nộp bài.'
-                        setError(msg)
+                        setFailMessage(msg)
+                        setShowFail(true)
                     },
                 }
             )
         } catch (error) {
             console.error('❌ Lỗi khi gọi /exam/start/:exam_id:', error)
-            setError('Không thể lấy attemptId để nộp bài.')
+            setFailMessage('Không thể lấy attemptId để nộp bài.')
+            setShowFail(true)
         }
     }, [answers, exam, submitExam, navigate])
 
@@ -195,7 +206,7 @@ const ExamDoingPage = () => {
 
     return (
         <div
-            className="max-w-5xl mx-auto"
+            className="max-w-5xl mx-auto relative"
             style={exam?.settings?.preventCopy ? { userSelect: 'none' } : {}}
         >
             <div className="flex justify-between items-center px-6 py-4 bg-red-600 text-white mb-6 rounded-b shadow">
@@ -263,7 +274,7 @@ const ExamDoingPage = () => {
 
             <div className="px-6 mt-8 flex justify-end">
                 <button
-                    onClick={handleSubmit}
+                    onClick={() => setShowModal(true)}
                     disabled={isSubmitting}
                     className={`px-6 py-3 rounded text-white font-semibold transition ${
                         isSubmitting
@@ -274,6 +285,44 @@ const ExamDoingPage = () => {
                     {isSubmitting ? 'Đang nộp bài...' : 'Nộp bài'}
                 </button>
             </div>
+
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-96 shadow-lg text-center">
+                        <h2 className="text-xl font-semibold mb-4">Xác nhận nộp bài</h2>
+                        <p className="mb-6">Bạn có chắc chắn muốn nộp bài không?</p>
+                        <div className="flex justify-end  gap-3">
+                            <button
+                                onClick={() => setShowModal(false)}
+                                className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                            >
+                                Hủy
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowModal(false)
+                                    handleSubmit()
+                                }}
+                                className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+                            >
+                                Xác nhận
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showSuccess && (
+                <div className="fixed top-6 right-6 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+                    ✅ Nộp bài thành công!
+                </div>
+            )}
+
+            {showFail && (
+                <div className="fixed top-6 right-6 bg-red-500 text-white px-6 py-3 rounded-lg shadow-lg z-50">
+                    ❌ {failMessage}
+                </div>
+            )}
         </div>
     )
 }
