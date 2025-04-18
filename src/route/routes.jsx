@@ -41,6 +41,9 @@ import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
 import { Navigate } from 'react-router-dom'
 import ProfieLayout from '@/layout/ProfileLayout'
+import CourseStudentTable from '@/pages/CourseStudentTable/CourseStudentTable'
+import FlashcardDetail from '@/pages/FlashcardDetail/FlashcardDetail'
+import EditFlashcard from '@/pages/EditFlashcard/EditFlashcard'
 
 export const publicRoutes = [
     {
@@ -221,8 +224,13 @@ export const teacherRoutes = [
                 path: 'question/:lessonId/:renshuuId',
                 element: <EditQuestion isRevisionMode={true} />,
             },
+            {
+                path: 'students',
+                element: <CourseStudentTable />,
+            },
         ],
     },
+
     {
         path: '/manage-document',
         element: <MainLayout />,
@@ -239,6 +247,14 @@ export const teacherRoutes = [
                     {
                         path: 'flashcard/create-flashcard',
                         element: <CreateFlashcard />,
+                    },
+                    {
+                        path: 'flashcard/edit/:deckId',
+                        element: <EditFlashcard />,
+                    },
+                    {
+                        path: 'flashcard/study/:deckId',
+                        element: <FlashcardDetail />,
                     },
                     { path: 'exam', element: <ManageExam /> },
                     { path: 'exam/edit/:examId', element: <EditExam /> },

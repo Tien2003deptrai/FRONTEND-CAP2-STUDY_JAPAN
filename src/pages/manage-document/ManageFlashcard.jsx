@@ -1,20 +1,50 @@
 import useFetchAllDecks from '@/hooks/useFetchAllDecks'
+import axiosInstance from '@/network/httpRequest'
 import { LoadingOverlay } from '@mantine/core'
 import { Add, Book, Delete, Edit, PlayArrow, Search } from '@mui/icons-material'
+import { useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import Swal from 'sweetalert2'
 
 function ManageFlashcard() {
     const [visibleItems, setVisibleItems] = useState(5)
     const [searchTerm, setSearchTerm] = useState('')
 
     const { data: decks, isLoading } = useFetchAllDecks()
+    const queryClient = useQueryClient()
+    const handleDeleteDeck = async (deckId) => {
+        const confirm = await Swal.fire({
+            title: 'Xóa bộ flashcard?',
+            text: 'Hành động này sẽ xóa toàn bộ thẻ trong bộ này. Bạn chắc chứ?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#aaa',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy',
+        })
+
+        if (confirm.isConfirmed) {
+            try {
+                await axiosInstance.delete(`/deck/${deckId}`)
+                await queryClient.invalidateQueries({ queryKey: ['all-decks'] })
+                Swal.fire('Đã xóa!', 'Bộ flashcard đã được xóa.', 'success')
+            } catch (error) {
+                Swal.fire(
+                    'Lỗi!',
+                    error.response?.data?.message ||
+                        'Không thể xóa bộ flashcard',
+                    'error'
+                )
+            }
+        }
+    }
 
     const showMore = () => {
         setVisibleItems((prev) => prev + 5)
     }
 
-    // Filter decks based on search term
     const filteredDecks = decks?.filter((deck) =>
         deck.deck_title.toLowerCase().includes(searchTerm.toLowerCase())
     )
@@ -71,19 +101,22 @@ function ManageFlashcard() {
 
                         <div className="flex items-center gap-2">
                             <Link
-                                to={`/study/${deck._id}`}
+                                to={`study/${deck._id}`}
                                 className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                                 title="Học ngay"
                             >
                                 <PlayArrow />
                             </Link>
-                            <button
+
+                            <Link
+                                to={`edit/${deck._id}`}
                                 className="p-2 text-gray-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
                                 title="Chỉnh sửa"
                             >
                                 <Edit />
-                            </button>
+                            </Link>
                             <button
+                                onClick={() => handleDeleteDeck(deck._id)}
                                 className="p-2 text-gray-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
                                 title="Xóa"
                             >
