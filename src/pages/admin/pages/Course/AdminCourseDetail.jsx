@@ -8,6 +8,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import Swal from 'sweetalert2'
+import { jsPDF } from 'jspdf' // Import jsPDF từ thư viện
 
 function AdminCourseDetail() {
     const navigate = useNavigate()
@@ -20,7 +21,6 @@ function AdminCourseDetail() {
         student.email.toLowerCase().includes(searchTerm.toLowerCase())
     )
     const [selectedStudents, setSelectedStudents] = useState([])
-    console.log(selectedStudents)
 
     const { data: enrolledStudents, refetch } = useQuery({
         queryKey: ['enrolledStudents', course._id],
@@ -92,6 +92,29 @@ function AdminCourseDetail() {
                 toast.error('Có lỗi xảy ra, vui lòng thử lại!')
             }
         }
+    }
+
+    const generatePDF = () => {
+        const doc = new jsPDF()
+
+        doc.setFont('times')
+        doc.setFontSize(18)
+        doc.text('Danh sách sinh viên khóa học', 20, 20)
+
+        doc.setFontSize(12)
+        const startY = 30
+        let currentY = startY
+
+        enrolledStudents?.forEach((student, index) => {
+            doc.text(
+                `${index + 1}. ${student.name} - ${student.email}`,
+                20,
+                currentY
+            )
+            currentY += 10
+        })
+
+        doc.save('danh_sach_sinh_vien.pdf')
     }
 
     return (
@@ -200,6 +223,12 @@ function AdminCourseDetail() {
                     </tbody>
                 </table>
             </div>
+
+            <button onClick={generatePDF} className="primary-btn mt-4">
+                In danh sách sinh viên ra PDF
+            </button>
+
+            {/* Modal */}
             <Modal
                 closeOnClickOutside={false}
                 opened={opened}

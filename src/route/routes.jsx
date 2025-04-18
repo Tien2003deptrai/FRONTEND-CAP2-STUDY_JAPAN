@@ -40,6 +40,7 @@ import Voice from '@/pages/Practice/Voice'
 import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
 import { Navigate } from 'react-router-dom'
+import ProfieLayout from '@/layout/ProfileLayout'
 
 export const publicRoutes = [
     {
@@ -50,10 +51,6 @@ export const publicRoutes = [
     {
         path: 'login',
         element: <Login />,
-    },
-    {
-        path: 'user/:userId',
-        element: <ProfileUser />,
     },
     {
         path: 'not-allowed',
@@ -116,6 +113,19 @@ export const studentRoutes = [
     {
         path: '/courses/:courseId',
         element: <CourseDetail />,
+    },
+]
+
+export const profileRoutes = [
+    {
+        path: '/profile',
+        element: <ProfieLayout />,
+        children: [
+            {
+                index: true,
+                element: <ProfileUser />,
+            },
+        ],
     },
 ]
 

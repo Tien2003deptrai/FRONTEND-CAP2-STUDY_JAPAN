@@ -18,8 +18,8 @@ export default function PracticeSidebar() {
     const menuItems = [
         { label: 'Flashcard', path: 'flashcard', icon: <SchoolIcon /> },
         { label: 'Voice', path: 'voice', icon: <RecordVoiceOverIcon /> },
-        { label: 'Translate', path: 'translate', icon: <GTranslateIcon /> },
-        { label: 'Exam', path: 'exam', icon: <QuizIcon /> },
+        { label: 'Tra cứu', path: 'translate', icon: <GTranslateIcon /> },
+        { label: 'Bài kiểm tra', path: 'exam', icon: <QuizIcon /> },
     ]
 
     const isActive = (path) => location.pathname.includes(`/practice/${path}`)
