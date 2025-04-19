@@ -15,13 +15,13 @@ import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
 import EditExam from '@/pages/edit-exam/EditExam'
+import EditListQuestion from '@/pages/edit-exam/EditListQuestion'
 import EditQuestion from '@/pages/edit-exam/EditQuestion'
 import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import KanjiDetail from '@/pages/KanjiDetail/KanjiDetail'
 import KanjiPage from '@/pages/KanjiPage/KanjiPage'
-import KanjiLevel from '@/pages/KanjiPage/KanjiPage'
 import KanjiStrokePractice from '@/pages/KanjiStrokePractice/KanjiStrokePractice'
 import Login from '@/pages/login/Login'
 import ProfileUser from '@/pages/login/ProfileUser'
@@ -235,6 +235,10 @@ export const teacherRoutes = [
                     {
                         path: 'exam/edit/:examId/:questionId',
                         element: <EditQuestion />,
+                    },
+                    {
+                        path: 'exam/edit/:examId/questions',
+                        element: <EditListQuestion />,
                     },
                 ],
             },

@@ -17,6 +17,7 @@ function EditExam() {
             return response.data.data
         },
     })
+    console.log(examData)
 
     const onDelete = (questionId) => {
         console.log(questionId)
@@ -78,43 +79,60 @@ function EditExam() {
             </div>
             <hr className="my-4" />
             <div>
-                <label className="font-bold text-lg block mb-3">
-                    Danh sách câu hỏi:
-                </label>
-                {/* Questions */}
-                {examData?.questions?.map((question, index) => (
-                    <div
-                        key={question.id}
-                        className="flex justify-between items-center gap-2 border border-solid border-gray-400 p-4 rounded-lg shadow mb-4"
+                <div className="flex justify-between items-center">
+                    <label className="font-bold text-lg block ">
+                        Danh sách câu hỏi:
+                    </label>
+                    <Link
+                        className="primary-btn"
+                        to={'questions'}
+                        state={{ questions: examData?.questions }}
                     >
-                        <div>
-                            <label className="font-bold text-primary w-fit">
-                                Câu hỏi {index + 1}:
-                            </label>
-                            <label className="w-fit ml-2">
-                                {question.content}
-                            </label>
+                        Chỉnh sửa câu hỏi
+                    </Link>
+                </div>
+                <hr className="my-6" />
+
+                {examData?.questions?.map((questionGroup, groupIndex) => (
+                    <div key={questionGroup._id} className="mb-6">
+                        <div className="mb-2 font-semibold text-primary">
+                            {groupIndex + 1}. {questionGroup.parentQuestion}
                         </div>
-                        <div className="flex gap-4 ">
-                            <Link
-                                to={`${question._id}`}
-                                state={question}
-                                title="Chỉnh sửa"
-                                className="rounded-full hover:bg-gray-200 p-2 duration-150 text-blue-600"
+
+                        {questionGroup.childQuestions.map((q, index) => (
+                            <div
+                                key={q.id}
+                                className="flex justify-between items-center gap-2 border border-gray-400 p-4 rounded-lg shadow mb-4"
                             >
-                                <Edit />
-                            </Link>
-                            <button
-                                onClick={() => onDelete(question.id)}
-                                title="Xóa"
-                                className="rounded-full hover:bg-gray-200 p-2 duration-150 text-primary"
-                            >
-                                <Delete />
-                            </button>
-                        </div>
+                                <div>
+                                    <label className="font-bold text-primary">
+                                        Câu hỏi {index + 1}:
+                                    </label>
+                                    <label className="ml-2">{q.content}</label>
+                                </div>
+                                <div className="flex gap-4">
+                                    <Link
+                                        to={`${q.id}`}
+                                        state={q}
+                                        title="Chỉnh sửa"
+                                        className="rounded-full hover:bg-gray-200 p-2 duration-150 text-blue-600"
+                                    >
+                                        <Edit />
+                                    </Link>
+                                    <button
+                                        onClick={() => onDelete(q.id)}
+                                        title="Xóa"
+                                        className="rounded-full hover:bg-gray-200 p-2 duration-150 text-primary"
+                                    >
+                                        <Delete />
+                                    </button>
+                                </div>
+                            </div>
+                        ))}
                     </div>
                 ))}
             </div>
+
             {examData?.questions?.length <= 0 && (
                 <div className="text-gray-500 text-sm mt-2">
                     Không có câu hỏi nào trong danh sách.
