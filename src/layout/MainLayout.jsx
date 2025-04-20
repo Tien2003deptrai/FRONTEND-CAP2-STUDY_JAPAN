@@ -1,21 +1,23 @@
 import Header from '@/components/header/Header'
 import ScrollToTop from '@/components/scroll-to-top/ScrollToTop'
-import Footer from '../components/footer/Footer'
+import { Group } from '@mantine/core'
 import { Outlet } from 'react-router-dom'
+import Footer from '../components/footer/Footer'
 
-function KanjiLayout() {
+function MainLayout() {
     return (
-        <div className="flex flex-col min-h-screen bg-gray-100">
+        <div>
             <ScrollToTop />
             <Header />
-            <div className="flex-1 flex justify-center items-start py-8">
-                <div className="w-full max-w-7xl px-4">
+            {/* <NavBar /> */}
+            <Group w={'100%'} justify="center">
+                <Group maw={1440} w={'100%'}>
                     <Outlet />
-                </div>
-            </div>
+                </Group>
+            </Group>
             <Footer />
         </div>
     )
 }
 
-export default KanjiLayout
+export default MainLayout
