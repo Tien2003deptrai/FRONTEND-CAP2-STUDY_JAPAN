@@ -64,20 +64,26 @@ function EditFlashcard() {
         try {
             const payload = {
                 deck_title: deckTitle,
-                type: flashcardType,
-                [flashcardType === 'vocabulary' ? 'vocab' : 'grammar']:
-                    selectedItem.map((item) => item._id),
+                flashcard_type: flashcardType,
+                flashcards: selectedItem.map((item) => item._id),
             }
-            await axiosInstance.post('/flashcard', payload)
-            Swal.fire(
-                'Đã cập nhật',
-                'Flashcard đã được cập nhật thành công.',
-                'success'
-            )
-            navigate(-1)
+
+            await axiosInstance.put(`/flashcard/${deckId}`, payload)
+
+            Swal.fire({
+                icon: 'success',
+                title: 'Cập nhật thành công!',
+                timer: 1500,
+                showConfirmButton: false,
+            })
+
+            navigate(-1) // hoặc path phù hợp với app của bạn
         } catch (err) {
-            Swal.fire('Lỗi', 'Không thể cập nhật flashcard', 'error')
-            console.log('err', err)
+            Swal.fire({
+                icon: 'error',
+                title: 'Lỗi',
+                text: err.response?.data?.message || 'Cập nhật thất bại',
+            })
         }
     }
 

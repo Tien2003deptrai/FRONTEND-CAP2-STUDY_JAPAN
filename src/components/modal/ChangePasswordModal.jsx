@@ -1,5 +1,6 @@
-// File: src/components/modal/ChangePasswordModal.jsx
 import React, { useState } from 'react'
+import axiosInstance from '@/network/httpRequest'
+import Swal from 'sweetalert2'
 
 const ChangePasswordModal = ({ onClose }) => {
     const [form, setForm] = useState({
@@ -7,16 +8,48 @@ const ChangePasswordModal = ({ onClose }) => {
         newPassword: '',
         confirmPassword: '',
     })
+    const [loading, setLoading] = useState(false)
 
     const handleChange = (e) => {
         setForm({ ...form, [e.target.name]: e.target.value })
     }
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault()
-        // TODO: Call API to change password
-        console.log('Change password with:', form)
-        onClose()
+        const { currentPassword, newPassword, confirmPassword } = form
+
+        if (newPassword !== confirmPassword) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Mật khẩu không khớp',
+                text: 'Vui lòng xác nhận lại mật khẩu mới.',
+            })
+            return
+        }
+
+        setLoading(true)
+        try {
+            await axiosInstance.post('/user/change-password', {
+                oldPassword: currentPassword,
+                newPassword: newPassword,
+            })
+            Swal.fire({
+                icon: 'success',
+                title: 'Đổi mật khẩu thành công',
+                text: 'Bạn đã đổi mật khẩu thành công.',
+            })
+            onClose()
+        } catch (error) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Đổi mật khẩu thất bại',
+                text:
+                    error?.response?.data?.message ||
+                    'Đã có lỗi xảy ra, vui lòng thử lại.',
+            })
+        } finally {
+            setLoading(false)
+        }
     }
 
     return (
@@ -24,7 +57,7 @@ const ChangePasswordModal = ({ onClose }) => {
             <div className="bg-white w-full max-w-md rounded-xl shadow-xl p-6 relative">
                 <button
                     onClick={onClose}
-                    className="absolute top-3 right-4 text-gray-400 hover:text-red-500"
+                    className="absolute top-3 right-4 text-gray-400 hover:text-red-500 text-xl"
                 >
                     ✕
                 </button>
@@ -73,9 +106,10 @@ const ChangePasswordModal = ({ onClose }) => {
                     </div>
                     <button
                         type="submit"
+                        disabled={loading}
                         className="w-full bg-red-500 hover:bg-red-600 text-white font-semibold py-2 rounded-md"
                     >
-                        Cập nhật mật khẩu
+                        {loading ? 'Đang xử lý...' : 'Đổi mật khẩu'}
                     </button>
                 </form>
             </div>
