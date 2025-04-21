@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import axiosInstance from '@/network/httpRequest'
-import { Link } from 'react-router-dom' // Import Link for navigation
+import { Link } from 'react-router-dom'
 
 const KanjiLevel = ({ jlptLevel }) => {
     const [kanjiData, setKanjiData] = useState([])
@@ -16,12 +16,12 @@ const KanjiLevel = ({ jlptLevel }) => {
                     `/kanji/level/${jlptLevel}`
                 )
                 if (response.data.data.kanji.length === 0) {
-                    setError('No Kanji found for this level.')
+                    setError('Không tìm thấy Kanji cho cấp độ này.')
                 } else {
                     setKanjiData(response.data.data.kanji)
                 }
             } catch (error) {
-                setError('Error fetching Kanji data.')
+                setError('Lỗi khi tải dữ liệu Kanji.')
                 console.error('Error fetching kanji:', error)
             } finally {
                 setLoading(false)
@@ -33,26 +33,31 @@ const KanjiLevel = ({ jlptLevel }) => {
 
     if (loading) {
         return (
-            <div className="text-center text-xl text-gray-500">Loading...</div>
+            <div className="flex justify-center items-center py-10">
+                <div className="w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
+            </div>
         )
     }
 
     if (error) {
-        return <div className="text-center text-xl text-red-500">{error}</div>
+        return <div className="text-center text-lg text-red-500">{error}</div>
     }
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-md">
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">
-                {kanjiData.map((kanji) => (
+        <div className="bg-white p-6 rounded-3xl shadow-2xl border border-blue-200 transition-all duration-300">
+            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-5">
+                {kanjiData.map((kanji, idx) => (
                     <Link
                         key={kanji._id}
                         to={`/kanji/${kanji._id}`}
-                        className="flex items-center justify-center h-16 w-16 bg-white border border-gray-300 rounded-xl shadow hover:shadow-md hover:scale-105 transition duration-200"
+                        className="group relative flex items-center justify-center h-20 w-20 rounded-2xl bg-gradient-to-br from-white to-blue-100 border border-blue-300 shadow-md hover:shadow-xl hover:scale-110 transition-all duration-200"
                     >
-                        <span className="text-2xl font-bold text-gray-800">
+                        <span className="text-3xl font-bold text-blue-900 group-hover:text-orange-500 transition">
                             {kanji.kanji}
                         </span>
+                        <div className="absolute top-1 left-1 bg-white border border-gray-300 text-gray-500 text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow">
+                            {idx + 1}
+                        </div>
                     </Link>
                 ))}
             </div>
