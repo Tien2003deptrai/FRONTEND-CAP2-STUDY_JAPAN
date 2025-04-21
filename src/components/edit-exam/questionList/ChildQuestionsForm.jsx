@@ -13,8 +13,7 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
 
     return (
         <div className="space-y-4 mt-4">
-            <h3 className="font-semibold mt-4 mb-2">Child Questions</h3>
-            {/* Display error if the entire childQuestions array is invalid (e.g., empty) */}
+            <h3 className="font-semibold mt-4 mb-2">Câu hỏi</h3>
             {childErrors?.message && !Array.isArray(childErrors) && (
                 <p className="text-red-500 text-sm">{childErrors.message}</p>
             )}
@@ -23,16 +22,15 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
                     key={child.id}
                     className="border border-dashed border-gray-300 rounded-lg p-4 ml-4"
                 >
-                    {/* Child Question Content Input */}
                     <label className="block mb-2">
                         <span className="text-gray-700">
-                            Child Question {cIndex + 1} Content:
+                            Câu hỏi {cIndex + 1}
                         </span>
                         <input
                             {...register(
                                 `${childQuestionsPath}.${cIndex}.content`
                             )}
-                            placeholder={`Enter content for child question ${cIndex + 1}`}
+                            placeholder={`Nội dung câu hỏi ${cIndex + 1}`}
                             className="border border-gray-300 rounded-lg p-2 w-full mt-1"
                         />
                     </label>
@@ -67,7 +65,7 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
                             className="flex items-center gap-2 text-red-500 hover:text-red-700 text-sm"
                             aria-label={`Remove Child Question ${cIndex + 1}`}
                         >
-                            <Delete fontSize="small" /> Remove Child Question
+                            <Delete fontSize="small" /> Xóa câu hỏi {cIndex + 1}
                         </button>
                     </div>
                 </div>
@@ -86,7 +84,7 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
                     }
                     className="flex items-center gap-2 text-blue-500 hover:text-blue-700"
                 >
-                    <Add /> Add Child Question
+                    <Add /> Thêm câu hỏi
                 </button>
             </div>
         </div>

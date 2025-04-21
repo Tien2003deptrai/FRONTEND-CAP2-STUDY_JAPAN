@@ -1,7 +1,7 @@
-import axiosInstance from '@/network/httpRequest'
 import mammoth from 'mammoth'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { saveQuestions } from './api/questionService'
 
 function UploadQuestionsFile({ onSaveCallback }) {
     const [questions, setQuestions] = useState([])
@@ -121,9 +121,7 @@ function UploadQuestionsFile({ onSaveCallback }) {
     console.log(questions)
 
     const onSaveQuestions = async () => {
-        const res = await axiosInstance.post(`exam/${examId}/questions`, {
-            questions: questions.questions,
-        })
+        const res = await saveQuestions(examId, [...questions.newQuestions])
         if (res.status == 200) {
             alert('Questions saved successfully')
             clearFileInput()

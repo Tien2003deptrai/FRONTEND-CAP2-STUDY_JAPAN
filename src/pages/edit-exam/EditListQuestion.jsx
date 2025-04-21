@@ -1,13 +1,15 @@
+import { saveQuestions } from '@/components/edit-exam/api/questionService'
 import ChildQuestionsForm from '@/components/edit-exam/questionList/ChildQuestionsForm'
 import { formSchema } from '@/components/edit-exam/questionList/schemaValidate'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Add, Delete } from '@mui/icons-material'
+import { Add, ArrowBack, Delete } from '@mui/icons-material'
 import { useFieldArray, useForm } from 'react-hook-form'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 function EditListQuestion() {
     const { state } = useLocation()
-
+    const { examId } = useParams()
+    const navigate = useNavigate()
     const defaultSingleQuestion = {
         parentQuestion: '',
         paragraph: '',
@@ -50,9 +52,11 @@ function EditListQuestion() {
     })
 
     const onSubmit = async (data) => {
-        console.log('Form data submitted:', data)
-
-        alert('Form submitted successfully! Check the console.')
+        const res = await saveQuestions(examId, [...data.questions])
+        if (res.status == 200) {
+            alert('Lưu câu hỏi thành công')
+            navigate(-1)
+        }
     }
 
     return (
@@ -60,15 +64,25 @@ function EditListQuestion() {
             onSubmit={handleSubmit(onSubmit)}
             className="space-y-6 max-w-4xl mx-auto p-4"
         >
-            <h1 className="text-2xl font-bold mb-6">Edit Questions</h1>
+            <div className="flex items-center gap-6 mb-6">
+                <button
+                    className=" text-primary rounded-full shadow-sm"
+                    onClick={() => navigate(-1)}
+                    title="Quay lại"
+                    type="button"
+                >
+                    <ArrowBack />
+                </button>
+                <h1 className="text-2xl font-bold"> Chỉnh sửa câu hỏi</h1>
+            </div>
             <hr />
             {questionFields.map((question, qIndex) => (
                 <div
                     key={question.id}
                     className="border border-gray-300 border-solid rounded-lg p-4 shadow-sm bg-white"
                 >
-                    <h2 className="font-bold text-lg mb-4 text-gray-800">
-                        Câu hỏi {qIndex + 1}
+                    <h2 className="font-bold text-lg mb-4 text-primary">
+                        Part {qIndex + 1}
                     </h2>
                     <div className="space-y-4">
                         {/* Parent Question Input */}
@@ -90,20 +104,13 @@ function EditListQuestion() {
                             </p>
                         )}
 
-                        {/* Paragraph Textarea - corrected spelling */}
-                        <label className="block">
-                            <span className="text-gray-700">
-                                Đoạn văn (Optional):
-                            </span>
-                            <textarea
-                                {...register(`questions.${qIndex}.paragraph`)}
-                                placeholder="Enter any relevant paragraph or context"
-                                className="border border-gray-300 rounded-lg p-2 w-full mt-1 h-24"
-                                Increased
-                                height
-                            />
-                        </label>
-                        {/* Error display for paragraph if needed */}
+                        <textarea
+                            {...register(`questions.${qIndex}.paragraph`)}
+                            placeholder="Đoạn văn bản"
+                            className="border border-gray-300 rounded-lg p-2 w-full mt-1 h-24"
+                            Increased
+                            height
+                        />
                         {errors.questions?.[qIndex]?.paragraph && (
                             <p className="text-red-500 text-sm">
                                 {errors.questions[qIndex].paragraph.message}
@@ -127,7 +134,7 @@ function EditListQuestion() {
                             className="flex items-center gap-2 text-red-600 hover:text-red-800 font-medium px-3 py-1 rounded hover:bg-red-50"
                             aria-label={`Remove Question ${qIndex + 1}`}
                         >
-                            <Delete /> Remove Question {qIndex + 1}
+                            <Delete /> Xóa Part {qIndex + 1}
                         </button>
                     </div>
                 </div>
@@ -140,7 +147,7 @@ function EditListQuestion() {
                     onClick={() => appendQuestion(defaultSingleQuestion)}
                     className="flex items-center gap-2 second-btn"
                 >
-                    <Add /> Add Another Question Group
+                    <Add /> Thêm phần câu hỏi mới
                 </button>
             </div>
 
@@ -163,7 +170,7 @@ function EditListQuestion() {
                     className="primary-btn"
                     disabled={Object.keys(errors).length > 0}
                 >
-                    Save Changes
+                    Lưu
                 </button>
             </div>
         </form>

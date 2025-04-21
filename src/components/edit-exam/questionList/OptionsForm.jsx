@@ -17,10 +17,7 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
 
     return (
         <div className="space-y-2 mt-4 pl-4">
-            {' '}
-            {/* Added padding */}
-            <h4 className="font-medium mb-2">Options</h4>
-            {/* Display error if the entire options array is invalid (e.g., empty) */}
+            <h4 className="font-medium mb-2">Đáp án</h4>
             {optionsErrors?.message && !Array.isArray(optionsErrors) && (
                 <p className="text-red-500 text-sm">{optionsErrors.message}</p>
             )}
@@ -29,17 +26,15 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
                     key={opt.id}
                     className="flex items-center gap-4 border-b border-gray-200 pb-2"
                 >
-                    {/* Option Label (a, b, c) */}
                     <span className="font-medium text-gray-600 w-5 text-center">
                         {generateOptionId(oIndex)}.
                     </span>
 
-                    {/* Option Text Input */}
                     <div className="flex-1">
                         <input
                             type="text"
                             {...register(`${optionsPath}.${oIndex}.text`)}
-                            placeholder={`Option text`}
+                            placeholder={`Đáp án ${oIndex + 1}`}
                             className="border border-gray-300 rounded-lg p-2 w-full"
                         />
                         {optionsErrors?.[oIndex]?.text && (
@@ -49,7 +44,6 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
                         )}
                     </div>
 
-                    {/* Correct Answer Radio Button */}
                     <input
                         type="radio"
                         {...register(
@@ -59,7 +53,6 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
                         className="w-4 h-4 cursor-pointer"
                     />
 
-                    {/* Remove Option Button */}
                     <button
                         type="button"
                         onClick={() => remove(oIndex)}
@@ -70,7 +63,7 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
                     </button>
                 </div>
             ))}
-            {/* Add Option Button */}
+
             <div className="flex justify-end pt-2">
                 <button
                     type="button"
@@ -83,7 +76,7 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
                     }
                     className="flex items-center gap-2 text-blue-500 hover:text-blue-700 text-sm"
                 >
-                    <Add fontSize="small" /> Add Option
+                    <Add fontSize="small" /> Thêm đáp án
                 </button>
             </div>
         </div>
