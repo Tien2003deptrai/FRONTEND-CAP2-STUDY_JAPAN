@@ -1,3 +1,4 @@
+// 📁 src/components/practice/renshuu/RenshuuPractice.jsx
 import { useState } from 'react'
 import {
     Button,
@@ -7,6 +8,11 @@ import {
     Chip,
     Snackbar,
     Alert,
+    Divider,
+    Grid,
+    Card,
+    CardContent,
+    LinearProgress,
 } from '@mui/material'
 import RenshuuQuestionCard from './RenshuuQuestionCard'
 import axiosInstance from '@/network/httpRequest'
@@ -71,10 +77,20 @@ export default function RenshuuPractice({
     const handleCloseToast = () => setToast({ ...toast, open: false })
 
     if (result) {
+        const percentage = Math.round(
+            (result.correctAnswers / result.totalQuestions) * 100
+        )
+        const getLevel = () => {
+            if (percentage >= 90) return '🌟 Xuất sắc'
+            if (percentage >= 75) return '🎯 Giỏi'
+            if (percentage >= 50) return '👍 Khá'
+            return '📘 Cần cải thiện'
+        }
+
         return (
             <Paper
-                elevation={3}
-                className="p-6 rounded-2xl bg-white shadow-xl border border-green-200"
+                elevation={4}
+                className="p-10 rounded-[2rem] bg-gradient-to-br from-[#fff] to-[#fbe9e7] shadow-xl border border-[#f44336]/30"
             >
                 <Snackbar
                     anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
@@ -91,64 +107,98 @@ export default function RenshuuPractice({
                     </Alert>
                 </Snackbar>
 
-                <Typography
-                    variant="h5"
-                    className="text-green-600 font-bold mb-4"
-                >
-                    🎉 Kết quả luyện tập
-                </Typography>
-                <Typography className="mb-2">
-                    Tổng số câu hỏi: {result.totalQuestions}
-                </Typography>
-                <Typography className="mb-6">
-                    Số câu đúng: {result.correctAnswers}
-                </Typography>
-
-                <div className="space-y-4">
-                    {result.results.map((item, index) => (
-                        <Box
-                            key={item.questionId}
-                            className={`p-4 rounded-xl border ${item.isCorrect ? 'border-green-300 bg-green-50' : 'border-red-200 bg-red-50'}`}
+                {/* Header summary */}
+                <Box className="text-center mb-12">
+                    <Typography
+                        variant="h4"
+                        className="font-extrabold text-[#c62828]"
+                    >
+                        {getLevel()}
+                    </Typography>
+                    <Typography className="text-gray-700 text-base mt-1">
+                        Bạn làm đúng <strong>{result.correctAnswers}</strong> /{' '}
+                        {result.totalQuestions} câu hỏi
+                    </Typography>
+                    <Box className="w-full max-w-lg mx-auto mt-4">
+                        <LinearProgress
+                            variant="determinate"
+                            value={percentage}
+                            color="error"
+                            className="rounded-full h-3"
+                        />
+                        <Typography
+                            variant="caption"
+                            display="block"
+                            className="mt-1 text-sm text-gray-500"
                         >
-                            <Typography className="font-medium mb-2">
-                                📝 Câu {index + 1}: {item.question}
-                            </Typography>
-                            <div className="flex flex-col gap-1 text-sm">
-                                <Chip
-                                    label={`Bạn chọn: ${item.selectedAnswer}`}
-                                    color={
-                                        item.isCorrect ? 'success' : 'default'
-                                    }
-                                    size="small"
-                                />
-                                <Chip
-                                    label={`Đáp án đúng: ${item.correctAnswer}`}
-                                    color="success"
-                                    size="small"
-                                />
-                                {item.isCorrect ? (
-                                    <Chip
-                                        label="✔ Đúng"
-                                        color="success"
-                                        size="small"
-                                    />
-                                ) : (
-                                    <Chip
-                                        label="✖ Sai"
-                                        color="error"
-                                        size="small"
-                                    />
-                                )}
-                            </div>
-                        </Box>
-                    ))}
-                </div>
+                            {percentage}% hoàn thành chính xác
+                        </Typography>
+                    </Box>
+                </Box>
 
-                <div className="text-center mt-8">
-                    <Button variant="outlined" onClick={onBack} color="primary">
+                <Divider className="mb-8" />
+
+                {/* Result Cards */}
+                <Grid container spacing={4}>
+                    {result.results.map((item, index) => (
+                        <Grid item xs={12} md={6} key={item.questionId}>
+                            <Card
+                                elevation={3}
+                                className={`rounded-2xl border-l-[6px] ${item.isCorrect ? 'border-green-500 bg-white' : 'border-red-500 bg-white'}`}
+                            >
+                                <CardContent className="space-y-3">
+                                    <Typography
+                                        variant="subtitle1"
+                                        className="font-semibold text-gray-800"
+                                    >
+                                        Câu {index + 1}: {item.question}
+                                    </Typography>
+                                    <Box className="flex flex-wrap gap-2 text-sm">
+                                        <Chip
+                                            label={`Bạn chọn: ${item.selectedAnswer}`}
+                                            color={
+                                                item.isCorrect
+                                                    ? 'success'
+                                                    : 'default'
+                                            }
+                                            size="small"
+                                        />
+                                        <Chip
+                                            label={`Đáp án đúng: ${item.correctAnswer}`}
+                                            color="success"
+                                            size="small"
+                                        />
+                                        <Chip
+                                            label={
+                                                item.isCorrect
+                                                    ? '✔ Chính xác'
+                                                    : '✖ Sai'
+                                            }
+                                            color={
+                                                item.isCorrect
+                                                    ? 'success'
+                                                    : 'error'
+                                            }
+                                            size="small"
+                                        />
+                                    </Box>
+                                </CardContent>
+                            </Card>
+                        </Grid>
+                    ))}
+                </Grid>
+
+                {/* Footer */}
+                <Box className="text-center mt-16">
+                    <Button
+                        variant="outlined"
+                        onClick={onBack}
+                        color="error"
+                        size="large"
+                    >
                         🔁 Làm bài khác
                     </Button>
-                </div>
+                </Box>
             </Paper>
         )
     }

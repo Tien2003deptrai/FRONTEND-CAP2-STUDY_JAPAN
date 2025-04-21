@@ -24,15 +24,10 @@ export default function RenshuuPage() {
     }
 
     return (
-        <div className="max-w-6xl mx-auto px-4 py-10 space-y-10">
+        <div className="max-w-6xl mx-auto px-2 py-3 space-y-10">
             <div className="text-center space-y-2">
-                <img
-                    src="/japan-class.svg"
-                    alt="Japan class"
-                    className="mx-auto h-24"
-                />
-                <h1 className="text-[#d32f2f] font-extrabold text-3xl md:text-4xl">
-                    🇯🇵 Renshuu Luyện Tập Tiếng Nhật
+                <h1 className="text-[#ec2e2e] font-extrabold text-3xl md:text-4xl">
+                     Renshuu Luyện Tập Tiếng Nhật
                 </h1>
                 <p className="text-gray-600 text-base">
                     Rèn luyện kỹ năng dịch, phản xạ và ghi nhớ với các bài luyện
@@ -42,7 +37,7 @@ export default function RenshuuPage() {
 
             {!selectedLessonId ? (
                 <>
-                    <h2 className="text-xl font-bold text-[#d32f2f] mb-2">
+                    <h2 className="text-xl font-bold text-[#d32f2f] mb-1">
                         📘 Danh sách bài học
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
