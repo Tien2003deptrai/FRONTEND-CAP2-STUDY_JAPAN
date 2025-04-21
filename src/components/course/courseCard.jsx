@@ -11,9 +11,17 @@ const CourseCard = ({ course }) => {
         <div className="relative group rounded-3xl bg-white border border-red-100 shadow-xl overflow-hidden transform transition-all duration-500 hover:scale-[1.03] hover:shadow-2xl hover:border-red-300 hover:brightness-105">
             <div className="aspect-[16/9] bg-gradient-to-br from-red-100 via-white to-red-100 overflow-hidden">
                 <img
-                    src={course.thumb}
+                   src={
+                    course.thumb ||
+                    'https://media.istockphoto.com/id/1298277940/vector/learn-japanese-language-isometric-concept-with-open-laptop-books-headphones-and-tea.jpg?s=612x612&w=0&k=20&c=RchsXoccKQFLHf6bmJiSx1fXX1JvX1l-uRPhiBxum4E='
+                }
                     alt={course.name}
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110 pointer-events-none"
+                    onError={(e) => {
+                        e.target.onerror = null
+                        e.target.src =
+                            'https://media.istockphoto.com/id/1298277940/vector/learn-japanese-language-isometric-concept-with-open-laptop-books-headphones-and-tea.jpg?s=612x612&w=0&k=20&c=RchsXoccKQFLHf6bmJiSx1fXX1JvX1l-uRPhiBxum4E='
+                    }}
                 />
             </div>
 
