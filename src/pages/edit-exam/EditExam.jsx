@@ -95,6 +95,14 @@ function EditExam() {
                         <p className="p-4 text-gray-600 text-lg italic">
                             {questionGroup.paragraph}
                         </p>
+                        {questionGroup?.imgUrl && (
+                            <div className="flex justify-center items-center my-6">
+                                <img
+                                    src={questionGroup.imgUrl}
+                                    className="max-w-2/3 max-h-72"
+                                />
+                            </div>
+                        )}
                         <div className="px-4">
                             {questionGroup.childQuestions.map((q, index) => (
                                 <div

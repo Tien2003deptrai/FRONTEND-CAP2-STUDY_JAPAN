@@ -16,7 +16,7 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
         errors.questions?.[qIndex]?.childQuestions?.[cIndex]?.options
 
     return (
-        <div className="space-y-2 mt-4 pl-4">
+        <div className="space-y-2 mt-8 pl-4">
             <h4 className="font-medium mb-2">Đáp án</h4>
             {optionsErrors?.message && !Array.isArray(optionsErrors) && (
                 <p className="text-red-500 text-sm">{optionsErrors.message}</p>
@@ -35,7 +35,7 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
                             type="text"
                             {...register(`${optionsPath}.${oIndex}.text`)}
                             placeholder={`Đáp án ${oIndex + 1}`}
-                            className="border border-gray-300 rounded-lg p-2 w-full"
+                            className=" border-gray-300 border p-2 w-full rounded py-4 px-4"
                         />
                         {optionsErrors?.[oIndex]?.text && (
                             <p className="text-red-500 text-sm mt-1">
@@ -50,13 +50,13 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
                             `questions.${qIndex}.childQuestions.${cIndex}.correctAnswer`
                         )}
                         value={generateOptionId(oIndex)}
-                        className="w-4 h-4 cursor-pointer"
+                        className="w-4 h-4 border-gray-300 rounded-full text-teal-600 focus:ring-teal-500 dark:bg-neutral-800 dark:border-neutral-700 dark:checked:bg-teal-500 dark:checked:border-teal-500"
                     />
 
                     <button
                         type="button"
                         onClick={() => remove(oIndex)}
-                        className="text-red-500 hover:text-red-700"
+                        className="text-gray-400 hover:text-red-700"
                         aria-label={`Remove Option ${generateOptionId(oIndex)}`}
                     >
                         <Delete fontSize="small" />
@@ -67,14 +67,14 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
             <div className="flex justify-end pt-2">
                 <button
                     type="button"
+                    disabled={fields.length >= 4}
                     onClick={() =>
                         append({
                             id: generateOptionId(fields.length),
                             text: '',
-                            _id: '',
                         })
                     }
-                    className="flex items-center gap-2 text-blue-500 hover:text-blue-700 text-sm"
+                    className="flex items-center gap-2 text-blue-500 hover:text-blue-700 disabled:cursor-not-allowed disabled:text-gray-600"
                 >
                     <Add fontSize="small" /> Thêm đáp án
                 </button>
