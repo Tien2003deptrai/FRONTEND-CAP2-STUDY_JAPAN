@@ -21,7 +21,6 @@ import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
 import KanjiDetail from '@/pages/KanjiDetail/KanjiDetail'
 import KanjiPage from '@/pages/KanjiPage/KanjiPage'
-import KanjiLevel from '@/pages/KanjiPage/KanjiPage'
 import KanjiStrokePractice from '@/pages/KanjiStrokePractice/KanjiStrokePractice'
 import Login from '@/pages/login/Login'
 import ProfileUser from '@/pages/login/ProfileUser'
@@ -44,6 +43,8 @@ import ProfieLayout from '@/layout/ProfileLayout'
 import CourseStudentTable from '@/pages/CourseStudentTable/CourseStudentTable'
 import FlashcardDetail from '@/pages/FlashcardDetail/FlashcardDetail'
 import EditFlashcard from '@/pages/EditFlashcard/EditFlashcard'
+import MemoryCardGame from '@/components/practice/MemoryCardGame/MemoryCardGame'
+import MiniRPGGame from '@/components/MiniRPGGame/MiniRPGGame'
 
 export const publicRoutes = [
     {
@@ -63,6 +64,7 @@ export const publicRoutes = [
         path: '*',
         element: <PageNotFound />,
     },
+    // game
 
     // Admin routes with AdminLayOut
     {
@@ -168,8 +170,13 @@ export const practiceRoutes = [
                     },
                     { path: 'flashcard', element: <Deck /> },
                     { path: 'flashcard/:deckId', element: <Flashcard /> },
+
+                    { path: 'memory', element: <MemoryCardGame /> },
+                    { path: 'mini-rpg', element: <MiniRPGGame /> }, // Kiểm tra lại
+
                     { path: 'voice', element: <Voice /> },
                     { path: 'translate', element: <Translate /> },
+
                     {
                         path: 'exam',
                         children: [

@@ -1,19 +1,29 @@
-import { Box, Button, Paper, Stack, Typography, useTheme } from '@mui/material'
+import {
+    Box,
+    Button,
+    IconButton,
+    Paper,
+    Stack,
+    Typography,
+    useTheme,
+} from '@mui/material'
 import { useState } from 'react'
+import VolumeUpIcon from '@mui/icons-material/VolumeUp'
+import { useNavigate } from 'react-router-dom'
 
 function FlashcardViewer({ flashcards }) {
     const theme = useTheme()
     const [index, setIndex] = useState(0)
     const [flipped, setFlipped] = useState(false)
+    const navigate = useNavigate()
 
     const card = flashcards[index]
 
-    // const handleAudio = () => {
-    //     if (card.vocab.audio) {
-    //         const audio = new Audio(card.vocab.audio)
-    //         audio.play()
-    //     }
-    // }
+    const speakJapanese = (text) => {
+        const utterance = new SpeechSynthesisUtterance(text)
+        utterance.lang = 'ja-JP'
+        speechSynthesis.speak(utterance)
+    }
 
     const nextCard = () => {
         setFlipped(false)
@@ -50,7 +60,7 @@ function FlashcardViewer({ flashcards }) {
                         transform: flipped ? 'rotateY(180deg)' : 'none',
                     }}
                 >
-                    {/* Front side*/}
+                    {/* Front side */}
                     <Paper
                         elevation={6}
                         sx={{
@@ -78,6 +88,17 @@ function FlashcardViewer({ flashcards }) {
                         >
                             {card.front}
                         </Typography>
+                        <IconButton
+                            sx={{ mt: 2 }}
+                            onClick={(e) => {
+                                e.stopPropagation() // không lật card khi bấm
+                                speakJapanese(card.front)
+                            }}
+                        >
+                            <VolumeUpIcon
+                                sx={{ color: 'white', fontSize: 40 }}
+                            />
+                        </IconButton>
                     </Paper>
 
                     {/* Back side */}
@@ -124,6 +145,18 @@ function FlashcardViewer({ flashcards }) {
                     onClick={nextCard}
                 >
                     Tiếp ➡️
+                </Button>
+                <Button
+                    variant="outlined"
+                    color="secondary"
+                    size="large"
+                    onClick={() =>
+                        navigate('/practice/memory', {
+                            state: { flashcards },
+                        })
+                    }
+                >
+                    🧠 Chơi Memory Game
                 </Button>
             </Stack>
         </Box>
