@@ -2,6 +2,7 @@ import CourseList from '@/components/course/courseList'
 import axiosInstance from '@/network/httpRequest'
 import useAuthStore from '@/store/useAuthStore'
 import { useQuery } from '@tanstack/react-query'
+import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects'
 
 function StudentCourse() {
     const { user } = useAuthStore()
@@ -12,8 +13,6 @@ function StudentCourse() {
         }
 
         const res = await axiosInstance.get('/course/enrolled')
-
-        console.log(res.data)
         return res.data.data
     }
 
@@ -31,23 +30,30 @@ function StudentCourse() {
     })
 
     return (
-        <div className="w-full flex justify-center items-center">
-            <div className="w-1200 py-9">
-                <h1 className="text-3xl font-extrabold text-center text-red-600 mb-5">
-                    🇯🇵 Các khóa học bạn đã đăng ký
+        <div className="w-full bg-gradient-to-b from-white to-red-50 min-h-screen py-10">
+            <div className="max-w-6xl mx-auto px-4">
+                <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-red-600 mb-6 drop-shadow-lg flex items-center justify-center gap-3">
+                    <EmojiObjectsIcon fontSize="large" />
+                    Khoá học của bạn
                 </h1>
-                <hr className="w-full my-5" />
+                <p className="text-center text-gray-600 text-lg mb-10">
+                    Khám phá hành trình học tiếng Nhật của bạn ✨
+                </p>
 
                 {isLoading ? (
-                    <p>Đang tải khóa học...</p>
+                    <p className="text-center text-gray-500 text-lg">
+                        ⏳ Đang tải khoá học...
+                    </p>
                 ) : isError ? (
-                    <div className="text-red-500 font-semibold">
-                        {error?.message || 'Đã xảy ra lỗi không xác định.'}
+                    <div className="text-center text-red-500 font-semibold">
+                        ❌ {error?.message || 'Đã xảy ra lỗi không xác định.'}
                     </div>
                 ) : courses?.length > 0 ? (
                     <CourseList courses={courses} />
                 ) : (
-                    <p>Không có khóa học nào được tìm thấy.</p>
+                    <p className="text-center text-gray-400 text-md">
+                        📭 Không có khoá học nào được tìm thấy.
+                    </p>
                 )}
             </div>
         </div>
