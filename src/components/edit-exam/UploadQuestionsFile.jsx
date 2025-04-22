@@ -42,7 +42,7 @@ function UploadQuestionsFile({ onSaveCallback }) {
         let currentChild = null
 
         lines.forEach((line, index) => {
-            const parentMatch = line.match(/^(I+)\.\s+(.+)/i)
+            const parentMatch = line.match(/^([IVX]+)\.\s+(.+)/i)
             const paragraphMatch = line.toLowerCase().startsWith('paragraph:')
             const questionMatch = line.match(/^(\d+)\.\s*$/)
             const answerMatch = line.match(/^(\*?)([a-d])\.\s(.+)/)
