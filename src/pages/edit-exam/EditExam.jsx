@@ -1,11 +1,9 @@
-import QuestionInputForm from '@/components/edit-exam/QuestionInputForm'
 import UploadQuestionsFile from '@/components/edit-exam/UploadQuestionsFile'
 import axiosInstance from '@/network/httpRequest'
-import { ArrowBack, Delete, Edit } from '@mui/icons-material'
+import { ArrowBack } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { toast, ToastContainer } from 'react-toastify'
-import Swal from 'sweetalert2'
+import { ToastContainer } from 'react-toastify'
 
 function EditExam() {
     const { examId } = useParams()
@@ -17,30 +15,6 @@ function EditExam() {
             return response.data.data
         },
     })
-
-    const onDelete = (questionId) => {
-        console.log(questionId)
-        Swal.fire({
-            title: 'Bạn có chắc chắn không?',
-            text: 'Bạn sẽ không thể hoàn tác hành động này!',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Vâng, xóa nó!',
-            cancelButtonText: 'Hủy',
-        }).then(async (result) => {
-            if (result.isConfirmed) {
-                const res = await axiosInstance.delete(
-                    `exam/${examId}/question/${questionId}`
-                )
-                if (res.status === 200) {
-                    refetch()
-                    toast.success('Xóa câu hỏi thành công!')
-                }
-            }
-        })
-    }
 
     return (
         <div className="w-full py-4">
@@ -73,48 +47,67 @@ function EditExam() {
             </div>
             <hr className="my-4" />
             <div>
-                <label className="font-bold text-lg">Nhập câu hỏi:</label>
-                <QuestionInputForm onSaveCallback={refetch} />
-            </div>
-            <hr className="my-4" />
-            <div>
-                <label className="font-bold text-lg block mb-3">
-                    Danh sách câu hỏi:
-                </label>
-                {/* Questions */}
-                {examData?.questions?.map((question, index) => (
-                    <div
-                        key={question.id}
-                        className="flex justify-between items-center gap-2 border border-solid border-gray-400 p-4 rounded-lg shadow mb-4"
+                <div className="flex justify-between items-center">
+                    <label className="font-bold text-lg block ">
+                        Danh sách câu hỏi:
+                    </label>
+                    <Link
+                        className="primary-btn"
+                        to={'questions'}
+                        state={{ questions: examData?.questions }}
                     >
-                        <div>
-                            <label className="font-bold text-primary w-fit">
-                                Câu hỏi {index + 1}:
-                            </label>
-                            <label className="w-fit ml-2">
-                                {question.content}
-                            </label>
+                        Chỉnh sửa câu hỏi
+                    </Link>
+                </div>
+                <hr className="my-4" />
+
+                {examData?.questions?.map((questionGroup, groupIndex) => (
+                    <div key={questionGroup._id} className="mb-6">
+                        <div className="mb-2 font-semibold text-primary">
+                            Part {groupIndex + 1}.{' '}
+                            {questionGroup.parentQuestion}
                         </div>
-                        <div className="flex gap-4 ">
-                            <Link
-                                to={`${question._id}`}
-                                state={question}
-                                title="Chỉnh sửa"
-                                className="rounded-full hover:bg-gray-200 p-2 duration-150 text-blue-600"
-                            >
-                                <Edit />
-                            </Link>
-                            <button
-                                onClick={() => onDelete(question.id)}
-                                title="Xóa"
-                                className="rounded-full hover:bg-gray-200 p-2 duration-150 text-primary"
-                            >
-                                <Delete />
-                            </button>
+                        <p className="p-4 text-gray-600 text-lg italic">
+                            {questionGroup.paragraph}
+                        </p>
+                        {questionGroup?.imgUrl && (
+                            <div className="flex justify-center items-center my-6">
+                                <img
+                                    src={questionGroup.imgUrl}
+                                    className="max-w-2/3 max-h-72"
+                                />
+                            </div>
+                        )}
+                        <div className="px-4">
+                            {questionGroup.childQuestions.map((q, index) => (
+                                <div
+                                    key={q.id}
+                                    className="flex justify-between items-center gap-2 border border-gray-400 border-solid p-4 py-6 rounded-lg shadow mb-4"
+                                >
+                                    <div className="flex">
+                                        <label className="font-bold text-primary">
+                                            Câu hỏi {index + 1}:
+                                        </label>
+                                        <label className="ml-2">
+                                            {q.content}
+                                        </label>
+                                    </div>
+                                    <p className="italic text-green-600 font-bold">
+                                        ({q.correctAnswer}.{' '}
+                                        {
+                                            q.options.find(
+                                                (o) => o.id == q.correctAnswer
+                                            )?.text
+                                        }
+                                        )
+                                    </p>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 ))}
             </div>
+
             {examData?.questions?.length <= 0 && (
                 <div className="text-gray-500 text-sm mt-2">
                     Không có câu hỏi nào trong danh sách.
