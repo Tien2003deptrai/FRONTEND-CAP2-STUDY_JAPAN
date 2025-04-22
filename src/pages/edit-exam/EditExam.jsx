@@ -15,31 +15,6 @@ function EditExam() {
             return response.data.data
         },
     })
-    console.log(examData)
-
-    // const onDelete = (questionId) => {
-    //     console.log(questionId)
-    //     Swal.fire({
-    //         title: 'Bạn có chắc chắn không?',
-    //         text: 'Bạn sẽ không thể hoàn tác hành động này!',
-    //         icon: 'warning',
-    //         showCancelButton: true,
-    //         confirmButtonColor: '#3085d6',
-    //         cancelButtonColor: '#d33',
-    //         confirmButtonText: 'Vâng, xóa nó!',
-    //         cancelButtonText: 'Hủy',
-    //     }).then(async (result) => {
-    //         if (result.isConfirmed) {
-    //             const res = await axiosInstance.delete(
-    //                 `exam/${examId}/question/${questionId}`
-    //             )
-    //             if (res.status === 200) {
-    //                 refetch()
-    //                 toast.success('Xóa câu hỏi thành công!')
-    //             }
-    //         }
-    //     })
-    // }
 
     return (
         <div className="w-full py-4">

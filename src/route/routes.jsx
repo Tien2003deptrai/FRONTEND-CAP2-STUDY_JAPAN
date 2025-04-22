@@ -215,7 +215,7 @@ export const teacherRoutes = [
     },
     {
         path: '/manage-document',
-        element: <MainLayout />,
+        element: <MainLayout isFooter={false} />,
         children: [
             {
                 path: '',
@@ -236,11 +236,11 @@ export const teacherRoutes = [
                         path: 'exam/edit/:examId/:questionId',
                         element: <EditQuestion />,
                     },
-                    {
-                        path: 'exam/edit/:examId/questions',
-                        element: <EditListQuestion />,
-                    },
                 ],
+            },
+            {
+                path: 'exam/edit/:examId/questions',
+                element: <EditListQuestion />,
             },
         ],
     },

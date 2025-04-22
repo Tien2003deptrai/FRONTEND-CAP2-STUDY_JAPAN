@@ -57,7 +57,6 @@ function OptionsForm({ control, register, errors, qIndex, cIndex }) {
                         type="button"
                         onClick={() => remove(oIndex)}
                         className="text-gray-400 hover:text-red-700"
-                        aria-label={`Remove Option ${generateOptionId(oIndex)}`}
                     >
                         <Delete fontSize="small" />
                     </button>

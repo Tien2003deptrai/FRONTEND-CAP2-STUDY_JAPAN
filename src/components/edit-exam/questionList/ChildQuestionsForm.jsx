@@ -19,10 +19,14 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
             )}
             {fields.map((child, cIndex) => (
                 <div
+                    id={`q${nestIndex}_c${cIndex}`}
                     key={child.id}
-                    className="border border-dashed border-gray-300 rounded-lg p-4 ml-4"
+                    className="border border-dashed border-gray-300 rounded-lg p-4 ml-4 mt-32"
                 >
-                    <div className="flex justify-between items-center gap-2 mb-4">
+                    <div
+                        id={`question_${cIndex}`}
+                        className="flex justify-between items-center gap-2 mb-4"
+                    >
                         <span className="text-lg text-primary font-bold">
                             Câu {cIndex + 1}:
                         </span>
@@ -71,7 +75,6 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
                             id: '',
                             content: '',
                             correctAnswer: '',
-                            options: [{ id: '', text: '', _id: '' }],
                         })
                     }
                     className="flex items-center gap-2 px-4 py-3 rounded-md text-blue-700 hover:bg-blue-200 duration-150 bg-blue-100"
