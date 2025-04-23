@@ -14,6 +14,7 @@ function EditListQuestion() {
     const { examId } = useParams()
     const navigate = useNavigate()
     const [imgUrls, setImgUrls] = useState({})
+    const [audioUrl, setAudioUrl] = useState({})
     const [progress, setProgress] = useState()
     const [childQuestions, setChildQuestions] = useState([])
 
@@ -58,12 +59,28 @@ function EditListQuestion() {
         name: 'questions',
     })
 
-    const handleThumbnailChange = async (e, qIndex) => {
+    const handleAudioChange = async (e, qIndex) => {
         const file = e.target.files[0]
         if (file) {
             const url = await uploadImage(file, (progress) => {
                 setProgress(progress)
             })
+            setValue(`questions.${qIndex}.audioUrl`, url, {
+                shouldValidate: true,
+                shouldDirty: true,
+            })
+            setAudioUrl((prev) => ({
+                ...prev,
+                [qIndex]: url,
+            }))
+            console.log('Audio URL:', url)
+        }
+    }
+
+    const handleThumbnailChange = async (e, qIndex) => {
+        const file = e.target.files[0]
+        if (file) {
+            const url = await uploadImage(file, () => {})
             setValue(`questions.${qIndex}.imgUrl`, url, {
                 shouldValidate: true,
                 shouldDirty: true,
@@ -212,12 +229,7 @@ function EditListQuestion() {
                                         onChange={(e) =>
                                             handleThumbnailChange(e, qIndex)
                                         }
-                                        className="block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-full file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100"
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold  file:bg-blue-50 file:text-blue-700  hover:file:bg-blue-100"
                                     />
 
                                     {errors.questions?.[qIndex]?.thumbnail && (
@@ -240,6 +252,45 @@ function EditListQuestion() {
                                             alt={`Thumbnail Preview ${qIndex + 1}`}
                                             className="mt-4 w-80 object-cover rounded"
                                         />
+                                    )}
+                                </div>
+                                <div className="p-4">
+                                    <label className="block font-bold text-gray-700 mb-2">
+                                        Audio file
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="audio/*"
+                                        onChange={(e) =>
+                                            handleAudioChange(e, qIndex)
+                                        }
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold  file:bg-blue-50 file:text-blue-700  hover:file:bg-blue-100"
+                                    />
+
+                                    {errors.questions?.[qIndex]?.audioUrl && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {
+                                                errors.questions[qIndex]
+                                                    .audioUrl.message
+                                            }
+                                        </p>
+                                    )}
+                                    {/* {progress > 0 && progress < 100 && (
+                                        <Progress value={progress} />
+                                    )} */}
+                                    {(question.audioUrl ||
+                                        audioUrl[qIndex]) && (
+                                        <audio
+                                            controls
+                                            className="mt-4"
+                                            src={
+                                                question.audioUrl ||
+                                                audioUrl[qIndex]
+                                            }
+                                        >
+                                            Your browser does not support the
+                                            audio element.
+                                        </audio>
                                     )}
                                 </div>
                             </div>
