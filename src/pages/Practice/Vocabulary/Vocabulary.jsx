@@ -1,6 +1,4 @@
 import React, { useState } from 'react'
-import useFetchAllVocabularies from '@/hooks/useFetchAllVocabularies'
-import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import CheckCircleIcon from '@mui/icons-material/CheckCircle'
 import BookmarkIcon from '@mui/icons-material/Bookmark'
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder'
@@ -14,6 +12,8 @@ import {
     Grid,
     Chip,
 } from '@mui/material'
+import useFetchAllVocabularies from '@/hooks/useFetchAllVocabularies'
+import { Link } from 'react-router-dom'
 
 const VocabularyList = () => {
     const {
@@ -21,39 +21,32 @@ const VocabularyList = () => {
         isLoading,
         isError,
     } = useFetchAllVocabularies()
-
     const [difficultWords, setDifficultWords] = useState(new Set())
     const [learnedWords, setLearnedWords] = useState(new Set())
     const [isFlashcardMode, setFlashcardMode] = useState(false)
     const [isQuizMode, setQuizMode] = useState(false)
     const [quizAnswer, setQuizAnswer] = useState({})
 
+    // Toggle difficult words
     const toggleDifficult = (id) => {
         const newSet = new Set(difficultWords)
         newSet.has(id) ? newSet.delete(id) : newSet.add(id)
         setDifficultWords(newSet)
     }
 
+    // Toggle learned words
     const toggleLearned = (id) => {
         const newSet = new Set(learnedWords)
         newSet.has(id) ? newSet.delete(id) : newSet.add(id)
         setLearnedWords(newSet)
     }
-    const playAudio = (url) => {
-        const audio = new Audio(url)
-        audio.volume = 1
 
-        audio.addEventListener('canplaythrough', () => {
-            audio.play().catch((e) => {
-                alert(
-                    '⚠️ Không thể phát âm thanh. Trình duyệt có thể đang chặn.'
-                )
-                console.warn('Audio Play Error:', e)
-            })
-        })
-
-        audio.load()
-    }
+    // Speak Japanese word using SpeechSynthesis
+    // const speakJapanese = (text) => {
+    //     const utterance = new SpeechSynthesisUtterance(text)
+    //     utterance.lang = 'ja-JP'
+    //     speechSynthesis.speak(utterance)
+    // }
 
     const getRandomQuiz = (id) => {
         const options = ['Tình yêu', 'Núi', 'Trường học', 'Cây cối', 'Công ty']
@@ -142,14 +135,20 @@ const VocabularyList = () => {
                                     justifyContent="space-between"
                                     alignItems="center"
                                 >
-                                    <Typography
-                                        variant="h4"
-                                        fontWeight="bold"
-                                        color="error.main"
-                                        sx={{ fontSize: '2rem' }}
+                                    <Link
+                                        to={`/practice/vocabulary/${vocab._id}`}
                                     >
-                                        {isFlashcardMode ? '•••••' : vocab.word}
-                                    </Typography>
+                                        <Typography
+                                            variant="h4"
+                                            fontWeight="bold"
+                                            color="error.main"
+                                            sx={{ fontSize: '2rem' }}
+                                        >
+                                            {isFlashcardMode
+                                                ? '•••••'
+                                                : vocab.word}
+                                        </Typography>
+                                    </Link>
                                     <Box>
                                         <IconButton
                                             onClick={() =>
@@ -180,7 +179,7 @@ const VocabularyList = () => {
 
                                 {!isFlashcardMode && (
                                     <>
-                                        <Typography variant="h6" sx={{ mt: 1 }}>
+                                        {/* <Typography variant="h6" sx={{ mt: 1 }}>
                                             Kana: <strong>{vocab.kana}</strong>{' '}
                                             | Kanji:{' '}
                                             <strong>
@@ -202,14 +201,14 @@ const VocabularyList = () => {
                                         </Typography>
                                         {vocab.audio && (
                                             <IconButton
-                                                onClick={() =>
-                                                    playAudio(vocab.audio)
-                                                }
+                                                onClick={() => {
+                                                    speakJapanese(vocab.word)
+                                                }}
                                                 size="small"
                                             >
                                                 <VolumeUpIcon />
                                             </IconButton>
-                                        )}
+                                        )} */}
                                     </>
                                 )}
 
