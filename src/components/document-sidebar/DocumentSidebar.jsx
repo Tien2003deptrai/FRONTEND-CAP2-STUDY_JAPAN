@@ -14,6 +14,11 @@ const DocumentSidebar = () => {
             icon: <Quiz />,
             path: '/manage-document/exam',
         },
+        {
+            label: 'Vocabulary',
+            icon: <Quiz />,
+            path: '/manage-document/vocab',
+        },
     ]
 
     const isActive = (path) => {

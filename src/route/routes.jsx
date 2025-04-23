@@ -45,6 +45,9 @@ import FlashcardDetail from '@/pages/FlashcardDetail/FlashcardDetail'
 import EditFlashcard from '@/pages/EditFlashcard/EditFlashcard'
 import MemoryCardGame from '@/components/practice/MemoryCardGame/MemoryCardGame'
 import MiniRPGGame from '@/components/MiniRPGGame/MiniRPGGame'
+import AddVocabulary from '@/pages/Vocabulary/AddVocabulary'
+import Vocabularies from '@/pages/Vocabulary/Vocabularies'
+import VocabularyDetail from '@/pages/Vocabulary/VocabularyDetail'
 
 export const publicRoutes = [
     {
@@ -268,6 +271,19 @@ export const teacherRoutes = [
                     {
                         path: 'exam/edit/:examId/:questionId',
                         element: <EditQuestion />,
+                    },
+                    { path: 'vocab', element: <Vocabularies /> },
+                    {
+                        path: 'vocab/create-vocab',
+                        element: <AddVocabulary />,
+                    },
+                    {
+                        path: 'vocab/study/:id',
+                        element: <VocabularyDetail />,
+                    },
+                    {
+                        path: 'vocab/edit/:id',
+                        element: <EditFlashcard />,
                     },
                 ],
             },
