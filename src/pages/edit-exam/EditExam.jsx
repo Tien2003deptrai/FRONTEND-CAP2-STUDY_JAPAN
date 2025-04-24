@@ -1,21 +1,49 @@
 import UploadQuestionsFile from '@/components/edit-exam/UploadQuestionsFile'
 import axiosInstance from '@/network/httpRequest'
-import { Modal } from '@mantine/core'
-import { DateTimePicker } from '@mantine/dates'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Modal, Select, TextInput } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { ArrowBack } from '@mui/icons-material'
+import {
+    AlarmOffOutlined,
+    AlarmOnOutlined,
+    ArrowBack,
+    HourglassBottomOutlined,
+} from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import 'dayjs/locale/vi'
-import { useState } from 'react'
+import { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
+import { z } from 'zod'
+
+const schema = z
+    .object({
+        startTime: z.string(),
+        endTime: z.string(),
+        time_limit: z.union([
+            z.number().min(1, 'Thời gian làm bài phải lớn hơn 0 phút'),
+            z.string().regex(/^\d+$/, 'Thời gian làm bài phải là số'),
+        ]),
+
+        level: z.string().nonempty('Vui lòng chọn cấp độ bài thi'),
+    })
+    .refine(
+        (data) => {
+            const start = new Date(data.startTime)
+            const end = new Date(data.endTime)
+            return start < end
+        },
+        {
+            message: 'Thời gian kết thúc phải sau thời gian bắt đầu',
+            path: ['endTime'], // show the error under endTime field
+        }
+    )
 
 function EditExam() {
     const { examId } = useParams()
     const navigate = useNavigate()
-    const [startTime, setStartTime] = useState('')
-    const [endTime, setEndTime] = useState('')
     const [opened, { open, close }] = useDisclosure(false)
 
     const { data: examData, refetch } = useQuery({
@@ -26,18 +54,44 @@ function EditExam() {
         },
     })
 
-    console.log(examData)
+    const {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        formState: { errors },
+    } = useForm({
+        resolver: zodResolver(schema),
+        defaultValues: {
+            startTime: null,
+            endTime: null,
+            time_limit: '',
+            level: '',
+        },
+    })
 
-    const onSubmit = async () => {
-        if (startTime > endTime) {
-            toast.error(
-                'Thời gian kết thúc không được nhỏ hơn thời gian bắt đầu'
-            )
-            return
+    useEffect(() => {
+        if (examData) {
+            reset({
+                startTime: dayjs(examData.startTime).format('YYYY-MM-DDTHH:mm'),
+                endTime: dayjs(examData.endTime).format('YYYY-MM-DDTHH:mm'),
+                time_limit: examData.time_limit,
+                level: examData.level,
+            })
+        }
+    }, [examData, reset])
+
+    const onSubmit = async (data) => {
+        console.log(data)
+        const res = await axiosInstance.put(`exam/${examId}/schedule`, data)
+        if (res.status == 200) {
+            refetch()
+            toast.success('Cài đặt bài thi đã được lưu!')
+            close()
         }
     }
 
-    dayjs.locale('vi')
+    console.log(examData)
 
     return (
         <div className="w-full py-4">
@@ -49,7 +103,7 @@ function EditExam() {
             <div className="flex justify-between items-center">
                 <div className="flex items-center gap-4">
                     <button
-                        className="p-4 text-primary rounded-full shadow-sm"
+                        className="p-4 pl-0 text-primary rounded-full shadow-sm"
                         onClick={() => navigate(-1)}
                         title="Quay lại"
                     >
@@ -67,6 +121,29 @@ function EditExam() {
                 <button className="primary-btn" onClick={open}>
                     Cài đặt bài thi
                 </button>
+            </div>
+            <div className="mt-6 w-full flex flex-col justify-center gap-2 items-start ">
+                <div className="flex justify-center items-center gap-2 text-gray-500">
+                    <AlarmOnOutlined fontSize="small" />
+                    Bắt đầu:
+                    <p className="tracking-wider font-semibold">
+                        {dayjs(examData?.startTime).format('DD/MM/YYYY hh:mm')}
+                    </p>
+                </div>
+                <div className="flex justify-center items-center gap-2 text-gray-500">
+                    <AlarmOffOutlined fontSize="small" />
+                    Kết thúc:
+                    <p className="tracking-wider font-semibold">
+                        {dayjs(examData?.endTime).format('DD/MM/YYYY hh:mm')}
+                    </p>
+                </div>
+                <div className="flex justify-center items-center gap-2 text-gray-500">
+                    <HourglassBottomOutlined fontSize="small" />
+                    Thời gian làm bài:
+                    <p className="tracking-wider font-semibold">
+                        {examData?.time_limit} phút
+                    </p>
+                </div>
             </div>
             <hr className="my-4" />
             <div>
@@ -92,7 +169,7 @@ function EditExam() {
                 <hr className="my-4" />
 
                 {examData?.questions?.map((questionGroup, groupIndex) => (
-                    <div key={questionGroup._id} className="mb-6">
+                    <div key={groupIndex} className="mb-6">
                         <div className="mb-2 font-semibold text-primary">
                             Part {groupIndex + 1}.{' '}
                             {questionGroup.parentQuestion}
@@ -111,26 +188,25 @@ function EditExam() {
                         <div className="px-4">
                             {questionGroup.childQuestions.map((q, index) => (
                                 <div
-                                    key={q.id}
-                                    className="flex justify-between items-center gap-2 border border-gray-400 border-solid p-4 py-6 rounded-lg shadow mb-4"
+                                    key={index}
+                                    className="flex justify-start gap-2 border border-gray-400 border-solid p-4 py-6 rounded-lg shadow mb-4"
                                 >
-                                    <div className="flex">
-                                        <label className="font-bold text-primary">
-                                            Câu hỏi {index + 1}:
-                                        </label>
-                                        <label className="ml-2">
-                                            {q.content}
-                                        </label>
+                                    <label className="font-bold text-primary">
+                                        Câu hỏi {index + 1}:
+                                    </label>
+                                    <div className="flex flex-col flex-1 gap-4">
+                                        <label className="">{q.content}</label>
+                                        <p className="italic text-green-600 font-bold">
+                                            Đáp án:{' '}
+                                            {
+                                                q.options.find(
+                                                    (o) =>
+                                                        o.id == q.correctAnswer
+                                                )?.text
+                                            }
+                                            ({q.correctAnswer})
+                                        </p>
                                     </div>
-                                    <p className="italic text-green-600 font-bold">
-                                        ({q.correctAnswer}.{' '}
-                                        {
-                                            q.options.find(
-                                                (o) => o.id == q.correctAnswer
-                                            )?.text
-                                        }
-                                        )
-                                    </p>
                                 </div>
                             ))}
                         </div>
@@ -144,38 +220,77 @@ function EditExam() {
                 </div>
             )}
 
-            <Modal opened={opened} onClose={close} title="Cài đặt">
-                <div className="flex flex-col gap-6">
-                    <DateTimePicker
-                        label="Thời gian bắt đầu:"
-                        placeholder="Chọn ngày và giờ"
-                        value={startTime}
-                        onChange={setStartTime}
-                        valueFormat="DD/MM/YYYY HH:mm"
-                        minDate={new Date()}
-                        amPm={false}
-                        locale="vi"
+            <Modal
+                opened={opened}
+                onClose={close}
+                title="Cài đặt"
+                closeOnClickOutside={false}
+            >
+                <form
+                    onSubmit={handleSubmit(onSubmit)}
+                    className="flex flex-col gap-6"
+                >
+                    <div className="w-full flex gap-3 flex-col">
+                        <label className="block font-bold">
+                            Thời gian bắt đầu làm bài{' '}
+                            <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            {...register('startTime')}
+                            min={new Date().toISOString().slice(0, 16)}
+                            type="datetime-local"
+                            className="border p-2 w-full rounded py-4 px-4"
+                        />
+                        {errors.startTime && (
+                            <p className="text-red-500">
+                                {errors.startTime?.message}
+                            </p>
+                        )}
+                    </div>
+                    <div className="w-full flex gap-3 flex-col">
+                        <label className="block font-bold">
+                            Thời gian kết thúc làm bài{' '}
+                            <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            {...register('endTime')}
+                            type="datetime-local"
+                            min={new Date().toISOString().slice(0, 16)}
+                            className="border p-2 w-full rounded py-4 px-4"
+                        />
+                        {errors.endTime && (
+                            <p className="text-red-500">
+                                {errors.endTime?.message}
+                            </p>
+                        )}
+                    </div>
+                    <TextInput
+                        label="Thời gian làm bài (phút):"
+                        placeholder="Nhập thời gian làm bài"
+                        {...register('time_limit')}
+                        type="number"
+                        error={errors.examDuration?.message}
                     />
-                    <DateTimePicker
-                        label="Thời gian kết thúc:"
-                        placeholder="Chọn ngày và giờ"
-                        value={endTime}
-                        onChange={setEndTime}
-                        valueFormat="DD/MM/YYYY HH:mm"
-                        minDate={new Date()}
-                        amPm={false}
-                        locale="vi"
+                    <Select
+                        label="Cấp độ bài thi:"
+                        placeholder="Chọn cấp độ"
+                        value={watch('level')}
+                        data={[
+                            { value: 'N1', label: 'N1' },
+                            { value: 'N2', label: 'N2' },
+                            { value: 'N3', label: 'N3' },
+                            { value: 'N4', label: 'N4' },
+                            { value: 'N5', label: 'N5' },
+                        ]}
+                        {...register('level')}
+                        error={errors.level?.message}
                     />
                     <div className="flex justify-end">
-                        <button
-                            className="primary-btn"
-                            type="submit"
-                            onClick={onSubmit}
-                        >
+                        <button className="primary-btn" type="submit">
                             Lưu cài đặt
                         </button>
                     </div>
-                </div>
+                </form>
             </Modal>
         </div>
     )
