@@ -4,7 +4,7 @@ import { Group } from '@mantine/core'
 import { Outlet } from 'react-router-dom'
 import Footer from '../components/footer/Footer'
 
-function MainLayout() {
+function MainLayout({ isFooter = true }) {
     return (
         <div>
             <ScrollToTop />
@@ -15,7 +15,7 @@ function MainLayout() {
                     <Outlet />
                 </Group>
             </Group>
-            <Footer />
+            {isFooter && <Footer />}
         </div>
     )
 }

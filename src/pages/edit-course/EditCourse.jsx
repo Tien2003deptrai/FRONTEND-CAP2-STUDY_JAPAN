@@ -32,13 +32,14 @@ function EditCourse() {
 
     const { data: vocabularies = [] } = useFetchVocabulary(lesson?._id)
     const { data: grammars = [] } = useFetchGrammar(lesson?._id)
-    const { data: revisionQuestions = [] } = useQuery({
-        queryKey: ['revisionQuestions', lesson?._id],
-        queryFn: async () => {
-            const res = await axiosInstance.get(`/renshuu/${lesson?._id}`)
-            return res.data.data
-        },
-    })
+    const { data: revisionQuestions = [], refetch: questionsRefetch } =
+        useQuery({
+            queryKey: ['revisionQuestions', lesson?._id],
+            queryFn: async () => {
+                const res = await axiosInstance.get(`/renshuu/${lesson?._id}`)
+                return res.data.data
+            },
+        })
     console.log(revisionQuestions)
 
     const onSaveLessonContent = async () => {
@@ -198,12 +199,13 @@ function EditCourse() {
                                             renshuuId={revisionQuestions._id}
                                             question={question}
                                             index={index}
+                                            onDeleteCallback={questionsRefetch}
                                         />
                                     )
                                 )
                             ) : (
                                 <p className="text-gray-500">
-                                    Không có ngữ pháp nào.
+                                    Không có câu hỏi ôn tập nào.
                                 </p>
                             )}
                         </div>

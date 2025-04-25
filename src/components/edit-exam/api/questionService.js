@@ -19,9 +19,16 @@ const updateQuestionRevision = async (data) => {
     return await axiosInstance.put(`renshuu/question`, data)
 }
 
+const saveQuestions = async (examId, newQuestions) => {
+    return await axiosInstance.post(`exam/${examId}/questions`, {
+        newQuestions: newQuestions,
+    })
+}
+
 export {
     createQuestionExam,
     createQuestionRevision,
+    saveQuestions,
     updateQuestionExam,
     updateQuestionRevision,
 }
