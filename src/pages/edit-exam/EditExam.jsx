@@ -1,5 +1,5 @@
 import UploadQuestionsFile from '@/components/edit-exam/UploadQuestionsFile'
-import axiosInstance from '@/network/httpRequest'
+import useFetchExamData from '@/hooks/useFetchExamData'
 import { useDisclosure } from '@mantine/hooks'
 import {
     AlarmOffOutlined,
@@ -9,7 +9,6 @@ import {
     BookOutlined,
     HourglassBottomTwoTone,
 } from '@mui/icons-material'
-import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import 'dayjs/locale/vi'
 import { Link, useNavigate, useParams } from 'react-router-dom'
@@ -21,14 +20,11 @@ function EditExam() {
     const navigate = useNavigate()
     const [opened, { open, close }] = useDisclosure(false)
 
-    const { data: examData, refetch } = useQuery({
-        queryKey: ['exam data', examId],
-        queryFn: async () => {
-            const response = await axiosInstance.get(`exam/${examId}`)
-            return response.data.data
-        },
-    })
-
+    const { data: examData, refetch } = useFetchExamData(examId)
+    // Check if startTime is over
+    const isStartTimeOver = examData?.startTime
+        ? dayjs(examData.startTime).isBefore(dayjs())
+        : false
     console.log(examData)
 
     return (
@@ -42,7 +38,7 @@ function EditExam() {
                 <div className="flex items-center gap-4">
                     <button
                         className="p-4 pl-0 text-primary rounded-full shadow-sm"
-                        onClick={() => navigate(-1)}
+                        onClick={() => navigate('/manage-document/exam')}
                         title="Quay lại"
                     >
                         <ArrowBack />
@@ -111,12 +107,14 @@ function EditExam() {
                 </div>
             </div>
             <hr className="my-4" />
-            <div>
-                <label className="font-bold text-lg">
-                    Upload câu hỏi từ Microsoft Word (.doc, .docx):
-                </label>
-                <UploadQuestionsFile onSaveCallback={refetch} />
-            </div>
+            {!isStartTimeOver && (
+                <div>
+                    <label className="font-bold text-lg">
+                        Upload câu hỏi từ Microsoft Word (.doc, .docx):
+                    </label>
+                    <UploadQuestionsFile onSaveCallback={refetch} />
+                </div>
+            )}
             <hr className="my-4" />
             <div>
                 <div className="flex justify-between items-center">
@@ -126,7 +124,7 @@ function EditExam() {
                     <Link
                         className="primary-btn"
                         to={'questions'}
-                        state={{ questions: examData?.questions }}
+                        state={isStartTimeOver}
                     >
                         Chỉnh sửa câu hỏi
                     </Link>
