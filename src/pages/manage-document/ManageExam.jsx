@@ -2,7 +2,7 @@ import useFetchTeacherCourses from '@/hooks/useFetchTeacherCourses'
 import axiosInstance from '@/network/httpRequest'
 import useAuthStore from '@/store/useAuthStore'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Add, ArrowForward, Delete, Edit } from '@mui/icons-material'
+import { Add, ArrowForward, Delete } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -32,7 +32,6 @@ const examFormSchema = z.object({
 function ManageExam() {
     const { user } = useAuthStore()
     const [openDialog, setOpenDialog] = useState(false)
-    const [selectedExam, setSelectedExam] = useState(null)
 
     const {
         register,
@@ -45,53 +44,37 @@ function ManageExam() {
             title: '',
             description: '',
             time_limit: '',
+            courseId: '',
+            level: 'N5',
         },
     })
 
     const { data: coursesData } = useFetchTeacherCourses()
 
-    const handleOpenDialog = (exam = null) => {
-        if (exam) {
-            setSelectedExam(exam)
-            reset({
-                title: exam.title,
-                description: exam.description,
-                time_limit: exam.time_limit,
-                courseId: exam.course?._id,
-                level: exam.level,
-            })
-        } else {
-            setSelectedExam(null)
-            reset({
-                title: '',
-                description: '',
-                time_limit: '',
-                courseId: '',
-                level: 'N5',
-            })
-        }
+    const handleOpenDialog = () => {
+        reset({
+            title: '',
+            description: '',
+            time_limit: '',
+            courseId: '',
+            level: 'N5',
+        })
         setOpenDialog(true)
     }
 
     const handleCloseDialog = () => {
         setOpenDialog(false)
-        setSelectedExam(null)
         reset()
     }
 
     const onSubmit = async (data) => {
         try {
-            if (selectedExam) {
-                await axiosInstance.put(`exam/${selectedExam._id}`, data)
-                toast.success('Cập nhật bài thi thành công')
-            } else {
-                await axiosInstance.post('exam', data)
-                toast.success('Tạo bài thi thành công')
-            }
+            await axiosInstance.post('exam', data)
+            toast.success('Tạo bài thi thành công')
             refetch()
             handleCloseDialog()
         } catch (error) {
-            console.error('Error submitting exam:', error)
+            console.error('Error creating exam:', error)
             toast.error(
                 error.response?.data?.message ||
                     'Có lỗi xảy ra, vui lòng thử lại'
@@ -132,7 +115,7 @@ function ManageExam() {
                     Quản lý bài thi
                 </h1>
                 <button
-                    onClick={() => handleOpenDialog()}
+                    onClick={handleOpenDialog}
                     className="flex items-center second-btn"
                 >
                     <Add />
@@ -162,13 +145,6 @@ function ManageExam() {
                         <div className="px-6 py-4 bg-gray-50 flex justify-between space-x-2">
                             <div>
                                 <button
-                                    onClick={() => handleOpenDialog(exam)}
-                                    className="p-2 text-green-600 hover:bg-green-50 rounded-full transition-colors"
-                                    title="Chỉnh sửa thư mục"
-                                >
-                                    <Edit />
-                                </button>
-                                <button
                                     className="p-2 text-red-600 hover:bg-red-50 rounded-full transition-colors"
                                     title="Xóa"
                                     onClick={() => onDelete(exam._id)}
@@ -196,9 +172,7 @@ function ManageExam() {
                         <form onSubmit={handleSubmit(onSubmit)}>
                             <div className="p-6">
                                 <h2 className="text-xl font-semibold text-gray-800 mb-4">
-                                    {selectedExam
-                                        ? 'Chỉnh sửa thư mục bài thi'
-                                        : 'Tạo bài thi mới'}
+                                    Tạo bài thi mới
                                 </h2>
                                 <div className="space-y-4">
                                     <div>
@@ -245,13 +219,10 @@ function ManageExam() {
                                         <select
                                             {...register('courseId')}
                                             className={`w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
-                                                errors.time_limit
+                                                errors.courseId
                                                     ? 'border-red-500 focus:ring-red-500'
                                                     : 'border-gray-300 focus:ring-blue-500'
                                             }`}
-                                            defaultChecked={
-                                                selectedExam?.course?._id || ''
-                                            }
                                         >
                                             {coursesData?.data?.map(
                                                 (course) => (
@@ -264,9 +235,9 @@ function ManageExam() {
                                                 )
                                             )}
                                         </select>
-                                        {errors.course && (
+                                        {errors.courseId && (
                                             <p className="mt-1 text-sm text-red-500">
-                                                {errors.course.message}
+                                                {errors.courseId.message}
                                             </p>
                                         )}
                                     </div>
@@ -313,7 +284,7 @@ function ManageExam() {
                                     type="submit"
                                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                                 >
-                                    {selectedExam ? 'Cập nhật' : 'Tạo mới'}
+                                    Tạo mới
                                 </button>
                             </div>
                         </form>

@@ -1,6 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { saveQuestions } from '@/components/edit-exam/api/questionService'
 import ChildQuestionsForm from '@/components/edit-exam/questionList/ChildQuestionsForm'
 import { formSchema } from '@/components/edit-exam/questionList/schemaValidate'
+import useFetchExamData from '@/hooks/useFetchExamData'
 import { uploadImage } from '@/util/firebase/firebaseUtils'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Progress } from '@mantine/core'
@@ -10,12 +12,16 @@ import { useFieldArray, useForm, useWatch } from 'react-hook-form'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 function EditListQuestion() {
-    const { state } = useLocation()
     const { examId } = useParams()
+    const location = useLocation()
+    const isStartTimeOver = location.state
     const navigate = useNavigate()
     const [imgUrls, setImgUrls] = useState({})
+    const [audioUrl, setAudioUrl] = useState({})
     const [progress, setProgress] = useState()
     const [childQuestions, setChildQuestions] = useState([])
+
+    const { data: examData } = useFetchExamData(examId)
 
     const defaultSingleQuestion = {
         parentQuestion: '',
@@ -33,18 +39,17 @@ function EditListQuestion() {
         ],
     }
 
-    const defaultValues = {
-        questions: state?.questions || [defaultSingleQuestion],
-    }
-
     const {
         control,
         register,
         handleSubmit,
         setValue,
+        reset, // Use reset to update form values
         formState: { errors },
     } = useForm({
-        defaultValues,
+        defaultValues: {
+            questions: [defaultSingleQuestion], // Initial default value
+        },
         resolver: zodResolver(formSchema),
         mode: 'onChange',
     })
@@ -58,12 +63,39 @@ function EditListQuestion() {
         name: 'questions',
     })
 
-    const handleThumbnailChange = async (e, qIndex) => {
+    // Update form values when examData is loaded
+    useEffect(() => {
+        if (examData) {
+            reset({
+                questions: examData.questions || [defaultSingleQuestion],
+            })
+        }
+    }, [examData, reset])
+
+    const handleAudioChange = async (e, qIndex) => {
+        if (isStartTimeOver) return // Prevent editing if startTime is over
         const file = e.target.files[0]
         if (file) {
             const url = await uploadImage(file, (progress) => {
                 setProgress(progress)
             })
+            setValue(`questions.${qIndex}.audioUrl`, url, {
+                shouldValidate: true,
+                shouldDirty: true,
+            })
+            setAudioUrl((prev) => ({
+                ...prev,
+                [qIndex]: url,
+            }))
+            console.log('Audio URL:', url)
+        }
+    }
+
+    const handleThumbnailChange = async (e, qIndex) => {
+        if (isStartTimeOver) return // Prevent editing if startTime is over
+        const file = e.target.files[0]
+        if (file) {
+            const url = await uploadImage(file, () => {})
             setValue(`questions.${qIndex}.imgUrl`, url, {
                 shouldValidate: true,
                 shouldDirty: true,
@@ -77,6 +109,10 @@ function EditListQuestion() {
     }
 
     const onSubmit = async (data) => {
+        if (isStartTimeOver) {
+            alert('Không thể chỉnh sửa vì thời gian bắt đầu đã qua.')
+            return
+        }
         const res = await saveQuestions(examId, [...data.questions])
         if (res.status === 200) {
             alert('Lưu câu hỏi thành công')
@@ -117,7 +153,7 @@ function EditListQuestion() {
                         </h1>
                     </div>
                     <hr className="my-4" />
-                    <div className="overflow-auto h-[90%] pb-10">
+                    <div className="overflow-auto h-[90%] pb-10 pr-6">
                         {childQuestions?.map((q, qIndex) => (
                             <div key={`parent-${qIndex}`} className="mb-8">
                                 <h2 className="font-bold rounded-md text-primary mb-4">
@@ -162,6 +198,7 @@ function EditListQuestion() {
                                     onClick={() => removeQuestion(qIndex)}
                                     className="flex items-center gap-2 second-btn"
                                     aria-label={`Remove Question ${qIndex + 1}`}
+                                    disabled={isStartTimeOver} // Disable button if startTime is over
                                 >
                                     <Delete /> Xóa Part {qIndex + 1}
                                 </button>
@@ -175,6 +212,7 @@ function EditListQuestion() {
                                         )}
                                         placeholder="Tiêu đề"
                                         className="border-gray-300 mt-1 border p-2 w-full rounded py-4 px-4"
+                                        disabled={isStartTimeOver} // Disable input if startTime is over
                                     />
                                 </label>
                                 {errors.questions?.[qIndex]?.parentQuestion && (
@@ -192,6 +230,7 @@ function EditListQuestion() {
                                     )}
                                     placeholder="Đoạn văn bản"
                                     className="border-gray-300 mt-1 h-24 border p-2 w-full rounded py-4 px-4"
+                                    disabled={isStartTimeOver} // Disable textarea if startTime is over
                                 />
                                 {errors.questions?.[qIndex]?.paragraph && (
                                     <p className="text-red-500 text-sm">
@@ -212,12 +251,8 @@ function EditListQuestion() {
                                         onChange={(e) =>
                                             handleThumbnailChange(e, qIndex)
                                         }
-                                        className="block w-full text-sm text-gray-500
-                                    file:mr-4 file:py-2 file:px-4
-                                    file:rounded-full file:border-0
-                                    file:text-sm file:font-semibold
-                                    file:bg-blue-50 file:text-blue-700
-                                    hover:file:bg-blue-100"
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold  file:bg-blue-50 file:text-blue-700  hover:file:bg-blue-100"
+                                        disabled={isStartTimeOver} // Disable file input if startTime is over
                                     />
 
                                     {errors.questions?.[qIndex]?.thumbnail && (
@@ -242,6 +277,43 @@ function EditListQuestion() {
                                         />
                                     )}
                                 </div>
+                                <div className="p-4">
+                                    <label className="block font-bold text-gray-700 mb-2">
+                                        Audio file
+                                    </label>
+                                    <input
+                                        type="file"
+                                        accept="audio/*"
+                                        onChange={(e) =>
+                                            handleAudioChange(e, qIndex)
+                                        }
+                                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold  file:bg-blue-50 file:text-blue-700  hover:file:bg-blue-100"
+                                        disabled={isStartTimeOver} // Disable file input if startTime is over
+                                    />
+
+                                    {errors.questions?.[qIndex]?.audioUrl && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {
+                                                errors.questions[qIndex]
+                                                    .audioUrl.message
+                                            }
+                                        </p>
+                                    )}
+                                    {(question.audioUrl ||
+                                        audioUrl[qIndex]) && (
+                                        <audio
+                                            controls
+                                            className="mt-4"
+                                            src={
+                                                question.audioUrl ||
+                                                audioUrl[qIndex]
+                                            }
+                                        >
+                                            Your browser does not support the
+                                            audio element.
+                                        </audio>
+                                    )}
+                                </div>
                             </div>
 
                             {/* Child Questions Component */}
@@ -250,18 +322,23 @@ function EditListQuestion() {
                                 register={register}
                                 errors={errors}
                                 nestIndex={qIndex}
+                                isStartTimeOver={isStartTimeOver} // Pass the state as a prop
                             />
                         </div>
                     ))}
 
-                    {/* Add Question Button */}
                     <div className="flex justify-end">
                         <button
                             type="button"
                             onClick={() =>
                                 appendQuestion(defaultSingleQuestion)
                             }
-                            className="flex items-center gap-2 px-4 py-3 rounded-md text-blue-700 hover:bg-blue-200 duration-150 bg-blue-100"
+                            className={`flex items-center gap-2 px-4 py-3 rounded-md duration-150 ${
+                                isStartTimeOver
+                                    ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                                    : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+                            }`}
+                            disabled={isStartTimeOver} // Disable add button if startTime is over
                         >
                             <Add fontSize="small" /> Thêm phần câu hỏi mới
                         </button>
@@ -284,7 +361,12 @@ function EditListQuestion() {
                     <div className="flex justify-end">
                         <button
                             type="submit"
-                            className=" bg-green-600 px-4 py-3 text-white rounded-md hover:bg-green-700 duration-150"
+                            className={`px-4 py-3 rounded-md duration-150 ${
+                                isStartTimeOver
+                                    ? 'bg-gray-400 text-gray-700 cursor-not-allowed'
+                                    : 'bg-green-600 text-white hover:bg-green-700'
+                            }`}
+                            disabled={isStartTimeOver} // Disable submit button if startTime is over
                         >
                             Lưu bài thi
                         </button>

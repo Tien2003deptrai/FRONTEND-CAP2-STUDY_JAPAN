@@ -2,7 +2,13 @@ import { Add, Delete } from '@mui/icons-material'
 import { useFieldArray } from 'react-hook-form'
 import OptionsForm from './OptionsForm'
 
-function ChildQuestionsForm({ control, register, errors, nestIndex }) {
+function ChildQuestionsForm({
+    control,
+    register,
+    errors,
+    nestIndex,
+    isStartTimeOver,
+}) {
     const childQuestionsPath = `questions.${nestIndex}.childQuestions`
     const { fields, append, remove } = useFieldArray({
         control,
@@ -33,8 +39,13 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
                         <button
                             type="button"
                             onClick={() => remove(cIndex)}
-                            className="flex items-center gap-2 second-btn"
+                            className={`flex items-center gap-2 second-btn ${
+                                isStartTimeOver
+                                    ? 'cursor-not-allowed text-gray-400'
+                                    : ''
+                            }`}
                             aria-label={`Remove Child Question ${cIndex + 1}`}
+                            disabled={isStartTimeOver}
                         >
                             <Delete fontSize="small" /> Xóa câu hỏi {cIndex + 1}
                         </button>
@@ -43,6 +54,7 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
                         {...register(`${childQuestionsPath}.${cIndex}.content`)}
                         placeholder={`Nội dung câu hỏi ${cIndex + 1}`}
                         className=" border-gray-300 border p-2 w-full rounded py-4 px-4"
+                        disabled={isStartTimeOver}
                     />
                     {childErrors?.[cIndex]?.content && (
                         <p className="text-red-500 text-sm mb-2">
@@ -63,6 +75,7 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
                         errors={errors}
                         qIndex={nestIndex}
                         cIndex={cIndex}
+                        isStartTimeOver={isStartTimeOver}
                     />
                 </div>
             ))}
@@ -77,7 +90,12 @@ function ChildQuestionsForm({ control, register, errors, nestIndex }) {
                             correctAnswer: '',
                         })
                     }
-                    className="flex items-center gap-2 px-4 py-3 rounded-md text-blue-700 hover:bg-blue-200 duration-150 bg-blue-100"
+                    className={`flex items-center gap-2 px-4 py-3 rounded-md text-blue-700 hover:bg-blue-200 duration-150 bg-blue-100 ${
+                        isStartTimeOver
+                            ? 'cursor-not-allowed text-gray-400'
+                            : ''
+                    }`}
+                    disabled={isStartTimeOver}
                 >
                     <Add fontSize="small" /> Thêm câu hỏi
                 </button>

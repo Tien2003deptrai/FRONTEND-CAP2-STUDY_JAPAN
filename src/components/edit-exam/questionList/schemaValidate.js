@@ -17,6 +17,7 @@ export const singleQuestionSchema = z.object({
     parentQuestion: z.string().min(1, 'Parent question type is required'),
     paragraph: z.string().optional(),
     imgUrl: z.string().optional(),
+    audioUrl: z.string().optional(),
     childQuestions: z
         .array(childQuestionSchema)
         .min(1, 'At least one child question is required'),
