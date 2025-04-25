@@ -5,7 +5,7 @@ const EXAM_KEYS = {
     all: ['exams'],
     list: () => [...EXAM_KEYS.all, 'list'],
     detail: (examId) => [...EXAM_KEYS.all, 'detail', examId],
-    take: (attemptId) => [...EXAM_KEYS.all, 'take', attemptId],
+    take: (examId) => [...EXAM_KEYS.all, 'take', examId],
     result: (attemptId) => [...EXAM_KEYS.all, 'result', attemptId],
     history: (examId) => [...EXAM_KEYS.all, 'history', examId],
 }
@@ -17,23 +17,19 @@ const examApi = {
     },
 
     getExamById: async (examId) => {
+        const res = await axiosInstance.get(`/exam/${examId}`)
+        return res.data.data
+    },
+
+    getExamTake: async (examId) => {
         const res = await axiosInstance.get(`/exam/take/${examId}`)
         return res.data.data
     },
 
-    getExamTake: async (attemptId) => {
-        const res = await axiosInstance.get(`/exam/take/${attemptId}`)
-        const { exam, attemptId: realAttemptId } = res.data.data
-        return {
-            exam,
-            attemptId: realAttemptId,
-        }
-    },
-
     startExam: async (examId) => {
         if (!examId) throw new Error('Exam ID is required')
-        const res = await axiosInstance.post(`/exam/start/${examId}`, {})
-        return res.data.data
+        const res = await axiosInstance.post(`/exam/start/${examId}`)
+        return res.data.data // trả về attemptId
     },
 
     submitExam: async ({ attemptId, answers }) => {
@@ -66,11 +62,11 @@ export const useExamById = (examId) =>
         enabled: !!examId,
     })
 
-export const useExamTake = (attemptId) =>
+export const useExamTake = (examId) =>
     useQuery({
-        queryKey: EXAM_KEYS.take(attemptId),
-        queryFn: () => examApi.getExamTake(attemptId),
-        enabled: !!attemptId,
+        queryKey: EXAM_KEYS.take(examId),
+        queryFn: () => examApi.getExamTake(examId),
+        enabled: !!examId,
     })
 
 export const useStartExam = () =>
