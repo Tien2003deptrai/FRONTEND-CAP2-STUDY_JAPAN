@@ -1,45 +1,20 @@
 import UploadQuestionsFile from '@/components/edit-exam/UploadQuestionsFile'
 import axiosInstance from '@/network/httpRequest'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Modal, Select, TextInput } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import {
     AlarmOffOutlined,
     AlarmOnOutlined,
+    AlignVerticalBottom,
     ArrowBack,
-    HourglassBottomOutlined,
+    BookOutlined,
+    HourglassBottomTwoTone,
 } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
 import dayjs from 'dayjs'
 import 'dayjs/locale/vi'
-import { useEffect } from 'react'
-import { useForm } from 'react-hook-form'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
-import { z } from 'zod'
-
-const schema = z
-    .object({
-        startTime: z.string(),
-        endTime: z.string(),
-        time_limit: z.union([
-            z.number().min(1, 'Thời gian làm bài phải lớn hơn 0 phút'),
-            z.string().regex(/^\d+$/, 'Thời gian làm bài phải là số'),
-        ]),
-
-        level: z.string().nonempty('Vui lòng chọn cấp độ bài thi'),
-    })
-    .refine(
-        (data) => {
-            const start = new Date(data.startTime)
-            const end = new Date(data.endTime)
-            return start < end
-        },
-        {
-            message: 'Thời gian kết thúc phải sau thời gian bắt đầu',
-            path: ['endTime'], // show the error under endTime field
-        }
-    )
+import ExamModal from './modal/ExamModal'
 
 function EditExam() {
     const { examId } = useParams()
@@ -53,43 +28,6 @@ function EditExam() {
             return response.data.data
         },
     })
-
-    const {
-        register,
-        handleSubmit,
-        reset,
-        watch,
-        formState: { errors },
-    } = useForm({
-        resolver: zodResolver(schema),
-        defaultValues: {
-            startTime: null,
-            endTime: null,
-            time_limit: '',
-            level: '',
-        },
-    })
-
-    useEffect(() => {
-        if (examData) {
-            reset({
-                startTime: dayjs(examData.startTime).format('YYYY-MM-DDTHH:mm'),
-                endTime: dayjs(examData.endTime).format('YYYY-MM-DDTHH:mm'),
-                time_limit: examData.time_limit,
-                level: examData.level,
-            })
-        }
-    }, [examData, reset])
-
-    const onSubmit = async (data) => {
-        console.log(data)
-        const res = await axiosInstance.put(`exam/${examId}/schedule`, data)
-        if (res.status == 200) {
-            refetch()
-            toast.success('Cài đặt bài thi đã được lưu!')
-            close()
-        }
-    }
 
     console.log(examData)
 
@@ -122,26 +60,53 @@ function EditExam() {
                     Cài đặt bài thi
                 </button>
             </div>
-            <div className="mt-6 w-full flex flex-col justify-center gap-2 items-start ">
+            {examData?.description && (
+                <p className="my-4 text-gray-500 italic tracking-wider">
+                    {examData?.description}
+                </p>
+            )}
+            <div className="mt-6 w-full flex flex-col justify-center gap-3 items-start ">
                 <div className="flex justify-center items-center gap-2 text-gray-500">
                     <AlarmOnOutlined fontSize="small" />
                     Bắt đầu:
                     <p className="tracking-wider font-semibold">
-                        {dayjs(examData?.startTime).format('DD/MM/YYYY hh:mm')}
+                        {examData?.startTime
+                            ? dayjs(examData.startTime).format(
+                                  'DD/MM/YYYY hh:mm'
+                              )
+                            : 'Chưa có'}
                     </p>
                 </div>
                 <div className="flex justify-center items-center gap-2 text-gray-500">
                     <AlarmOffOutlined fontSize="small" />
                     Kết thúc:
                     <p className="tracking-wider font-semibold">
-                        {dayjs(examData?.endTime).format('DD/MM/YYYY hh:mm')}
+                        {examData?.startTime
+                            ? dayjs(examData.startTime).format(
+                                  'DD/MM/YYYY hh:mm'
+                              )
+                            : 'Chưa có'}
                     </p>
                 </div>
                 <div className="flex justify-center items-center gap-2 text-gray-500">
-                    <HourglassBottomOutlined fontSize="small" />
+                    <HourglassBottomTwoTone fontSize="small" />
                     Thời gian làm bài:
                     <p className="tracking-wider font-semibold">
                         {examData?.time_limit} phút
+                    </p>
+                </div>
+                <div className="flex justify-center items-center gap-2 text-gray-500">
+                    <BookOutlined fontSize="small" />
+                    Khóa học:
+                    <p className="tracking-wider font-semibold">
+                        {examData?.course?.name}
+                    </p>
+                </div>
+                <div className="flex justify-center items-center gap-2 text-gray-500">
+                    <AlignVerticalBottom fontSize="small" />
+                    Level:
+                    <p className="tracking-wider font-semibold">
+                        {examData?.level}
                     </p>
                 </div>
             </div>
@@ -220,78 +185,15 @@ function EditExam() {
                 </div>
             )}
 
-            <Modal
+            <ExamModal
                 opened={opened}
-                onClose={close}
-                title="Cài đặt"
-                closeOnClickOutside={false}
-            >
-                <form
-                    onSubmit={handleSubmit(onSubmit)}
-                    className="flex flex-col gap-6"
-                >
-                    <div className="w-full flex gap-3 flex-col">
-                        <label className="block font-bold">
-                            Thời gian bắt đầu làm bài{' '}
-                            <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            {...register('startTime')}
-                            min={new Date().toISOString().slice(0, 16)}
-                            type="datetime-local"
-                            className="border p-2 w-full rounded py-4 px-4"
-                        />
-                        {errors.startTime && (
-                            <p className="text-red-500">
-                                {errors.startTime?.message}
-                            </p>
-                        )}
-                    </div>
-                    <div className="w-full flex gap-3 flex-col">
-                        <label className="block font-bold">
-                            Thời gian kết thúc làm bài{' '}
-                            <span className="text-red-500">*</span>
-                        </label>
-                        <input
-                            {...register('endTime')}
-                            type="datetime-local"
-                            min={new Date().toISOString().slice(0, 16)}
-                            className="border p-2 w-full rounded py-4 px-4"
-                        />
-                        {errors.endTime && (
-                            <p className="text-red-500">
-                                {errors.endTime?.message}
-                            </p>
-                        )}
-                    </div>
-                    <TextInput
-                        label="Thời gian làm bài (phút):"
-                        placeholder="Nhập thời gian làm bài"
-                        {...register('time_limit')}
-                        type="number"
-                        error={errors.examDuration?.message}
-                    />
-                    <Select
-                        label="Cấp độ bài thi:"
-                        placeholder="Chọn cấp độ"
-                        value={watch('level')}
-                        data={[
-                            { value: 'N1', label: 'N1' },
-                            { value: 'N2', label: 'N2' },
-                            { value: 'N3', label: 'N3' },
-                            { value: 'N4', label: 'N4' },
-                            { value: 'N5', label: 'N5' },
-                        ]}
-                        {...register('level')}
-                        error={errors.level?.message}
-                    />
-                    <div className="flex justify-end">
-                        <button className="primary-btn" type="submit">
-                            Lưu cài đặt
-                        </button>
-                    </div>
-                </form>
-            </Modal>
+                close={close}
+                examData={examData && examData}
+                onSubmitCallback={() => {
+                    refetch()
+                    toast.success('Cài đặt bài thi đã được lưu!')
+                }}
+            />
         </div>
     )
 }
