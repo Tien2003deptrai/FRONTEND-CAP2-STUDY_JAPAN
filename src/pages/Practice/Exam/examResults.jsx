@@ -1,9 +1,14 @@
-import React from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
 import { useExamResult } from '@/hooks/useExam'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 const ExamResultPage = () => {
     const { attemptId } = useParams()
+    const location = useLocation()
+    console.log(location)
+
+    const res = location?.state.res
+    console.log('res', res)
+
     const navigate = useNavigate()
     const { data: result, isLoading } = useExamResult(attemptId)
 
@@ -19,7 +24,6 @@ const ExamResultPage = () => {
                 Không tìm thấy kết quả bài thi
             </div>
         )
-
 
     return (
         <div className="p-6 max-w-5xl mx-auto text-gray-800">
@@ -48,8 +52,6 @@ const ExamResultPage = () => {
                             {result.time || 'Không xác định'}
                         </p>
                     </div>
-
-                    
                 </div>
 
                 {Array.isArray(result.answers) && result.answers.length > 0 ? (

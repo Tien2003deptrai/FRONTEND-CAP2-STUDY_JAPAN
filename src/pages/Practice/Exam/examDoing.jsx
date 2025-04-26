@@ -161,10 +161,13 @@ const ExamDoingPage = () => {
                     { attemptId: correctAttemptId, answers: formattedAnswers },
                     {
                         onSuccess: (res) => {
+                            console.log(res)
+
                             if (res?.attemptId) {
                                 setTimeout(() => {
                                     navigate(
-                                        `/practice/exam/result/${res.attemptId}`
+                                        `/practice/exam/result/${res.attemptId}`,
+                                        { state: { res } }
                                     )
                                 }, 500)
                             } else {
