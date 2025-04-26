@@ -1,3 +1,6 @@
+import CourseList from '@/components/course/courseList'
+import axiosInstance from '@/network/httpRequest'
+import useAuthStore from '@/store/useAuthStore'
 import {
     Book as BookIcon,
     Event as CalendarIcon,
@@ -8,6 +11,7 @@ import {
     Chat as MessageSquareIcon,
     Group as UsersIcon,
 } from '@mui/icons-material'
+import { useQuery } from '@tanstack/react-query'
 
 // Component FeatureCard
 const FeatureCard = ({ icon, title, description }) => {
@@ -19,97 +23,35 @@ const FeatureCard = ({ icon, title, description }) => {
         </div>
     )
 }
-
-// Component CourseCard
-const CourseCard = ({ course }) => {
-    return (
-        <div className="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow">
-            <img
-                src={course.image}
-                alt={course.title}
-                className="w-full h-40 object-cover"
-            />
-            <div className="p-4">
-                <div className="flex items-center justify-between mb-2">
-                    <span className="bg-red-100 text-red-800 text-xs font-semibold px-2 py-1 rounded">
-                        {course.level}
-                    </span>
-                    <span className="text-sm text-gray-500 flex items-center">
-                        <UsersIcon fontSize="small" className="mr-1" />{' '}
-                        {course.students}
-                    </span>
-                </div>
-                <h3 className="font-bold mb-2">{course.title}</h3>
-                <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">
-                        {course.lessons} bài học
-                    </span>
-                    <button className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors">
-                        Học ngay
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
-}
-
 // Main Component
 export default function JapaneseLearningApp() {
-    const courses = [
-        {
-            id: 1,
-            title: 'Nhập môn Hiragana',
-            level: 'N5',
-            lessons: 12,
-            students: 1240,
-            image: '/api/placeholder/320/180',
-        },
-        {
-            id: 2,
-            title: 'Katakana cho người mới bắt đầu',
-            level: 'N5',
-            lessons: 10,
-            students: 890,
-            image: '/api/placeholder/320/180',
-        },
-        {
-            id: 3,
-            title: 'Kanji cơ bản (JLPT N5)',
-            level: 'N5',
-            lessons: 20,
-            students: 1560,
-            image: '/api/placeholder/320/180',
-        },
-        {
-            id: 4,
-            title: 'Ngữ pháp trung cấp (JLPT N3)',
-            level: 'N3',
-            lessons: 25,
-            students: 750,
-            image: '/api/placeholder/320/180',
-        },
-    ]
+    const { user } = useAuthStore()
 
-    const popularLessons = [
-        {
-            id: 1,
-            title: 'Cách sử dụng trợ từ は và が',
-            views: 12400,
-            duration: '15 phút',
+    const fetchCourses = async () => {
+        if (!user || !user?._id) {
+            throw new Error('Không tìm thấy thông tin người dùng.')
+        }
+
+        const res = await axiosInstance.get('/course/enrolled')
+        return res.data.data
+    }
+
+    const { data: lessons } = useQuery({
+        queryKey: ['lessons'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/lesson/all/titles')
+            return res.data.data
         },
-        {
-            id: 2,
-            title: 'Động từ thể -te: Cách chia và ứng dụng',
-            views: 10800,
-            duration: '20 phút',
-        },
-        {
-            id: 3,
-            title: 'Từ vựng chủ đề nhà hàng và đồ ăn',
-            views: 9500,
-            duration: '12 phút',
-        },
-    ]
+    })
+    console.log('lessons', lessons)
+
+    const { data: courses } = useQuery({
+        queryKey: ['studentCourses', user?._id],
+        queryFn: fetchCourses,
+        enabled: !!user,
+        staleTime: 1000 * 60 * 5,
+        retry: 2,
+    })
 
     const jlptLevels = [
         { level: 'N5', description: 'Trình độ cơ bản', color: 'bg-green-500' },
@@ -138,7 +80,7 @@ export default function JapaneseLearningApp() {
                     <div className="bg-gradient-to-r from-red-500 to-red-600 rounded-2xl p-8 md:p-12 flex flex-col md:flex-row items-center justify-between">
                         <div className="text-white mb-6 md:mb-0 md:max-w-lg">
                             <h1 className="text-3xl md:text-4xl font-bold mb-4">
-                                Học tiếng Nhật hiệu quả với STUDY JAPAN
+                                Học tiếng Nhật hiệu quả với Nihongo
                             </h1>
                             <p className="text-lg opacity-90 mb-6">
                                 Tiếp cận phương pháp học chuẩn JLPT từ cơ bản
@@ -167,7 +109,7 @@ export default function JapaneseLearningApp() {
                 {/* Features Section */}
                 <section className="mb-12">
                     <h2 className="text-2xl font-bold mb-6">
-                        Tại sao chọn STUDY JAPAN?
+                        Tại sao chọn Nihongo?
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                         <FeatureCard
@@ -223,9 +165,7 @@ export default function JapaneseLearningApp() {
                 {/* Popular Courses */}
                 <section className="mb-12">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-2xl font-bold">
-                            Khóa học phổ biến
-                        </h2>
+                        <h2 className="text-2xl font-bold">Khóa học của tôi</h2>
                         <button className="text-red-600 font-medium flex items-center hover:underline">
                             Xem tất cả{' '}
                             <ChevronDownIcon
@@ -234,11 +174,7 @@ export default function JapaneseLearningApp() {
                             />
                         </button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {courses.map((course) => (
-                            <CourseCard key={course.id} course={course} />
-                        ))}
-                    </div>
+                    <CourseList courses={courses} />
                 </section>
 
                 {/* Popular Lessons */}
@@ -254,30 +190,31 @@ export default function JapaneseLearningApp() {
                         </button>
                     </div>
                     <div className="bg-white rounded-lg shadow overflow-hidden">
-                        {popularLessons.map((lesson, index) => (
-                            <div
-                                key={lesson.id}
-                                className={`p-4 flex items-center justify-between ${index !== popularLessons.length - 1 ? 'border-b' : ''}`}
-                            >
-                                <div className="flex items-center">
-                                    <div className="bg-red-100 text-red-800 w-10 h-10 rounded-full flex items-center justify-center mr-4">
-                                        {index + 1}
-                                    </div>
-                                    <div>
-                                        <h3 className="font-medium">
-                                            {lesson.title}
-                                        </h3>
-                                        <div className="text-sm text-gray-500">
-                                            {lesson.views.toLocaleString()} lượt
-                                            xem · {lesson.duration}
+                        {Array.isArray(lessons) &&
+                            lessons.map((lesson, index) => (
+                                <div
+                                    key={lesson.id}
+                                    className={`p-4 flex items-center justify-between ${index !== lessons.length - 1 ? 'border-b' : ''}`}
+                                >
+                                    <div className="flex items-center">
+                                        <div className="bg-red-100 text-red-800 w-10 h-10 rounded-full flex items-center justify-center mr-4">
+                                            {index + 1}
+                                        </div>
+                                        <div>
+                                            <h3 className="font-medium">
+                                                {lesson.lesson_title}
+                                            </h3>
+                                            <div className="text-sm text-gray-500">
+                                                {/* {lesson.views.toLocaleString()} lượt */}
+                                                1 xem · {lesson.duration}
+                                            </div>
                                         </div>
                                     </div>
+                                    <button className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-md text-sm font-medium transition-colors">
+                                        Học ngay
+                                    </button>
                                 </div>
-                                <button className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2 rounded-md text-sm font-medium transition-colors">
-                                    Học ngay
-                                </button>
-                            </div>
-                        ))}
+                            ))}
                     </div>
                 </section>
 

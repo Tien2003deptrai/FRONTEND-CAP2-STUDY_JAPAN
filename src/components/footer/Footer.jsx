@@ -9,7 +9,7 @@ function Footer() {
                     <div className="mb-6 md:mb-0">
                         <h2 className="text-2xl font-bold flex items-center">
                             <span className="text-3xl mr-2">🌸</span>
-                            Study Japan
+                            Nihongo
                         </h2>
                         <p className="mt-3 text-gray-200">
                             Nền tảng học tiếng Nhật toàn diện cho mọi trình độ.
@@ -122,8 +122,8 @@ function Footer() {
                 {/* Copyright */}
                 <div className="mt-8 pt-6 border-t border-red-400 text-center text-sm">
                     <p>
-                        © {new Date().getFullYear()} Sakura Nihongo. Tất cả các
-                        quyền được bảo lưu.
+                        © {new Date().getFullYear()} Nihongo. Tất cả các quyền
+                        được bảo lưu.
                     </p>
                 </div>
             </div>

@@ -83,7 +83,7 @@ const VocabularyList = () => {
                 fontWeight="bold"
                 mb={4}
             >
-                🏯 Nihongo Vocab Master
+                Nihongo Vocab Master
             </Typography>
 
             <Box textAlign="center" mb={4}>

@@ -31,7 +31,7 @@ function Deck() {
                                 </h3>
                             </div>
                             <div className="flex items-center justify-between text-sm text-gray-500">
-                                <span>{deck.cards?.length || 0} thẻ</span>
+                                <span>{deck?.flashcardCount || 0} thẻ</span>
                                 <div className="flex items-center gap-1 text-red-600">
                                     <span>Học ngay</span>
                                     <PlayArrow className="text-sm" />

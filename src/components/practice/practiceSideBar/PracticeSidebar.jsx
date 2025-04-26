@@ -11,16 +11,14 @@ import SchoolIcon from '@mui/icons-material/School'
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver'
 import GTranslateIcon from '@mui/icons-material/GTranslate'
 import QuizIcon from '@mui/icons-material/Quiz'
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
+import MenuBookIcon from '@mui/icons-material/MenuBook'
+import AutoStoriesIcon from '@mui/icons-material/AutoStories'
 
 export default function PracticeSidebar() {
     const location = useLocation()
 
     const menuItems = [
         { label: 'Flashcard', path: 'flashcard', icon: <SchoolIcon /> },
-        { label: 'Voice', path: 'voice', icon: <RecordVoiceOverIcon /> },
-        { label: 'Renshuu', path: 'renshuu', icon: <AutoStoriesIcon /> },
         { label: 'Từ Vựng', path: 'vocabulary', icon: <MenuBookIcon /> },
         { label: 'Tra Cứu', path: 'translate', icon: <GTranslateIcon /> },
         { label: 'Bài Tập', path: 'exam', icon: <QuizIcon /> },

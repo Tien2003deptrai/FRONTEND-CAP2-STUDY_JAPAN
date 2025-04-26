@@ -37,7 +37,7 @@ const VocabularyDetail = () => {
     return (
         <Box sx={{ maxWidth: '1200px', mx: 'auto', px: 3, py: 5 }}>
             <Button variant="outlined" onClick={handleBack} sx={{ mb: 4 }}>
-                Back to Vocabulary List
+                Quay lại danh sách từ vựng
             </Button>
 
             <Typography

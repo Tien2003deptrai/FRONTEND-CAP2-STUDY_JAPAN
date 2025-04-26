@@ -7,7 +7,7 @@ const LessonHina = ({ courseId, lessonId }) => {
     if (isLoading) return <p>Đang tải Hina...</p>
     if (error) return <p className="text-red-500">Lỗi tải Hina</p>
 
-    const { words, questions } = data || {}
+    const { words } = data || {}
 
     const speak = (text) => {
         const utterance = new SpeechSynthesisUtterance(text)
@@ -47,43 +47,6 @@ const LessonHina = ({ courseId, lessonId }) => {
                                         <p className="text-sm text-gray-400 mt-1">
                                             {word.note}
                                         </p>
-                                    )}
-                                </div>
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            )}
-
-            {/* Questions Section */}
-            {questions && (
-                <div className="mt-6">
-                    <h3 className="font-semibold text-lg mb-2">Câu hỏi</h3>
-                    <ul className="space-y-4">
-                        {questions.map((question) => (
-                            <li key={question._id} className="border-b pb-2">
-                                <div>
-                                    <p className="text-sm">
-                                        {question.content}
-                                    </p>
-                                    <p className="text-sm text-gray-500 italic">
-                                        {question.sentence}
-                                    </p>
-                                </div>
-                                <div className="mt-2">
-                                    {question.quiz && (
-                                        <ul className="list-disc ml-5">
-                                            {question.quiz.map(
-                                                (option, index) => (
-                                                    <li
-                                                        key={index}
-                                                        className="text-sm"
-                                                    >
-                                                        {option}
-                                                    </li>
-                                                )
-                                            )}
-                                        </ul>
                                     )}
                                 </div>
                             </li>

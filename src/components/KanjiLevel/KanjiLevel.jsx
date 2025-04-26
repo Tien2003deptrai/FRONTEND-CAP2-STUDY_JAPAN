@@ -44,7 +44,7 @@ const KanjiLevel = ({ jlptLevel }) => {
     }
 
     return (
-        <div className="bg-white p-6 rounded-3xl shadow-2xl border border-blue-200 transition-all duration-300">
+        <div className="bg-white p-6 rounded-xl shadow-2xl border border-blue-200 transition-all duration-300">
             <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-5">
                 {kanjiData.map((kanji, idx) => (
                     <Link
