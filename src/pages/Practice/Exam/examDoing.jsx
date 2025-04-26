@@ -15,13 +15,6 @@ const ExamDoingPage = () => {
     const [exam, setExam] = useState(null)
     const [correctAttemptId, setCorrectAttemptId] = useState(null)
 
-    useEffect(() => {
-        if (data) {
-            setExam(data.exam)
-            setCorrectAttemptId(data.attemptId)
-        }
-    }, [data])
-
     const [answers, setAnswers] = useState({})
     const [timeLeft, setTimeLeft] = useState(null)
     const [groupedQuestions, setGroupedQuestions] = useState([])
@@ -31,18 +24,24 @@ const ExamDoingPage = () => {
     const questionRefs = useRef({})
 
     useEffect(() => {
-        if (Array.isArray(exam?.questions)) {
-            const grouped = exam.questions.map((q) => [
-                ...(q.childQuestions || []),
-            ])
-            setGroupedQuestions(grouped)
-            exam.questions.forEach((q) => {
-                q.childQuestions?.forEach((child) => {
-                    questionRefs.current[child._id] = React.createRef()
+        if (data) {
+            setExam(data.exam)
+            setCorrectAttemptId(data.attemptId)
+
+            // Process questions immediately after setting exam
+            if (Array.isArray(data.exam?.questions)) {
+                const grouped = data.exam.questions.map((q) => [
+                    ...(q.childQuestions || []),
+                ])
+                setGroupedQuestions(grouped)
+                data.exam.questions.forEach((q) => {
+                    q.childQuestions?.forEach((child) => {
+                        questionRefs.current[child._id] = React.createRef()
+                    })
                 })
-            })
+            }
         }
-    }, [exam])
+    }, [data])
 
     useEffect(() => {
         if (!exam || !exam.time_limit || !correctAttemptId) return
@@ -129,7 +128,7 @@ const ExamDoingPage = () => {
             console.log('Answers trước khi xử lý:', answers)
             //dinh dang
             const formattedAnswers = Object.entries(answers)
-                .filter(([_, val]) => val !== undefined && val !== '')
+                .filter(([, val]) => val !== undefined && val !== '')
                 .map(([questionId, answer]) => {
                     const q = getQuestionById(questionId)
                     if (!q) {
