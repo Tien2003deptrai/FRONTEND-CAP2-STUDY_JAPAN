@@ -1,7 +1,7 @@
-import axiosInstance from '@/network/httpRequest'
 import mammoth from 'mammoth'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { saveQuestions } from './api/questionService'
 
 function UploadQuestionsFile({ onSaveCallback }) {
     const [questions, setQuestions] = useState([])
@@ -32,69 +32,83 @@ function UploadQuestionsFile({ onSaveCallback }) {
     }
 
     const formatQuestions = (text) => {
-        const lines = text.split('\n').filter((line) => line.trim() !== '')
-        const parsedData = []
-        let currentQuestion = null
-        let collectingQuestionText = false
+        const lines = text
+            .split('\n')
+            .map((line) => line.trim())
+            .filter(Boolean)
 
-        lines.forEach((line) => {
-            console.log('Processing line:', line) // Debugging
+        const parentQuestions = []
+        let currentParent = null
+        let currentChild = null
 
-            // Detect Question Number
-            const questionMatch = line.match(/^(\d+)\.\s*(.*)/)
-            if (questionMatch) {
-                if (currentQuestion) parsedData.push(currentQuestion)
+        lines.forEach((line, index) => {
+            const parentMatch = line.match(/^([IVX]+)\.\s+(.+)/i)
+            const paragraphMatch = line.toLowerCase().startsWith('paragraph:')
+            const questionMatch = line.match(/^(\d+)\.\s*$/)
+            const answerMatch = line.match(/^(\*?)([a-d])\.\s(.+)/)
 
-                currentQuestion = {
+            // 1. Detect parent question
+            if (parentMatch) {
+                if (currentParent) {
+                    if (currentChild)
+                        currentParent.childQuestions.push(currentChild)
+                    parentQuestions.push(currentParent)
+                }
+
+                currentParent = {
+                    parentQuestion: parentMatch[2].trim(),
+                    paragraph: '',
+                    childQuestions: [],
+                }
+                currentChild = null
+            }
+
+            // 2. Detect paragraph
+            else if (paragraphMatch && currentParent) {
+                currentParent.paragraph = line
+                    .replace(/^paragraph:/i, '')
+                    .trim()
+            }
+
+            // 3. Detect start of a child question
+            else if (questionMatch && currentParent) {
+                if (currentChild) {
+                    currentParent.childQuestions.push(currentChild)
+                }
+
+                currentChild = {
+                    content: '', // will be set in next line(s)
                     type: 'multiple_choice',
-                    content: '',
-                    options: [],
                     correctAnswer: '',
-                    point: 10,
+                    options: [],
                 }
-                collectingQuestionText = true
 
-                let questionText = questionMatch[2].trim()
-                questionText = questionText
-                    .replace(/\(\d+\.\d+\s*point\)/i, '')
-                    .trim() // Remove "(0.300 point)"
-
-                // If question text exists in the same line, assign it
-                if (questionText) {
-                    currentQuestion.content = questionText
-                    collectingQuestionText = false // No need to collect further lines
+                // Try to use the next line as the question content
+                const nextLine = lines[index + 1]?.trim()
+                if (nextLine && !nextLine.match(/^(\*?)[a-d]\.\s/)) {
+                    currentChild.content = nextLine
                 }
-            } else if (collectingQuestionText && currentQuestion) {
-                // Continue collecting the question text (next line)
-                let questionText = line.trim()
-                questionText = questionText
-                    .replace(/\(\d+\.\d+\s*point\)/i, '')
-                    .trim() // Remove "(0.300 point)"
+            }
 
-                if (questionText) {
-                    currentQuestion.content += ` ${questionText}`.trim()
-                    collectingQuestionText = false
-                }
-            } else {
-                // Detect Answer Choices
-                const answerMatch = line.match(/^(\*?)([a-d])\.\s(.+)/)
-                if (answerMatch && currentQuestion) {
-                    const isCorrect = answerMatch[1] === '*'
-                    const optionId = answerMatch[2]
-                    const text = answerMatch[3].trim()
-
-                    currentQuestion.options.push({ id: optionId, text })
-
-                    if (isCorrect) {
-                        currentQuestion.correctAnswer = optionId
-                    }
+            // 4. Detect answer options
+            else if (answerMatch && currentChild) {
+                const [_, star, id, text] = answerMatch
+                currentChild.options.push({ id, text })
+                if (star === '*') {
+                    currentChild.correctAnswer = id
                 }
             }
         })
 
-        if (currentQuestion) parsedData.push(currentQuestion)
-        console.log('Parsed Questions:', JSON.stringify(parsedData, null, 2))
-        return { questions: parsedData }
+        // Push any remaining questions
+        if (currentChild && currentParent) {
+            currentParent.childQuestions.push(currentChild)
+        }
+        if (currentParent) {
+            parentQuestions.push(currentParent)
+        }
+
+        return { newQuestions: parentQuestions }
     }
 
     useEffect(() => {
@@ -107,9 +121,7 @@ function UploadQuestionsFile({ onSaveCallback }) {
     console.log(questions)
 
     const onSaveQuestions = async () => {
-        const res = await axiosInstance.post(`exam/${examId}/questions`, {
-            questions: questions.questions,
-        })
+        const res = await saveQuestions(examId, [...questions.newQuestions])
         if (res.status == 200) {
             alert('Questions saved successfully')
             clearFileInput()
@@ -133,33 +145,52 @@ function UploadQuestionsFile({ onSaveCallback }) {
                 accept=".docx"
                 onChange={(e) => setFile(e.target.files?.[0])}
             />
-            <div className="flex flex-col gap-4 mt-4">
-                {questions?.questions?.map((question, index) => (
+            <div className="flex flex-col gap-6 mt-4">
+                {questions?.newQuestions?.map((parent, pIndex) => (
                     <div
-                        key={question.id}
-                        className='w-full border border-solid border-gray-400 p-4 rounded-lg shadow mb-4"'
+                        key={pIndex}
+                        className="border border-gray-300 p-4 rounded shadow"
                     >
-                        <h2 className="font-semibold">
-                            {index + 1}. {question.content}
+                        <h2 className="text-lg font-bold">
+                            {pIndex + 1}. {parent.parentQuestion}
                         </h2>
-                        <ul className={`pl-6 mt-2 gap-2 flex flex-col`}>
-                            {question.options.map((option) => (
-                                <li
-                                    key={option.id}
-                                    className={`${
-                                        question.correctAnswer === option.id
-                                            ? 'text-primary font-semibold'
-                                            : ''
-                                    }`}
+                        <p className="italic text-gray-600 mt-1">
+                            {parent.paragraph}
+                        </p>
+
+                        <div className="mt-4 space-y-4">
+                            {parent.childQuestions.map((child, cIndex) => (
+                                <div
+                                    key={cIndex}
+                                    className="border border-gray-200 p-3 rounded"
                                 >
-                                    {option.id}. {option.text}
-                                </li>
+                                    <p className="font-medium">
+                                        {pIndex + 1}.{cIndex + 1}{' '}
+                                        {child.content}
+                                    </p>
+                                    <ul className="mt-2 space-y-1 pl-4">
+                                        {child.options.map((opt) => (
+                                            <li
+                                                key={opt.id}
+                                                className={`${
+                                                    opt.id ===
+                                                    child.correctAnswer
+                                                        ? 'text-green-600 font-semibold'
+                                                        : ''
+                                                }`}
+                                            >
+                                                {opt.id}. {opt.text}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
                             ))}
-                        </ul>
+                        </div>
                     </div>
                 ))}
             </div>
-            {questions?.questions?.length > 0 && (
+
+            {questions?.newQuestions?.length > 0 && (
                 <div className="flex gap-4 mt-4">
                     <button
                         onClick={clearFileInput}

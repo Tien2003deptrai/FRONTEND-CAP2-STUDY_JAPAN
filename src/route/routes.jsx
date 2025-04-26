@@ -15,6 +15,7 @@ import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
 import EditExam from '@/pages/edit-exam/EditExam'
+import EditListQuestion from '@/pages/edit-exam/EditListQuestion'
 import EditQuestion from '@/pages/edit-exam/EditQuestion'
 import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
 import Forbiden from '@/pages/forbiden/Forbiden'
@@ -34,7 +35,10 @@ import ExamList from '@/pages/Practice/Exam/examList'
 import ExamResultPage from '@/pages/Practice/Exam/examResults'
 import Deck from '@/pages/Practice/flashcard/Deck'
 import Flashcard from '@/pages/Practice/flashcard/Flashcard'
+import Renshuu from '@/pages/Practice/renshuu/Renshuu'
 import Translate from '@/pages/Practice/Translate/Translate'
+import VocabularyList from '@/pages/Practice/Vocabulary/Vocabulary'
+import VocabularyDetail from '@/pages/Practice/VocabularyDetail/VocabularyDetail'
 import Voice from '@/pages/Practice/Voice'
 import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
@@ -173,11 +177,14 @@ export const practiceRoutes = [
                     },
                     { path: 'flashcard', element: <Deck /> },
                     { path: 'flashcard/:deckId', element: <Flashcard /> },
+                    { path: 'vocabulary', element: <VocabularyList /> },
+                    { path: 'vocabulary/:id', element: <VocabularyDetail /> },
 
                     { path: 'memory', element: <MemoryCardGame /> },
                     { path: 'mini-rpg', element: <MiniRPGGame /> }, // Kiểm tra lại
 
                     { path: 'voice', element: <Voice /> },
+                    { path: 'renshuu', element: <Renshuu /> },
                     { path: 'translate', element: <Translate /> },
 
                     {
@@ -204,6 +211,10 @@ export const practiceRoutes = [
                 ],
             },
         ],
+    },
+    {
+        path: 'practice/exam/doing/:attemptId',
+        element: <ExamDoingPage />,
     },
 ]
 
@@ -243,7 +254,7 @@ export const teacherRoutes = [
 
     {
         path: '/manage-document',
-        element: <MainLayout />,
+        element: <MainLayout isFooter={false} />,
         children: [
             {
                 path: '',
@@ -286,6 +297,10 @@ export const teacherRoutes = [
                         element: <EditFlashcard />,
                     },
                 ],
+            },
+            {
+                path: 'exam/edit/:examId/questions',
+                element: <EditListQuestion />,
             },
         ],
     },
