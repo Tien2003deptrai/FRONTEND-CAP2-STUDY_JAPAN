@@ -91,9 +91,9 @@ const ExamDetailPage = () => {
                             >
                                 <div>
                                     <p className="font-medium text-gray-700">
-                                        Số câu:{' '}
+                                        Số Điểm: {' '}
                                         <span className="text-danger">
-                                            {attempt.answers.filter((a) => a.isCorrect).length} câu
+                                            {attempt.totalScore} điểm
                                         </span>
                                     </p>
                                     <p className="text-sm text-gray-500">

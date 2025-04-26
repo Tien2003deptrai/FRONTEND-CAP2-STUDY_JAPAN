@@ -8,13 +8,13 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const ExamDoingPage = () => {
-    const { attemptId: paramAttemptId } = useParams()
+    const { attemptId: paramAttemptId } = useParams() //examID
     const navigate = useNavigate()
     const { data, isLoading, error: examError } = useExamTake(paramAttemptId)
     const { mutate: submitExam, isLoading: isSubmitting } = useSubmitExam()
     const [exam, setExam] = useState(null)
-    const [correctAttemptId, setCorrectAttemptId] = useState(null)
-
+    const [correctAttemptId, setCorrectAttemptId] = useState(null) //attemptID 
+        
     useEffect(() => {
         if (data) {
             setExam(data.exam)

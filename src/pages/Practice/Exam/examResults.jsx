@@ -6,7 +6,8 @@ const ExamResultPage = () => {
     const { attemptId } = useParams()
     const navigate = useNavigate()
     const { data: result, isLoading } = useExamResult(attemptId)
-
+    console.log("rs:", result);
+    
     if (isLoading)
         return (
             <div className="text-center py-10 text-gray-500">
@@ -35,8 +36,8 @@ const ExamResultPage = () => {
                             📊 Kết quả
                         </h3>
                         <p className="text-xl font-bold text-green-700">
-                            {result.answers.filter((a) => a.isCorrect).length} /{' '}
-                            {result.answers.length} câu
+                            {result.totalScore} điểm
+                           
                         </p>
                     </div>
 
@@ -68,10 +69,7 @@ const ExamResultPage = () => {
                                 >
                                     <div className="flex justify-between items-center">
                                         <p className="text-gray-800 font-medium">
-                                            Câu {index + 1} - ID:{' '}
-                                            <span className="text-sm text-gray-500">
-                                                {answer.questionId}
-                                            </span>
+                                            Câu {index + 1}
                                         </p>
                                         <span
                                             className={`text-sm px-3 py-1 rounded-full font-semibold ${
@@ -95,6 +93,13 @@ const ExamResultPage = () => {
                                             <span className="font-mono text-green-700">
                                                 {answer.correctAnswer ||
                                                     '(Không rõ)'}
+                                            </span>
+                                        </p>
+                                        <p>
+                                            <strong>Số điểm:</strong>{' '}
+                                            <span className="font-mono text-green-700">
+                                                {answer.score }
+                                                    
                                             </span>
                                         </p>
                                     </div>
