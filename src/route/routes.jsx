@@ -35,7 +35,10 @@ import ExamList from '@/pages/Practice/Exam/examList'
 import ExamResultPage from '@/pages/Practice/Exam/examResults'
 import Deck from '@/pages/Practice/flashcard/Deck'
 import Flashcard from '@/pages/Practice/flashcard/Flashcard'
+import Renshuu from '@/pages/Practice/renshuu/Renshuu'
 import Translate from '@/pages/Practice/Translate/Translate'
+import VocabularyList from '@/pages/Practice/Vocabulary/Vocabulary'
+import VocabularyDetail from '@/pages/Practice/VocabularyDetail/VocabularyDetail'
 import Voice from '@/pages/Practice/Voice'
 import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
@@ -155,7 +158,10 @@ export const practiceRoutes = [
                     },
                     { path: 'flashcard', element: <Deck /> },
                     { path: 'flashcard/:deckId', element: <Flashcard /> },
+                    { path: 'vocabulary', element: <VocabularyList /> },
+                    { path: 'vocabulary/:id', element: <VocabularyDetail /> },
                     { path: 'voice', element: <Voice /> },
+                    { path: 'renshuu', element: <Renshuu /> },
                     { path: 'translate', element: <Translate /> },
                     {
                         path: 'exam',
@@ -168,19 +174,21 @@ export const practiceRoutes = [
                                 path: ':exam_id',
                                 element: <ExamDetailPage />,
                             },
-                            {
-                                path: 'doing/:attemptId',
-                                element: <ExamDoingPage />,
-                            },
+                            
                             {
                                 path: 'result/:attemptId',
                                 element: <ExamResultPage />,
                             },
                         ],
                     },
+                    
                 ],
             },
         ],
+    },
+    {
+        path: 'practice/exam/doing/:attemptId',
+        element: <ExamDoingPage />,
     },
 ]
 

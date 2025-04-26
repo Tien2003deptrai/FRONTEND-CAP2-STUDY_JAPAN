@@ -24,6 +24,8 @@
         "@tanstack/react-query-devtools": "^5.69.0",
         "axios": "^1.8.4",
         "clsx": "^2.1.1",
+        "annyang": "^2.6.1",
+        "react-speech-recognition": "^4.0.0",
         "dayjs": "^1.11.13",
         "dotenv": "^16.4.7",
         "firebase": "^11.4.0",
