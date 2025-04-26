@@ -51,7 +51,6 @@ import MemoryCardGame from '@/components/practice/MemoryCardGame/MemoryCardGame'
 import MiniRPGGame from '@/components/MiniRPGGame/MiniRPGGame'
 import AddVocabulary from '@/pages/Vocabulary/AddVocabulary'
 import Vocabularies from '@/pages/Vocabulary/Vocabularies'
-import VocabularyDetail from '@/pages/Vocabulary/VocabularyDetail'
 
 export const publicRoutes = [
     {
@@ -178,7 +177,6 @@ export const practiceRoutes = [
                     { path: 'flashcard', element: <Deck /> },
                     { path: 'flashcard/:deckId', element: <Flashcard /> },
                     { path: 'vocabulary', element: <VocabularyList /> },
-                    { path: 'vocabulary/:id', element: <VocabularyDetail /> },
 
                     { path: 'memory', element: <MemoryCardGame /> },
                     { path: 'mini-rpg', element: <MiniRPGGame /> }, // Kiểm tra lại
