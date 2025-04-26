@@ -1,19 +1,26 @@
 'use client'
 
-import React, { useState, useEffect, useCallback, useRef } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { useExamTake, useSubmitExam } from '@/hooks/useExam'
-import QuestionSection from '@/components/practice/question/QuestionSection'
 import QuestionNavigator from '@/components/practice/question/QuestionNavigator'
+import QuestionSection from '@/components/practice/question/QuestionSection'
 import SubmitConfirmModal from '@/components/practice/question/SubmitConfirmModal'
+import { useExamTake, useSubmitExam } from '@/hooks/useExam'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const ExamDoingPage = () => {
     const { attemptId: paramAttemptId } = useParams()
     const navigate = useNavigate()
     const { data, isLoading, error: examError } = useExamTake(paramAttemptId)
     const { mutate: submitExam, isLoading: isSubmitting } = useSubmitExam()
-    const exam = data?.exam
-    const correctAttemptId = data?.attemptId
+    const [exam, setExam] = useState(null)
+    const [correctAttemptId, setCorrectAttemptId] = useState(null)
+
+    useEffect(() => {
+        if (data) {
+            setExam(data.exam)
+            setCorrectAttemptId(data.attemptId)
+        }
+    }, [data])
 
     const [answers, setAnswers] = useState({})
     const [timeLeft, setTimeLeft] = useState(null)
