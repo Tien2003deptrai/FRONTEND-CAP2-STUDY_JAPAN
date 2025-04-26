@@ -35,6 +35,29 @@ function ExamModal({ opened, close, examData, onSubmitCallback }) {
                 path: ['endTime'],
             }
         )
+        .refine(
+            (data) => {
+                const now = new Date()
+                const start = new Date(data.startTime)
+                return start > now
+            },
+            {
+                message: 'Thời gian bắt đầu phải lớn hơn thời gian hiện tại',
+                path: ['startTime'],
+            }
+        )
+        .refine(
+            (data) => {
+                const start = new Date(data.startTime)
+                const end = new Date(data.endTime)
+                const range = data.time_limit * 60 * 1000
+                return end - start > range
+            },
+            {
+                message: 'Khoảng thời gian bắt đầu và kết thúc không hợp lệ',
+                path: ['startTime'],
+            }
+        )
     const methods = useForm({
         resolver: zodResolver(schema),
         defaultValues: {
