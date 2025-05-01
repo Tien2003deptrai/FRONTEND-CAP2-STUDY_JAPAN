@@ -45,9 +45,7 @@ const examApi = {
     },
 
     getExamHistory: async (examId) => {
-        const res = await axiosInstance.get(
-            `/exam/history?examId=${examId}&status=completed`
-        )
+        const res = await axiosInstance.get(`/exam/history?examId=${examId}`)
         return res.data.data.results || []
     },
 }

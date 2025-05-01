@@ -1,19 +1,24 @@
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import QuestionNavigator from '@/components/practice/question/QuestionNavigator'
 import QuestionSection from '@/components/practice/question/QuestionSection'
 import SubmitConfirmModal from '@/components/practice/question/SubmitConfirmModal'
 import { useExamTake, useSubmitExam } from '@/hooks/useExam'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
 
 const ExamDoingPage = () => {
     const { exam_id } = useParams()
+    const location = useLocation()
     const navigate = useNavigate()
+
+    const attemptIdFromState = location.state?.attemptId || null
+    const [attemptId, setAttemptId] = useState(attemptIdFromState)
 
     const { data, isLoading, error: examError } = useExamTake(exam_id)
     const { mutate: submitExam, isLoading: isSubmitting } = useSubmitExam()
 
     const [exam, setExam] = useState(null)
-    const [attemptId, setAttemptId] = useState(null)
     const [answers, setAnswers] = useState({})
     const [timeLeft, setTimeLeft] = useState(null)
     const [groupedQuestions, setGroupedQuestions] = useState([])
@@ -22,6 +27,7 @@ const ExamDoingPage = () => {
 
     const questionRefs = useRef({})
     const timerRef = useRef(null)
+    const warnedRef = useRef(false)
 
     const handleSubmit = useCallback(
         async (isAutoSubmit = false) => {
@@ -29,6 +35,7 @@ const ExamDoingPage = () => {
                 setErrorMessage('Không tìm thấy ID lần thi. Vui lòng thử lại.')
                 return
             }
+
             if (!exam?.questions) {
                 setErrorMessage('Không tìm thấy câu hỏi trong bài thi.')
                 return
@@ -61,14 +68,10 @@ const ExamDoingPage = () => {
 
             const getAnswerValue = (questionId, answer) => {
                 const q = getQuestionById(questionId)
-                if (!q) {
-                    console.warn(`Câu hỏi ${questionId} không tìm thấy.`)
-                    return answer
-                }
-                if (q.type === 'multiple_choice') {
-                    return String(answer || '').toLowerCase()
-                }
-                return String(answer || '').trim()
+                if (!q) return answer
+                return q.type === 'multiple_choice'
+                    ? String(answer || '').toLowerCase()
+                    : String(answer || '').trim()
             }
 
             const formattedAnswers = allQuestionIds.map((questionId) => ({
@@ -78,19 +81,22 @@ const ExamDoingPage = () => {
 
             try {
                 submitExam(
-                    { attemptId: attemptId, answers: formattedAnswers },
+                    { attemptId, answers: formattedAnswers },
                     {
                         onSuccess: (res) => {
+                            localStorage.removeItem(`exam_timer_${attemptId}`)
                             if (res?.attemptId) {
                                 setTimeout(() => {
                                     navigate(
                                         `/practice/exam/result/${res.attemptId}`
                                     )
                                 }, 500)
+                                toast.success("Nộp bài thành công!")
                             } else {
                                 setErrorMessage(
                                     'Không nhận được ID bài thi. Vui lòng thử lại.'
                                 )
+                                toast.error('Có lỗi khi nộp bài thi.')
                             }
                         },
                         onError: (err) => {
@@ -104,66 +110,58 @@ const ExamDoingPage = () => {
                                     ? `Hết thời gian! Bài thi đã được gửi nhưng có lỗi: ${message}`
                                     : `Lỗi khi nộp bài: ${message}`
                             )
+                            toast.error(`Lỗi khi nộp bài: ${message}`)
                         },
                     }
                 )
             } catch (error) {
                 console.error('Lỗi hệ thống:', error)
                 setErrorMessage('Lỗi hệ thống khi nộp bài: ' + error.message)
+                toast.error('Lỗi hệ thống khi nộp bài.')
             }
         },
         [answers, attemptId, exam, navigate, submitExam]
     )
 
     useEffect(() => {
-        if (isLoading) return
+        if (isLoading || !data) return
 
-        if (!data) {
+        const { exam: examData, attemptId: fetchedAttemptId } = data
+        if (!examData) {
             setErrorMessage('Không thể tải thông tin bài thi')
             return
         }
 
-        const { exam: examData, attemptId: newAttemptId } = data
-
-        if (!examData || !newAttemptId) {
-            setErrorMessage('Không thể tải thông tin bài thi')
-            return
-        }
-
+        const finalAttemptId = attemptId || fetchedAttemptId
+        setAttemptId(finalAttemptId)
+        setExam(examData)
         setErrorMessage('')
 
-        setExam(examData)
-        setAttemptId(newAttemptId)
+        const grouped = examData.questions.map((q) => [
+            ...(q.childQuestions || []),
+        ])
+        setGroupedQuestions(grouped)
 
-        if (Array.isArray(examData.questions)) {
-            const grouped = examData.questions.map(q => [...(q.childQuestions || [])])
-            setGroupedQuestions(grouped)
-
-            const refs = {}
-            examData.questions.forEach(q => {
-                q.childQuestions?.forEach(child => {
-                    refs[child._id] = React.createRef()
-                })
+        const refs = {}
+        examData.questions.forEach((q) => {
+            q.childQuestions?.forEach((child) => {
+                refs[child._id] = React.createRef()
             })
-            questionRefs.current = refs
-        }
+        })
+        questionRefs.current = refs
 
+        // Đồng hồ đếm ngược
         if (examData.time_limit) {
             const now = Date.now()
-            const saved = localStorage.getItem(`exam_timer_${newAttemptId}`)
+            const key = `exam_timer_${finalAttemptId}`
             let startTime = now
 
-            if (saved) {
-                try {
-                    startTime = JSON.parse(saved).startTime
-                } catch {
-                    startTime = now
-                }
-            } else {
-                localStorage.setItem(
-                    `exam_timer_${newAttemptId}`,
-                    JSON.stringify({ startTime })
-                )
+            try {
+                const saved = JSON.parse(localStorage.getItem(key) || '{}')
+                if (saved.startTime) startTime = saved.startTime
+                else localStorage.setItem(key, JSON.stringify({ startTime }))
+            } catch {
+                localStorage.setItem(key, JSON.stringify({ startTime }))
             }
 
             const duration = examData.time_limit * 60
@@ -172,61 +170,58 @@ const ExamDoingPage = () => {
 
             setTimeLeft(remaining)
 
-            if (timerRef.current) {
-                clearInterval(timerRef.current)
-            }
-
+            if (timerRef.current) clearInterval(timerRef.current)
             timerRef.current = setInterval(() => {
-                setTimeLeft(prev => {
+                setTimeLeft((prev) => {
                     if (prev <= 1) {
                         clearInterval(timerRef.current)
                         handleSubmit(true)
                         return 0
                     }
+
+                    if (prev <= 300 && !warnedRef.current) {
+                        warnedRef.current = true
+                        alert(
+                            '⚠️ Chỉ còn 5 phút. Hãy kiểm tra lại bài làm của bạn.'
+                        )
+                    }
+
                     return prev - 1
                 })
             }, 1000)
         }
 
         return () => {
-            if (timerRef.current) {
-                clearInterval(timerRef.current)
-            }
+            if (timerRef.current) clearInterval(timerRef.current)
         }
-    }, [data, isLoading])
+    }, [data, isLoading, attemptId, handleSubmit])
 
     const handleAnswerChange = (qid, val) => {
         setAnswers((prev) => ({ ...prev, [qid]: val }))
-        const ref = questionRefs.current[qid]
-        if (ref?.current) {
-            ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            setTimeout(() => window.scrollBy(0, -80), 300)
-        }
     }
 
     if (isLoading)
         return <div className="text-center p-8">Đang tải đề thi...</div>
-    if (examError) {
-        console.log('Exam error:', examError)
+
+    if (examError)
         return (
             <div className="text-center p-8 text-red-600">
-                Lỗi khi tải đề thi: {examError?.message || 'Không tìm thấy bài thi'}
+                Lỗi khi tải đề thi:{' '}
+                {examError?.message || 'Không tìm thấy bài thi'}
             </div>
         )
-    }
-    if (!exam) {
-        console.log('Missing exam:', { exam, attemptId })
+
+    if (!exam)
         return (
             <div className="text-center p-8 text-red-600">
                 {errorMessage || 'Không tìm thấy bài thi'}
             </div>
         )
-    }
 
     return (
         <div className="max-w-7xl mx-auto">
             <div className="flex justify-between items-center px-6 py-4 bg-red-600 text-white rounded-b">
-                <h1 className="text-2xl font-bold">{exam.title}</h1>
+                <h1 className="text-2xl font-bold"> {exam.title}</h1>
             </div>
 
             {errorMessage && (
@@ -243,7 +238,7 @@ const ExamDoingPage = () => {
                         timeLeft={timeLeft}
                     />
                 </div>
-            
+
                 <div className="flex-1 overflow-y-auto pr-4">
                     {(exam.questions || []).map((q, idx) => (
                         <div key={q._id}>
@@ -278,6 +273,7 @@ const ExamDoingPage = () => {
                     handleSubmit()
                 }}
             />
+            <ToastContainer position="top-right" autoClose={5000} />
         </div>
     )
 }
