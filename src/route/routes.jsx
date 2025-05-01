@@ -187,7 +187,7 @@ export const practiceRoutes = [
         ],
     },
     {
-        path: 'practice/exam/doing/:attemptId',
+        path: 'practice/exam/doing/:exam_id',
         element: <ExamDoingPage />,
     },
 ]

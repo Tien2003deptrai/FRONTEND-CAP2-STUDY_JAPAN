@@ -1,5 +1,3 @@
-'use client'
-
 import QuestionNavigator from '@/components/practice/question/QuestionNavigator'
 import QuestionSection from '@/components/practice/question/QuestionSection'
 import SubmitConfirmModal from '@/components/practice/question/SubmitConfirmModal'
@@ -8,13 +6,14 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const ExamDoingPage = () => {
-    const { attemptId: paramAttemptId } = useParams() //examID
+    const { exam_id } = useParams()
     const navigate = useNavigate()
-    const { data, isLoading, error: examError } = useExamTake(paramAttemptId)
-    const { mutate: submitExam, isLoading: isSubmitting } = useSubmitExam()
-    const [exam, setExam] = useState(null)
-    const [correctAttemptId, setCorrectAttemptId] = useState(null)
 
+    const { data, isLoading, error: examError } = useExamTake(exam_id)
+    const { mutate: submitExam, isLoading: isSubmitting } = useSubmitExam()
+
+    const [exam, setExam] = useState(null)
+    const [attemptId, setAttemptId] = useState(null)
     const [answers, setAnswers] = useState({})
     const [timeLeft, setTimeLeft] = useState(null)
     const [groupedQuestions, setGroupedQuestions] = useState([])
@@ -22,79 +21,11 @@ const ExamDoingPage = () => {
     const [errorMessage, setErrorMessage] = useState('')
 
     const questionRefs = useRef({})
-
-    useEffect(() => {
-        if (data) {
-            setExam(data.exam)
-            setCorrectAttemptId(data.attemptId)
-
-            // Process questions immediately after setting exam
-            if (Array.isArray(data.exam?.questions)) {
-                const grouped = data.exam.questions.map((q) => [
-                    ...(q.childQuestions || []),
-                ])
-                setGroupedQuestions(grouped)
-                data.exam.questions.forEach((q) => {
-                    q.childQuestions?.forEach((child) => {
-                        questionRefs.current[child._id] = React.createRef()
-                    })
-                })
-            }
-        }
-    }, [data])
-
-    useEffect(() => {
-        if (!exam || !exam.time_limit || !correctAttemptId) return
-
-        const now = Date.now()
-        const saved = localStorage.getItem(`exam_timer_${correctAttemptId}`)
-        let startTime = now
-
-        if (saved) {
-            try {
-                startTime = JSON.parse(saved).startTime
-            } catch {
-                startTime = now
-            }
-        } else {
-            localStorage.setItem(
-                `exam_timer_${correctAttemptId}`,
-                JSON.stringify({ startTime })
-            )
-        }
-
-        const duration = exam.time_limit * 60
-        const elapsed = Math.floor((now - startTime) / 1000)
-        const remaining = Math.max(0, duration - elapsed)
-
-        setTimeLeft(remaining)
-
-        const interval = setInterval(() => {
-            setTimeLeft((prev) => {
-                if (prev <= 1) {
-                    clearInterval(interval)
-                    handleSubmit(true)
-                    return 0
-                }
-                return prev - 1
-            })
-        }, 1000)
-
-        return () => clearInterval(interval)
-    }, [exam, correctAttemptId])
-
-    const handleAnswerChange = (qid, val) => {
-        setAnswers((prev) => ({ ...prev, [qid]: val }))
-        const ref = questionRefs.current[qid]
-        if (ref?.current) {
-            ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
-            setTimeout(() => window.scrollBy(0, -80), 300)
-        }
-    }
+    const timerRef = useRef(null)
 
     const handleSubmit = useCallback(
         async (isAutoSubmit = false) => {
-            if (!correctAttemptId) {
+            if (!attemptId) {
                 setErrorMessage('Không tìm thấy ID lần thi. Vui lòng thử lại.')
                 return
             }
@@ -102,17 +33,32 @@ const ExamDoingPage = () => {
                 setErrorMessage('Không tìm thấy câu hỏi trong bài thi.')
                 return
             }
-            //childQuestion
+
+            const allQuestionIds = exam.questions
+                .flatMap((section) => section.childQuestions || [])
+                .map((child) => child._id)
+
+            const unansweredQuestionId = allQuestionIds.find(
+                (questionId) => !answers[questionId]
+            )
+
+            if (unansweredQuestionId && !isAutoSubmit) {
+                setErrorMessage(
+                    'Bạn cần trả lời đầy đủ tất cả câu hỏi trước khi nộp bài.'
+                )
+                return
+            }
+
             const getQuestionById = (questionId) => {
                 for (const section of exam.questions) {
-                    const childQuestion = section.childQuestions?.find(
-                        (child) => child._id === questionId
+                    const child = section.childQuestions?.find(
+                        (c) => c._id === questionId
                     )
-                    if (childQuestion) return childQuestion
+                    if (child) return child
                 }
                 return null
             }
-            // check ans
+
             const getAnswerValue = (questionId, answer) => {
                 const q = getQuestionById(questionId)
                 if (!q) {
@@ -120,45 +66,19 @@ const ExamDoingPage = () => {
                     return answer
                 }
                 if (q.type === 'multiple_choice') {
-                    return String(answer).toLowerCase()
+                    return String(answer || '').toLowerCase()
                 }
-                return String(answer).trim()
+                return String(answer || '').trim()
             }
 
-            console.log('Answers trước khi xử lý:', answers)
-            //dinh dang
-            const formattedAnswers = Object.entries(answers)
-                .filter(([, val]) => val !== undefined && val !== '')
-                .map(([questionId, answer]) => {
-                    const q = getQuestionById(questionId)
-                    if (!q) {
-                        console.warn(`Câu hỏi ${questionId} không hợp lệ.`)
-                        return null
-                    }
-                    return {
-                        questionId,
-                        answer: getAnswerValue(questionId, answer),
-                    }
-                })
-                .filter((item) => item !== null)
-
-            console.log('Formatted Answers:', formattedAnswers)
-
-            if (formattedAnswers.length === 0) {
-                setErrorMessage(
-                    'Vui lòng trả lời ít nhất một câu hỏi trước khi nộp bài.'
-                )
-                return
-            }
-
-            console.log('Dữ liệu gửi lên:', {
-                attemptId: correctAttemptId,
-                answers: formattedAnswers,
-            })
+            const formattedAnswers = allQuestionIds.map((questionId) => ({
+                questionId,
+                answer: getAnswerValue(questionId, answers[questionId] ?? ''),
+            }))
 
             try {
                 submitExam(
-                    { attemptId: correctAttemptId, answers: formattedAnswers },
+                    { attemptId: attemptId, answers: formattedAnswers },
                     {
                         onSuccess: (res) => {
                             if (res?.attemptId) {
@@ -192,18 +112,116 @@ const ExamDoingPage = () => {
                 setErrorMessage('Lỗi hệ thống khi nộp bài: ' + error.message)
             }
         },
-        [answers, correctAttemptId, exam, navigate, submitExam]
+        [answers, attemptId, exam, navigate, submitExam]
     )
+
+    useEffect(() => {
+        if (isLoading) return
+
+        if (!data) {
+            setErrorMessage('Không thể tải thông tin bài thi')
+            return
+        }
+
+        const { exam: examData, attemptId: newAttemptId } = data
+
+        if (!examData || !newAttemptId) {
+            setErrorMessage('Không thể tải thông tin bài thi')
+            return
+        }
+
+        setErrorMessage('')
+
+        setExam(examData)
+        setAttemptId(newAttemptId)
+
+        if (Array.isArray(examData.questions)) {
+            const grouped = examData.questions.map(q => [...(q.childQuestions || [])])
+            setGroupedQuestions(grouped)
+
+            const refs = {}
+            examData.questions.forEach(q => {
+                q.childQuestions?.forEach(child => {
+                    refs[child._id] = React.createRef()
+                })
+            })
+            questionRefs.current = refs
+        }
+
+        if (examData.time_limit) {
+            const now = Date.now()
+            const saved = localStorage.getItem(`exam_timer_${newAttemptId}`)
+            let startTime = now
+
+            if (saved) {
+                try {
+                    startTime = JSON.parse(saved).startTime
+                } catch {
+                    startTime = now
+                }
+            } else {
+                localStorage.setItem(
+                    `exam_timer_${newAttemptId}`,
+                    JSON.stringify({ startTime })
+                )
+            }
+
+            const duration = examData.time_limit * 60
+            const elapsed = Math.floor((now - startTime) / 1000)
+            const remaining = Math.max(0, duration - elapsed)
+
+            setTimeLeft(remaining)
+
+            if (timerRef.current) {
+                clearInterval(timerRef.current)
+            }
+
+            timerRef.current = setInterval(() => {
+                setTimeLeft(prev => {
+                    if (prev <= 1) {
+                        clearInterval(timerRef.current)
+                        handleSubmit(true)
+                        return 0
+                    }
+                    return prev - 1
+                })
+            }, 1000)
+        }
+
+        return () => {
+            if (timerRef.current) {
+                clearInterval(timerRef.current)
+            }
+        }
+    }, [data, isLoading])
+
+    const handleAnswerChange = (qid, val) => {
+        setAnswers((prev) => ({ ...prev, [qid]: val }))
+        const ref = questionRefs.current[qid]
+        if (ref?.current) {
+            ref.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+            setTimeout(() => window.scrollBy(0, -80), 300)
+        }
+    }
 
     if (isLoading)
         return <div className="text-center p-8">Đang tải đề thi...</div>
-    if (examError || !exam)
+    if (examError) {
+        console.log('Exam error:', examError)
         return (
             <div className="text-center p-8 text-red-600">
-                Lỗi khi tải đề thi:{' '}
-                {examError?.message || 'Không tìm thấy bài thi'}
+                Lỗi khi tải đề thi: {examError?.message || 'Không tìm thấy bài thi'}
             </div>
         )
+    }
+    if (!exam) {
+        console.log('Missing exam:', { exam, attemptId })
+        return (
+            <div className="text-center p-8 text-red-600">
+                {errorMessage || 'Không tìm thấy bài thi'}
+            </div>
+        )
+    }
 
     return (
         <div className="max-w-7xl mx-auto">
@@ -225,7 +243,7 @@ const ExamDoingPage = () => {
                         timeLeft={timeLeft}
                     />
                 </div>
-
+            
                 <div className="flex-1 overflow-y-auto pr-4">
                     {(exam.questions || []).map((q, idx) => (
                         <div key={q._id}>

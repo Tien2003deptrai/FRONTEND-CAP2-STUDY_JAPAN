@@ -1,5 +1,3 @@
-'use client'
-
 import React, { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useExamById, useExamHistory, useStartExam } from '@/hooks/useExam'
@@ -20,7 +18,6 @@ const ExamDetailPage = () => {
             setError('Không tìm thấy ID bài thi')
             return
         }
-
         try {
             await startExam(exam._id)
             navigate(`/practice/exam/doing/${exam_id}`)
