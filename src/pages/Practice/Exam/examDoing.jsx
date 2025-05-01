@@ -84,14 +84,14 @@ const ExamDoingPage = () => {
                     { attemptId, answers: formattedAnswers },
                     {
                         onSuccess: (res) => {
-                            localStorage.removeItem(`exam_timer_${attemptId}`)
                             if (res?.attemptId) {
                                 setTimeout(() => {
                                     navigate(
-                                        `/practice/exam/result/${res.attemptId}`
+                                        `/practice/exam/result/${res.attemptId}`,
+                                        { state: { res } }
                                     )
                                 }, 500)
-                                toast.success("Nộp bài thành công!")
+                                toast.success('Nộp bài thành công!')
                             } else {
                                 setErrorMessage(
                                     'Không nhận được ID bài thi. Vui lòng thử lại.'
