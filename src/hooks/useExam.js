@@ -1,5 +1,5 @@
-import { useQuery, useMutation } from '@tanstack/react-query'
 import axiosInstance from '@/network/httpRequest'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 const EXAM_KEYS = {
     all: ['exams'],
@@ -97,4 +97,4 @@ export const useExamHistory = (examId) =>
         enabled: !!examId,
     })
 
-export { examApi, EXAM_KEYS }
+export { EXAM_KEYS, examApi }

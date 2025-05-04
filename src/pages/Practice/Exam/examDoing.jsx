@@ -1,11 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate, useLocation, useParams } from 'react-router-dom'
-import { toast, ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import QuestionNavigator from '@/components/practice/question/QuestionNavigator'
 import QuestionSection from '@/components/practice/question/QuestionSection'
 import SubmitConfirmModal from '@/components/practice/question/SubmitConfirmModal'
 import { useExamTake, useSubmitExam } from '@/hooks/useExam'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 
 const ExamDoingPage = () => {
     const { exam_id } = useParams()
@@ -56,27 +56,23 @@ const ExamDoingPage = () => {
                 return
             }
 
-            const getQuestionById = (questionId) => {
-                for (const section of exam.questions) {
-                    const child = section.childQuestions?.find(
-                        (c) => c._id === questionId
-                    )
-                    if (child) return child
-                }
-                return null
-            }
-
             const getAnswerValue = (questionId, answer) => {
-                const q = getQuestionById(questionId)
-                if (!q) return answer
-                return q.type === 'multiple_choice'
-                    ? String(answer || '').toLowerCase()
-                    : String(answer || '').trim()
+                const question = exam.questions
+                    .flatMap((section) => section.childQuestions || [])
+                    .find((child) => child._id === questionId)
+                if (!question) return answer
+                return String(answer || '').toLowerCase()
             }
 
-            const formattedAnswers = allQuestionIds.map((questionId) => ({
-                questionId,
-                answer: getAnswerValue(questionId, answers[questionId] ?? ''),
+            const formattedAnswers = exam.questions.map((section) => ({
+                parentQuestionId: section._id,
+                childAnswers: (section.childQuestions || []).map((child) => ({
+                    id: child._id,
+                    userAnswer: getAnswerValue(
+                        child._id,
+                        answers[child._id] ?? ''
+                    ),
+                })),
             }))
 
             try {

@@ -1,5 +1,5 @@
 import { useExamResult } from '@/hooks/useExam'
-import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 
 const ExamResultPage = () => {
     const { attemptId } = useParams()
@@ -11,7 +11,7 @@ const ExamResultPage = () => {
 
     const navigate = useNavigate()
     const { data: result, isLoading } = useExamResult(attemptId)
-    
+
     if (isLoading)
         return (
             <div className="text-center py-10 text-gray-500">
@@ -40,7 +40,6 @@ const ExamResultPage = () => {
                         </h3>
                         <p className="text-xl font-bold text-green-700">
                             {result.totalScore} điểm
-                           
                         </p>
                     </div>
 
@@ -99,8 +98,7 @@ const ExamResultPage = () => {
                                         <p>
                                             <strong>Số điểm:</strong>{' '}
                                             <span className="font-mono text-green-700">
-                                                {answer.score }
-                                                    
+                                                {answer.score}
                                             </span>
                                         </p>
                                     </div>
@@ -135,8 +133,6 @@ const ExamResultPage = () => {
 }
 
 export default ExamResultPage
-
-
 
 // import { useLocation, useNavigate } from 'react-router-dom'
 
