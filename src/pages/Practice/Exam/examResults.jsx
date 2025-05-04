@@ -19,7 +19,6 @@ const ExamResultPage = () => {
     const { attemptId } = useParams()
     const navigate = useNavigate()
     const { data: result, isLoading } = useExamResult(attemptId)
-
     const [opened, { open, close }] = useDisclosure(false)
     const [selectedQuestion, setSelectedQuestion] = useState(null)
 
@@ -110,13 +109,15 @@ const ExamResultPage = () => {
                                     </Text>
                                     <Badge
                                         color={
-                                            question.isCorrect ? 'green' : 'red'
+                                            question?.isCorrect
+                                                ? 'green'
+                                                : 'red'
                                         }
                                         variant="filled"
                                         size="md"
                                     >
-                                        {question.isCorrect ? 'Đúng' : 'Sai'} -{' '}
-                                        {question.score} điểm
+                                        {question?.isCorrect ? 'Đúng' : 'Sai'} -{' '}
+                                        {question?.score ?? 0} điểm
                                     </Badge>
                                 </Group>
                             </Paper>
@@ -152,8 +153,17 @@ const ExamResultPage = () => {
                 {selectedQuestion && (
                     <Stack spacing="md">
                         <Text fw={600}>📝 {selectedQuestion.content}</Text>
+                        <div>
+                            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                                {selectedQuestion.options.map((opt) => (
+                                    <li key={opt._id}>
+                                        {opt.id.toUpperCase()}. {opt.text}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                         <Text>
-                            ✅ <strong>Đáp án đúng:</strong>{' '}
+                            <strong>Đáp án đúng:</strong>{' '}
                             <span style={{ color: '#15803d' }}>
                                 {
                                     selectedQuestion.options.find(
@@ -165,7 +175,7 @@ const ExamResultPage = () => {
                             </span>
                         </Text>
                         <Text>
-                            ❌ <strong>Đáp án bạn chọn:</strong>{' '}
+                            <strong>Đáp án bạn chọn:</strong>{' '}
                             <span style={{ color: '#b91c1c' }}>
                                 {selectedQuestion.options.find(
                                     (opt) =>
@@ -173,18 +183,6 @@ const ExamResultPage = () => {
                                 )?.text || 'Không chọn'}
                             </span>
                         </Text>
-                        <div>
-                            <Text fw={500} mb={4}>
-                                Tất cả lựa chọn:
-                            </Text>
-                            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                                {selectedQuestion.options.map((opt) => (
-                                    <li key={opt._id}>
-                                        {opt.id.toUpperCase()}. {opt.text}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
                     </Stack>
                 )}
             </Modal>
