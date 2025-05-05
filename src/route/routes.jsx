@@ -17,6 +17,8 @@ import EditVocabulary from '@/pages/edit-course/EditVocabulary'
 import EditExam from '@/pages/edit-exam/EditExam'
 import EditListQuestion from '@/pages/edit-exam/EditListQuestion'
 import EditQuestion from '@/pages/edit-exam/EditQuestion'
+import ExamReport from '@/pages/exam-report/ExamReport'
+import ReportDetails from '@/pages/exam-report/report-details/ReportDetails'
 import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
@@ -232,6 +234,14 @@ export const teacherRoutes = [
                     },
                     { path: 'exam', element: <ManageExam /> },
                     { path: 'exam/edit/:examId', element: <EditExam /> },
+                    {
+                        path: 'exam/edit/:examId/report',
+                        element: <ExamReport />,
+                    },
+                    {
+                        path: 'exam/edit/:examId/report/:studentId',
+                        element: <ReportDetails />,
+                    },
                     {
                         path: 'exam/edit/:examId/:questionId',
                         element: <EditQuestion />,
