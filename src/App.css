@@ -144,9 +144,11 @@ strong {
     .primary-btn {
         @apply bg-primary text-white text-sm px-4 py-2 rounded-md border border-solid border-transparent shadow-sm cursor-pointer text-center;
     }
+
     .primary-btn:hover {
         @apply bg-white text-primary duration-150 border border-solid border-primary;
     }
+
     .primary-btn:disabled {
         @apply bg-slate-400 cursor-not-allowed;
     }
@@ -156,10 +158,28 @@ strong {
     .second-btn {
         @apply bg-white text-primary text-sm px-4 py-2 rounded-md border border-solid border-primary shadow-sm cursor-pointer text-center;
     }
+
     .second-btn:hover {
         @apply bg-primary text-white duration-150;
     }
+
     .second-btn:disabled {
         @apply bg-slate-400 cursor-not-allowed border-transparent text-white;
     }
+}
+
+.input {
+    @apply w-full px-4 py-2 border border-red-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 bg-white text-gray-800;
+}
+
+.btn-primary {
+    @apply px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition font-semibold;
+}
+
+.btn-secondary {
+    @apply px-4 py-2 bg-white border border-red-500 text-red-600 rounded-md hover:bg-red-50 transition font-semibold;
+}
+
+.card {
+    @apply bg-white border border-red-100 rounded-xl shadow hover:shadow-md p-4 transition;
 }

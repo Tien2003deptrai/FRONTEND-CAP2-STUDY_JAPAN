@@ -62,7 +62,7 @@ const ExamListPage = () => {
 
                             <div className="space-y-2 text-sm text-gray-500">
                                 <p>🕒 Thời gian: {exam.time_limit} phút</p>
-                                <p>🏁 Điểm đạt: {exam.total_points} điểm</p>
+                                <p>🏁 Level: {exam.level}</p>
                             </div>
 
                             {lastDone ? (
