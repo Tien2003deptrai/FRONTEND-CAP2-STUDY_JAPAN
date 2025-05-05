@@ -143,48 +143,77 @@ const ExamResultPage = () => {
                 </Group>
             </Paper>
 
-            <Modal
-                opened={opened}
-                onClose={close}
-                title="Chi tiết câu hỏi"
-                centered
-                size="lg"
-            >
-                {selectedQuestion && (
-                    <Stack spacing="md">
-                        <Text fw={600}>📝 {selectedQuestion.content}</Text>
-                        <div>
-                            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                                {selectedQuestion.options.map((opt) => (
-                                    <li key={opt._id}>
-                                        {opt.id.toUpperCase()}. {opt.text}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                        <Text>
-                            <strong>Đáp án đúng:</strong>{' '}
-                            <span style={{ color: '#15803d' }}>
-                                {
-                                    selectedQuestion.options.find(
-                                        (opt) =>
-                                            opt.id ===
-                                            selectedQuestion.correctAnswer
-                                    )?.text
-                                }
-                            </span>
-                        </Text>
-                        <Text>
-                            <strong>Đáp án bạn chọn:</strong>{' '}
-                            <span style={{ color: '#b91c1c' }}>
-                                {selectedQuestion.options.find(
-                                    (opt) =>
-                                        opt.id === selectedQuestion.userAnswer
-                                )?.text || 'Không chọn'}
-                            </span>
-                        </Text>
-                    </Stack>
-                )}
+            <Modal size={800} opened={opened} onClose={close}>
+                <h2 className="text-2xl font-semibold text-primary mb-4">
+                    Chi tiết câu hỏi
+                </h2>
+                <hr />
+                <div className="flex flex-col px-8 py-4 text-lg">
+                    {selectedQuestion?.isCorrect ? (
+                        <p className="text-white w-fit bg-green-500 rounded-3xl text-sm px-6 py-2 font-bold mb-4">
+                            Đúng
+                        </p>
+                    ) : (
+                        <p className="text-white w-fit bg-primary rounded-3xl text-sm px-6 py-2 font-bold mb-4">
+                            Sai
+                        </p>
+                    )}
+                    <p className="mb-4">{selectedQuestion?.content}</p>
+                    <div className="flex flex-col gap-3">
+                        {selectedQuestion?.options.map((option, index) => {
+                            const isUserAnswer =
+                                option.id === selectedQuestion?.userAnswer
+                            const isCorrectAnswer =
+                                option.id === selectedQuestion?.correctAnswer
+                            const isWrongAnswer =
+                                isUserAnswer && !selectedQuestion?.isCorrect
+
+                            return (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-2"
+                                >
+                                    <span
+                                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                            isCorrectAnswer
+                                                ? 'border-green-500 bg-green-100'
+                                                : isWrongAnswer
+                                                  ? 'border-red-500 bg-red-100'
+                                                  : 'border-gray-300'
+                                        }`}
+                                    >
+                                        {isUserAnswer && (
+                                            <div
+                                                className={`w-2 h-2 rounded-full ${
+                                                    isCorrectAnswer
+                                                        ? 'bg-green-500'
+                                                        : 'bg-red-500'
+                                                }`}
+                                            ></div>
+                                        )}
+                                    </span>
+                                    <span
+                                        className={`${
+                                            isCorrectAnswer
+                                                ? 'text-green-500 font-bold'
+                                                : isWrongAnswer
+                                                  ? 'text-red-500 font-bold'
+                                                  : ''
+                                        }`}
+                                    >
+                                        {option.id.toUpperCase()}. {option.text}
+                                    </span>
+                                </div>
+                            )
+                        })}
+                    </div>
+                    {!selectedQuestion?.isCorrect && (
+                        <p className="text-green-500 font-bold mt-4">
+                            Đáp án đúng là:{' '}
+                            {selectedQuestion?.correctAnswer.toUpperCase()}
+                        </p>
+                    )}
+                </div>
             </Modal>
         </Container>
     )
