@@ -52,17 +52,18 @@ function EditExam() {
                         </label>
                     </div>
                 </div>
-                <Link to={'report'} className="flex items-center gap-4">
-                    <button
+                <div className="flex items-center gap-4">
+                    <Link
+                        to={'report'}
                         className="rounded-md px-4 py-2 text-sm text-blue-600 border-2 border-solid border-blue-600 duration-150 hover:bg-blue-100"
                         onClick={open}
                     >
                         Thống kê
-                    </button>
+                    </Link>
                     <button className="primary-btn" onClick={open}>
                         Cài đặt bài thi
                     </button>
-                </Link>
+                </div>
             </div>
             {examData?.description && (
                 <p className="my-4 text-gray-500 italic tracking-wider">
