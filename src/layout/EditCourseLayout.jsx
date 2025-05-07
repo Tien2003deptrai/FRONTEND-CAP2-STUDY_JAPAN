@@ -43,7 +43,7 @@ function EditCourseLayout() {
                     href="/"
                     className="font-mono text-2xl font-extrabold text-white flex items-center ml-8"
                 >
-                    {lessonList?.data?.course?.name || 'Study Japan'}
+                    {lessonList?.data?.course?.name || 'Nihongo'}
                 </a>
             </header>
 

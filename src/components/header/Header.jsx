@@ -19,7 +19,7 @@ function Header() {
                         href="/"
                         className="font-mono text-3xl font-extrabold tracking-wide flex items-center"
                     >
-                        STUDY JAPAN
+                        Nihongo
                     </a>
                 </div>
 

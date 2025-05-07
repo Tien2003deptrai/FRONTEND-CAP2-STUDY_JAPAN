@@ -5,17 +5,15 @@ const KanjiPage = () => {
     const jlptLevels = ['N1', 'N2', 'N3', 'N4', 'N5']
 
     return (
-        // <div className="bg-gray-50 py-12">
-        <div className="bg-gray-50 py-12">
+        <div className="bg-gradient-to-br from-white to-blue-50 py-12 min-h-screen">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-4xl font-semibold text-gray-800 text-center mb-8">
-                    Learn Kanji
+                <h1 className="text-5xl font-bold text-center text-blue-900 mb-14 tracking-tight">
+                    Học Kanji theo cấp độ JLPT
                 </h1>
 
-                {/* Loop through JLPT levels */}
                 {jlptLevels.map((level) => (
-                    <div key={level} className="mb-12">
-                        <h2 className="text-3xl font-semibold mb-4 text-gray-900">
+                    <div key={level} className="mb-16">
+                        <h2 className="text-2xl font-semibold mb-6 text-black-700 flex items-center gap-2">
                             Kanji {level}
                         </h2>
                         <KanjiLevel jlptLevel={level} />

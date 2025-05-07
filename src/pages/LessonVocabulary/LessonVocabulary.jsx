@@ -3,7 +3,12 @@ import useFetchVocabulary from '@/hooks/useFetchVocabulary'
 
 const LessonVocabulary = ({ lessonId }) => {
     const { data, isLoading, error } = useFetchVocabulary(lessonId)
-    console.log('data', data)
+
+    const speak = (text) => {
+        const utterance = new SpeechSynthesisUtterance(text)
+        utterance.lang = 'ja-JP'
+        speechSynthesis.speak(utterance)
+    }
 
     if (isLoading) return <p>Đang tải từ vựng...</p>
     if (error) return <p className="text-red-500">Lỗi tải từ vựng</p>
@@ -14,11 +19,18 @@ const LessonVocabulary = ({ lessonId }) => {
             <ul className="space-y-4">
                 {data?.map((vocab) => (
                     <li key={vocab._id} className="border-b pb-2">
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-start">
                             <div>
-                                <p className="text-lg font-semibold">
+                                <p className="text-lg font-semibold flex items-center gap-2">
                                     {vocab.word} ({vocab.kana}) -{' '}
                                     {vocab.meaning}
+                                    <button
+                                        onClick={() => speak(vocab.word)}
+                                        className="text-blue-600 hover:text-blue-800 text-sm"
+                                        title="Nghe phát âm"
+                                    >
+                                        🔊
+                                    </button>
                                 </p>
                                 <p className="text-sm text-gray-500 italic">
                                     {vocab.example}
@@ -29,13 +41,6 @@ const LessonVocabulary = ({ lessonId }) => {
                                     </p>
                                 )}
                             </div>
-                            {vocab.audio && (
-                                <audio
-                                    controls
-                                    src={vocab.audio}
-                                    className="ml-4"
-                                />
-                            )}
                         </div>
                     </li>
                 ))}

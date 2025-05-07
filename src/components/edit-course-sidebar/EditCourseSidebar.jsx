@@ -16,6 +16,15 @@ function EditCourseSidebar({ lessonId, onSelectLesson }) {
                     Chỉnh sửa cấu trúc khóa học
                 </Link>
             </div>
+
+            <div className="w-full flex flex-col gap-2">
+                <Link
+                    className="primary-btn"
+                    to={`/teacher/edit/${courseId}/students`}
+                >
+                    Xem danh sách học viên
+                </Link>
+            </div>
             <hr />
 
             <div className="w-full flex flex-col gap-3">

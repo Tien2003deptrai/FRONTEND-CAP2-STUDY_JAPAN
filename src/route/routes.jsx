@@ -45,6 +45,15 @@ import Voice from '@/pages/Practice/Voice'
 import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
 import { Navigate } from 'react-router-dom'
+import ProfieLayout from '@/layout/ProfileLayout'
+import CourseStudentTable from '@/pages/CourseStudentTable/CourseStudentTable'
+import FlashcardDetail from '@/pages/FlashcardDetail/FlashcardDetail'
+import EditFlashcard from '@/pages/EditFlashcard/EditFlashcard'
+import MemoryCardGame from '@/components/practice/MemoryCardGame/MemoryCardGame'
+import MiniRPGGame from '@/components/MiniRPGGame/MiniRPGGame'
+import AddVocabulary from '@/pages/Vocabulary/AddVocabulary'
+import Vocabularies from '@/pages/Vocabulary/Vocabularies'
+// import VocabularyDetail from '@/pages/Vocabulary/VocabularyDetail'
 
 export const publicRoutes = [
     {
@@ -57,10 +66,6 @@ export const publicRoutes = [
         element: <Login />,
     },
     {
-        path: 'user/:userId',
-        element: <ProfileUser />,
-    },
-    {
         path: 'not-allowed',
         element: <Forbiden />,
     },
@@ -68,6 +73,7 @@ export const publicRoutes = [
         path: '*',
         element: <PageNotFound />,
     },
+    // game
 
     // Admin routes with AdminLayOut
     {
@@ -124,6 +130,19 @@ export const studentRoutes = [
     },
 ]
 
+export const profileRoutes = [
+    {
+        path: '/profile',
+        element: <ProfieLayout />,
+        children: [
+            {
+                index: true,
+                element: <ProfileUser />,
+            },
+        ],
+    },
+]
+
 export const kanjiRoutes = [
     {
         path: '/kanji',
@@ -162,9 +181,14 @@ export const practiceRoutes = [
                     { path: 'flashcard/:deckId', element: <Flashcard /> },
                     { path: 'vocabulary', element: <VocabularyList /> },
                     { path: 'vocabulary/:id', element: <VocabularyDetail /> },
+
+                    { path: 'memory', element: <MemoryCardGame /> },
+                    { path: 'mini-rpg', element: <MiniRPGGame /> }, // Kiểm tra lại
+
                     { path: 'voice', element: <Voice /> },
                     { path: 'renshuu', element: <Renshuu /> },
                     { path: 'translate', element: <Translate /> },
+
                     {
                         path: 'exam',
                         children: [
@@ -176,14 +200,16 @@ export const practiceRoutes = [
                                 path: ':exam_id',
                                 element: <ExamDetailPage />,
                             },
-                            
+                            {
+                                path: 'doing/:attemptId',
+                                element: <ExamDoingPage />,
+                            },
                             {
                                 path: 'result/:attemptId',
                                 element: <ExamResultPage />,
                             },
                         ],
                     },
-                    
                 ],
             },
         ],
@@ -221,8 +247,13 @@ export const teacherRoutes = [
                 path: 'question/:lessonId/:renshuuId',
                 element: <EditQuestion isRevisionMode={true} />,
             },
+            {
+                path: 'students',
+                element: <CourseStudentTable />,
+            },
         ],
     },
+
     {
         path: '/manage-document',
         element: <MainLayout isFooter={false} />,
@@ -240,6 +271,14 @@ export const teacherRoutes = [
                         path: 'flashcard/create-flashcard',
                         element: <CreateFlashcard />,
                     },
+                    {
+                        path: 'flashcard/edit/:deckId',
+                        element: <EditFlashcard />,
+                    },
+                    {
+                        path: 'flashcard/study/:deckId',
+                        element: <FlashcardDetail />,
+                    },
                     { path: 'exam', element: <ManageExam /> },
                     { path: 'exam/edit/:examId', element: <EditExam /> },
                     {
@@ -253,6 +292,19 @@ export const teacherRoutes = [
                     {
                         path: 'exam/edit/:examId/:questionId',
                         element: <EditQuestion />,
+                    },
+                    { path: 'vocab', element: <Vocabularies /> },
+                    {
+                        path: 'vocab/create-vocab',
+                        element: <AddVocabulary />,
+                    },
+                    {
+                        path: 'vocab/study/:id',
+                        element: <VocabularyDetail />,
+                    },
+                    {
+                        path: 'vocab/edit/:id',
+                        element: <EditFlashcard />,
                     },
                 ],
             },

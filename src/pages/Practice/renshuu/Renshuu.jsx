@@ -17,6 +17,8 @@ export default function RenshuuPage() {
         },
     })
 
+    console.log('lessons', lessons)
+
     const { data } = useRenshuu(selectedLessonId)
 
     const handleSelect = (questionId, optionId) => {
