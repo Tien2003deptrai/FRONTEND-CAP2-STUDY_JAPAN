@@ -15,7 +15,10 @@ import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
 import EditVocabulary from '@/pages/edit-course/EditVocabulary'
 import EditExam from '@/pages/edit-exam/EditExam'
+import EditListQuestion from '@/pages/edit-exam/EditListQuestion'
 import EditQuestion from '@/pages/edit-exam/EditQuestion'
+import ExamReport from '@/pages/exam-report/ExamReport'
+import ReportDetails from '@/pages/exam-report/report-details/ReportDetails'
 import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
@@ -34,7 +37,10 @@ import ExamList from '@/pages/Practice/Exam/examList'
 import ExamResultPage from '@/pages/Practice/Exam/examResults'
 import Deck from '@/pages/Practice/flashcard/Deck'
 import Flashcard from '@/pages/Practice/flashcard/Flashcard'
+import Renshuu from '@/pages/Practice/renshuu/Renshuu'
 import Translate from '@/pages/Practice/Translate/Translate'
+import VocabularyList from '@/pages/Practice/Vocabulary/Vocabulary'
+import VocabularyDetail from '@/pages/Practice/VocabularyDetail/VocabularyDetail'
 import Voice from '@/pages/Practice/Voice'
 import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
@@ -47,7 +53,7 @@ import MemoryCardGame from '@/components/practice/MemoryCardGame/MemoryCardGame'
 import MiniRPGGame from '@/components/MiniRPGGame/MiniRPGGame'
 import AddVocabulary from '@/pages/Vocabulary/AddVocabulary'
 import Vocabularies from '@/pages/Vocabulary/Vocabularies'
-import VocabularyDetail from '@/pages/Vocabulary/VocabularyDetail'
+// import VocabularyDetail from '@/pages/Vocabulary/VocabularyDetail'
 
 export const publicRoutes = [
     {
@@ -173,11 +179,14 @@ export const practiceRoutes = [
                     },
                     { path: 'flashcard', element: <Deck /> },
                     { path: 'flashcard/:deckId', element: <Flashcard /> },
+                    { path: 'vocabulary', element: <VocabularyList /> },
+                    { path: 'vocabulary/:id', element: <VocabularyDetail /> },
 
                     { path: 'memory', element: <MemoryCardGame /> },
                     { path: 'mini-rpg', element: <MiniRPGGame /> }, // Kiểm tra lại
 
                     { path: 'voice', element: <Voice /> },
+                    { path: 'renshuu', element: <Renshuu /> },
                     { path: 'translate', element: <Translate /> },
 
                     {
@@ -204,6 +213,10 @@ export const practiceRoutes = [
                 ],
             },
         ],
+    },
+    {
+        path: 'practice/exam/doing/:exam_id',
+        element: <ExamDoingPage />,
     },
 ]
 
@@ -243,7 +256,7 @@ export const teacherRoutes = [
 
     {
         path: '/manage-document',
-        element: <MainLayout />,
+        element: <MainLayout isFooter={false} />,
         children: [
             {
                 path: '',
@@ -269,6 +282,14 @@ export const teacherRoutes = [
                     { path: 'exam', element: <ManageExam /> },
                     { path: 'exam/edit/:examId', element: <EditExam /> },
                     {
+                        path: 'exam/edit/:examId/report',
+                        element: <ExamReport />,
+                    },
+                    {
+                        path: 'exam/edit/:examId/report/:studentId',
+                        element: <ReportDetails />,
+                    },
+                    {
                         path: 'exam/edit/:examId/:questionId',
                         element: <EditQuestion />,
                     },
@@ -286,6 +307,10 @@ export const teacherRoutes = [
                         element: <EditFlashcard />,
                     },
                 ],
+            },
+            {
+                path: 'exam/edit/:examId/questions',
+                element: <EditListQuestion />,
             },
         ],
     },

@@ -1,9 +1,11 @@
-// File: src/layouts/UserLayout.jsx
 import React, { useState } from 'react'
 import Footer from '@/components/footer/Footer'
 import ScrollToTop from '@/components/scroll-to-top/ScrollToTop'
 import { Outlet, useNavigate } from 'react-router-dom'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
+import CloseIcon from '@mui/icons-material/Close'
+import LockResetIcon from '@mui/icons-material/LockReset'
+import KeyIcon from '@mui/icons-material/Key'
 import ChangePasswordModal from '@/components/modal/ChangePasswordModal'
 import ForgotPasswordModal from '@/components/modal/ForgotPasswordModal'
 
@@ -26,9 +28,9 @@ const UserLayout = () => {
             <div className="bg-red-500 px-6 py-4 flex items-center justify-between">
                 <button
                     onClick={() => navigate('/')}
-                    className="text-xl font-bold text-white hover:text-yellow-100"
+                    className="text-white hover:text-yellow-100"
                 >
-                    ✕
+                    <CloseIcon />
                 </button>
                 <h1 className="text-lg font-bold text-white">
                     Cài đặt tài khoản
@@ -41,32 +43,32 @@ const UserLayout = () => {
                         <MoreVertIcon className="text-white" />
                     </button>
                     {showMenu && (
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                        <div className="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg z-10">
                             <button
                                 onClick={() => handleAction('change-password')}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
-                                🔐 Đổi mật khẩu
+                                <LockResetIcon fontSize="small" />
+                                Đổi mật khẩu
                             </button>
                             <button
                                 onClick={() => handleAction('forgot-password')}
-                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                className="flex items-center gap-2 w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                             >
-                                🔁 Lấy lại mật khẩu
+                                <KeyIcon fontSize="small" />
+                                Lấy lại mật khẩu
                             </button>
                         </div>
                     )}
                 </div>
             </div>
 
-            {/* Full-width content */}
             <main className="flex-1 px-4 py-8">
                 <Outlet />
             </main>
 
             <Footer />
 
-            {/* Modals */}
             {showChangePassword && (
                 <ChangePasswordModal
                     onClose={() => setShowChangePassword(false)}

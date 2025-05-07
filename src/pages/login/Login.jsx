@@ -70,7 +70,7 @@ const Login = () => {
                     <div className="w-20 h-20 bg-white rounded-full flex justify-center items-center mb-6 shadow-lg">
                         <span className="text-4xl text-red-600">日</span>
                     </div>
-                    <h2 className="text-3xl font-bold mb-2">Sakura Nihongo </h2>
+                    <h2 className="text-3xl font-bold mb-2">Nihongo </h2>
                     <h3 className="text-xl mb-4">日本語を学ぼう!</h3>
                     <p className="text-center mb-4 text-lg">
                         Chào mừng bạn đến với nền tảng học tiếng Nhật hàng đầu
@@ -90,7 +90,7 @@ const Login = () => {
                 <div className="flex-1 bg-white px-8 py-24 w-1/2 h-full">
                     <div className="flex justify-between items-center mb-6">
                         <div className="text-4xl font-bold text-red-600">
-                            Sakura Nihongo{' '}
+                            Nihongo{' '}
                         </div>
                         <div className="relative">
                             <button

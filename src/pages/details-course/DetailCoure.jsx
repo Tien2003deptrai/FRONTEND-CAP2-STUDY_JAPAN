@@ -12,6 +12,7 @@ import LessonVocabulary from '../LessonVocabulary/LessonVocabulary'
 import LessonHina from '../LessonHina/LessonHina'
 import axiosInstance from '@/network/httpRequest'
 import { Button } from '@mantine/core'
+import RenshuuPractice from '@/components/RenshuuPractice/RenshuuPractice'
 
 function CourseDetail() {
     const { courseId } = useParams()
@@ -161,6 +162,12 @@ function CourseDetail() {
                         courseId={courseId}
                         lessonId={lessons[currentLessonIndex]?._id}
                     />
+
+                    {lessons[currentLessonIndex]?._id && (
+                        <RenshuuPractice
+                            lessonId={lessons[currentLessonIndex]?._id}
+                        />
+                    )}
 
                     {lessons && currentLessonIndex < lessons.length - 1 && (
                         <button

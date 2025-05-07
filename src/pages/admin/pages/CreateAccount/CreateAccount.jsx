@@ -11,12 +11,33 @@ const CreateAccount = () => {
     })
     const [loading, setLoading] = useState(false)
 
+    const isValidEmail = (email) => {
+        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+        if (!regex.test(email)) return false
+
+        const invalidDomains = ['example.com', 'test.com', 'domain.com']
+        const emailDomain = email.split('@')[1]
+
+        return !invalidDomains.includes(emailDomain)
+    }
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+
+        if (!isValidEmail(formData.email)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Email không hợp lệ',
+                text: 'Vui lòng nhập địa chỉ email hợp lệ (Không sử dụng email như example.com).',
+                confirmButtonColor: '#d33',
+            })
+            return
+        }
+
         setLoading(true)
         try {
             const response = await axiosInstance.post('/auth/signup', formData)

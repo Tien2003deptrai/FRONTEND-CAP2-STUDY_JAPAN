@@ -1,53 +1,21 @@
-import { useExamHistory, useExamList } from '@/hooks/useExam'
+import {  useExamList } from '@/hooks/useExam'
 import { useNavigate } from 'react-router-dom'
 
 const ExamListPage = () => {
     const { data: exams, isLoading: isExamLoading } = useExamList()
     const navigate = useNavigate()
 
-    // ✅ Lấy toàn bộ lịch sử các bài đã làm của user
-    const { data: allHistory, isLoading: isHistoryLoading } = useExamHistory() // Không truyền examId → lấy tất cả
 
-    if (isExamLoading || isHistoryLoading)
+    if (isExamLoading )
         return <div>Đang tải danh sách bài thi...</div>
 
-    // ✅ Gom lịch sử theo examId
-    const historyMap = Array.isArray(allHistory)
-        ? allHistory.reduce((map, attempt) => {
-              const examId = attempt.exam?._id
-              if (examId) {
-                  if (!map[examId]) {
-                      map[examId] = []
-                  }
-                  map[examId].push(attempt)
-              }
-              return map
-          }, {})
-        : {}
-
-    // ✅ Hàm xử lý khi click "Xem chi tiết"
-    const handleClickExam = (exam) => {
-        const attempts = historyMap[exam._id] || []
-
-        if (attempts.length >= 2) {
-            alert('❌ Bạn đã làm bài 2 lần, không thể làm lại nữa!')
-            return
-        }
-
-        navigate(`/practice/exam/${exam._id}`)
-    }
 
     return (
         <div className="p-4">
-            <h1 className="text-2xl font-bold mb-6">Danh sách bài thi</h1>
+            <h1 className="text-5xl font-bold mb-6">Danh sách bài thi</h1>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {exams?.map((exam) => {
-                    const attempts = historyMap[exam._id] || []
-                    const lastDone = attempts.find(
-                        (a) => a.status === 'completed'
-                    )
-
                     return (
                         <div
                             key={exam._id}
@@ -59,31 +27,16 @@ const ExamListPage = () => {
                             <p className="text-gray-600 mb-4">
                                 {exam.description}
                             </p>
-
                             <div className="space-y-2 text-sm text-gray-500">
                                 <p>🕒 Thời gian: {exam.time_limit} phút</p>
-                                <p>🏁 Điểm đạt: {exam.total_points} điểm</p>
+                                <p>🏁 Level: {exam.level}</p>
                             </div>
-
-                            {lastDone ? (
                                 <button
-                                    onClick={() =>
-                                        navigate(
-                                            `/practice/exam/result/${lastDone._id}`
-                                        )
-                                    }
-                                    className="mt-4 w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                                >
-                                    ✅ Đã làm - Xem kết quả
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={() => handleClickExam(exam)}
+                                    onClick={() =>  navigate(`/practice/exam/${exam._id}`)}
                                     className="mt-4 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
                                 >
                                     Xem chi tiết
                                 </button>
-                            )}
                         </div>
                     )
                 })}
