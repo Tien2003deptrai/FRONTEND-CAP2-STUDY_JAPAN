@@ -1,130 +1,221 @@
-import React from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
 import { useExamResult } from '@/hooks/useExam'
+import { useNavigate, useParams } from 'react-router-dom'
+import {
+    Modal,
+    Button,
+    Paper,
+    Text,
+    Title,
+    Badge,
+    Group,
+    Stack,
+    Container,
+    Divider,
+} from '@mantine/core'
+import { useDisclosure } from '@mantine/hooks'
+import { useState } from 'react'
 
 const ExamResultPage = () => {
     const { attemptId } = useParams()
     const navigate = useNavigate()
     const { data: result, isLoading } = useExamResult(attemptId)
+    const [opened, { open, close }] = useDisclosure(false)
+    const [selectedQuestion, setSelectedQuestion] = useState(null)
 
-    if (isLoading)
+    if (isLoading) {
         return (
             <div className="text-center py-10 text-gray-500">
                 Đang tải kết quả...
             </div>
         )
-    if (!result)
+    }
+
+    if (!result) {
         return (
             <div className="text-center py-10 text-red-600">
                 Không tìm thấy kết quả bài thi
             </div>
         )
+    }
 
+    const openModal = (question) => {
+        setSelectedQuestion(question)
+        open()
+    }
 
     return (
-        <div className="p-6 max-w-5xl mx-auto text-gray-800">
-            <div className="bg-white rounded-xl shadow-md p-8 border border-red-200">
-                <h1 className="text-3xl font-bold text-red-600 mb-6 text-center">
+        <Container size="md" px="sm">
+            <Paper shadow="md" radius="md" p="lg" withBorder>
+                <Title order={2} align="center" mb="md" c="red">
                     🎓 Kết quả bài thi:{' '}
                     <span className="text-black">{result.examTitle}</span>
-                </h1>
+                </Title>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <div className="bg-red-50 p-5 rounded-lg shadow-inner">
-                        <h3 className="text-lg font-semibold text-red-700 mb-2">
-                            📊 Kết quả
-                        </h3>
-                        <p className="text-xl font-bold text-green-700">
-                            {result.answers.filter((a) => a.isCorrect).length} /{' '}
-                            {result.answers.length} câu
-                        </p>
+                <Group
+                    position="center"
+                    spacing="xl"
+                    grow
+                    style={{
+                        backgroundColor: '#f9fafb',
+                        padding: '1.5rem',
+                        borderRadius: '0.75rem',
+                        boxShadow: 'inset 0 1px 3px rgba(0, 0, 0, 0.05)',
+                    }}
+                    mb="xl"
+                    wrap="wrap"
+                >
+                    <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
+                        <Text size="sm" color="gray.7" fw={500}>
+                            📊 Điểm số
+                        </Text>
+                        <Text size="xl" fw={700} style={{ color: '#059669' }}>
+                            {result.totalScore} điểm
+                        </Text>
                     </div>
 
-                    <div className="bg-red-50 p-5 rounded-lg">
-                        <h3 className="text-lg font-semibold mb-2 text-red-700">
+                    <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
+                        <Text size="sm" color="gray.7" fw={500}>
                             🕒 Thời gian làm bài
-                        </h3>
-                        <p className="text-xl font-extrabold text-red-600">
+                        </Text>
+                        <Text size="xl" fw={700} style={{ color: '#dc2626' }}>
                             {result.time || 'Không xác định'}
-                        </p>
+                        </Text>
                     </div>
+                </Group>
 
-                    
-                </div>
+                {result.answers.map((group) => (
+                    <div key={group._id} className="space-y-4 mt-6">
+                        {group.paragraph && (
+                            <Paper p="md" bg="red.1" radius="md" withBorder>
+                                <Text>
+                                    <strong>Đoạn văn:</strong> {group.paragraph}
+                                </Text>
+                            </Paper>
+                        )}
 
-                {Array.isArray(result.answers) && result.answers.length > 0 ? (
-                    <div className="space-y-4 mt-10">
-                        <h2 className="text-xl font-bold mb-2 text-red-600">
-                            📋 Chi tiết từng câu hỏi
-                        </h2>
-                        {[...result.answers]
-                            .sort((a, b) =>
-                                a.questionId.localeCompare(b.questionId)
-                            )
-                            .map((answer, index) => (
-                                <div
-                                    key={index}
-                                    className="border border-red-200 rounded-lg p-4 bg-white shadow"
-                                >
-                                    <div className="flex justify-between items-center">
-                                        <p className="text-gray-800 font-medium">
-                                            Câu {index + 1} - ID:{' '}
-                                            <span className="text-sm text-gray-500">
-                                                {answer.questionId}
-                                            </span>
-                                        </p>
-                                        <span
-                                            className={`text-sm px-3 py-1 rounded-full font-semibold ${
-                                                answer.isCorrect
-                                                    ? 'bg-green-100 text-green-700'
-                                                    : 'bg-red-100 text-red-700'
-                                            }`}
-                                        >
-                                            {answer.isCorrect ? 'Đúng' : 'Sai'}
-                                        </span>
-                                    </div>
-                                    <div className="mt-2 text-sm text-gray-600 space-y-1">
-                                        <p>
-                                            <strong>Đáp án của bạn:</strong>{' '}
-                                            <span className="font-mono text-gray-800">
-                                                {answer.userAnswer}
-                                            </span>
-                                        </p>
-                                        <p>
-                                            <strong>Đáp án đúng:</strong>{' '}
-                                            <span className="font-mono text-green-700">
-                                                {answer.correctAnswer ||
-                                                    '(Không rõ)'}
-                                            </span>
-                                        </p>
-                                    </div>
-                                </div>
-                            ))}
+                        {group.childAnswers.map((question, index) => (
+                            <Paper
+                                key={question._id}
+                                p="md"
+                                shadow="xs"
+                                radius="md"
+                                className="cursor-pointer hover:bg-gray-50 transition"
+                                withBorder
+                                onClick={() => openModal(question)}
+                            >
+                                <Group position="apart" wrap="wrap">
+                                    <Text fw={500}>
+                                        Câu {index + 1}: {question.content}
+                                    </Text>
+                                    <Badge
+                                        color={
+                                            question?.isCorrect
+                                                ? 'green'
+                                                : 'red'
+                                        }
+                                        variant="filled"
+                                        size="md"
+                                    >
+                                        {question?.isCorrect ? 'Đúng' : 'Sai'} -{' '}
+                                        {question?.score ?? 0} điểm
+                                    </Badge>
+                                </Group>
+                            </Paper>
+                        ))}
                     </div>
-                ) : (
-                    <div className="text-center mt-8 text-gray-600 italic">
-                        Không có câu hỏi nào được trả lời.
-                    </div>
-                )}
+                ))}
 
-                <div className="mt-10 flex justify-center gap-4">
-                    <button
+                <Group mt="xl" position="center" grow>
+                    <Button
+                        color="gray"
                         onClick={() => navigate('/practice/exam')}
-                        className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-2 rounded-lg transition"
                     >
                         🔙 Quay lại danh sách
-                    </button>
-                    <button
+                    </Button>
+                    <Button
+                        color="red"
                         onClick={() =>
                             navigate(`/practice/exam/${result.examId}`)
                         }
-                        className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition"
                     >
                         📄 Xem chi tiết đề thi
-                    </button>
+                    </Button>
+                </Group>
+            </Paper>
+
+            <Modal size={800} opened={opened} onClose={close}>
+                <h2 className="text-2xl font-semibold text-primary mb-4">
+                    Chi tiết câu hỏi
+                </h2>
+                <hr />
+                <div className="flex flex-col px-8 py-4 text-lg">
+                    {selectedQuestion?.isCorrect ? (
+                        <p className="text-white w-fit bg-green-500 rounded-3xl text-sm px-6 py-2 font-bold mb-4">
+                            Đúng
+                        </p>
+                    ) : (
+                        <p className="text-white w-fit bg-primary rounded-3xl text-sm px-6 py-2 font-bold mb-4">
+                            Sai
+                        </p>
+                    )}
+                    <p className="mb-4">{selectedQuestion?.content}</p>
+                    <div className="flex flex-col gap-3">
+                        {selectedQuestion?.options.map((option, index) => {
+                            const isUserAnswer =
+                                option.id === selectedQuestion?.userAnswer
+                            const isCorrectAnswer =
+                                option.id === selectedQuestion?.correctAnswer
+                            const isWrongAnswer =
+                                isUserAnswer && !selectedQuestion?.isCorrect
+
+                            return (
+                                <div
+                                    key={index}
+                                    className="flex items-center gap-2"
+                                >
+                                    <span
+                                        className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${
+                                            isCorrectAnswer
+                                                ? 'border-green-500 bg-green-100'
+                                                : isWrongAnswer
+                                                  ? 'border-red-500 bg-red-100'
+                                                  : 'border-gray-300'
+                                        }`}
+                                    >
+                                        {isUserAnswer && (
+                                            <div
+                                                className={`w-2 h-2 rounded-full ${
+                                                    isCorrectAnswer
+                                                        ? 'bg-green-500'
+                                                        : 'bg-red-500'
+                                                }`}
+                                            ></div>
+                                        )}
+                                    </span>
+                                    <span
+                                        className={`${
+                                            isCorrectAnswer
+                                                ? 'text-green-500 font-bold'
+                                                : isWrongAnswer
+                                                  ? 'text-red-500 font-bold'
+                                                  : ''
+                                        }`}
+                                    >
+                                        {option.id.toUpperCase()}. {option.text}
+                                    </span>
+                                </div>
+                            )
+                        })}
+                    </div>
+                    {!selectedQuestion?.isCorrect && (
+                        <p className="text-green-500 font-bold mt-4">
+                            Đáp án đúng là:{' '}
+                            {selectedQuestion?.correctAnswer.toUpperCase()}
+                        </p>
+                    )}
                 </div>
-            </div>
-        </div>
+            </Modal>
+        </Container>
     )
 }
 

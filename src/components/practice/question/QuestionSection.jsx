@@ -7,6 +7,8 @@ const QuestionSection = ({
     answers,
     onAnswerChange,
 }) => {
+    const optionLabels = ['A', 'B', 'C', 'D', 'E', 'F']
+
     return (
         <div className="space-y-10 mb-2">
             {section?.title && (
@@ -51,10 +53,10 @@ const QuestionSection = ({
                                 {childIdx + 1}. {child.content}
                             </div>
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                {child.options.map((opt) => (
+                                {child.options.map((opt, optIdx) => (
                                     <label
                                         key={opt._id}
-                                        className="flex items-center gap-3 cursor-pointer"
+                                        className="flex items-start gap-3 cursor-pointer"
                                     >
                                         <input
                                             type="radio"
@@ -69,10 +71,10 @@ const QuestionSection = ({
                                                     opt.id
                                                 )
                                             }
-                                            className="w-5 h-5 accent-red-600 focus:ring-2 focus:ring-red-300"
+                                            className="mt-1 w-5 h-5 accent-red-600 focus:ring-2 focus:ring-red-300"
                                         />
                                         <span className="text-gray-800 text-base">
-                                            {opt.text}
+                                            <strong className="mr-2">{optionLabels[optIdx]}.</strong> {opt.text}
                                         </span>
                                     </label>
                                 ))}
@@ -85,4 +87,4 @@ const QuestionSection = ({
     )
 }
 
-export default QuestionSection
+export default QuestionSection 
