@@ -1,8 +1,8 @@
 import CourseList from '@/components/course/courseList'
 import axiosInstance from '@/network/httpRequest'
 import useAuthStore from '@/store/useAuthStore'
-import { useQuery } from '@tanstack/react-query'
 import EmojiObjectsIcon from '@mui/icons-material/EmojiObjects'
+import { useQuery } from '@tanstack/react-query'
 
 function StudentCourse() {
     const { user } = useAuthStore()
@@ -32,7 +32,7 @@ function StudentCourse() {
     return (
         <div className="w-full bg-gradient-to-b from-white to-red-50 min-h-screen py-10">
             <div className="max-w-6xl mx-auto px-4">
-                <h1 className="text-4xl sm:text-5xl font-extrabold text-center text-red-600 mb-6 drop-shadow-lg flex items-center justify-center gap-3">
+                <h1 className="text-4xl sm:text-5xl font-bold text-center text-red-600 mb-6 drop-shadow-lg flex items-center justify-center gap-3">
                     <EmojiObjectsIcon fontSize="large" />
                     Khoá học của bạn
                 </h1>
