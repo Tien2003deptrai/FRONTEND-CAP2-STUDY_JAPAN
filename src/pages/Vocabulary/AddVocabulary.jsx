@@ -7,6 +7,7 @@ import { toast, ToastContainer } from 'react-toastify'
 function AddVocabulary() {
     const navigate = useNavigate()
 
+    // hihi
     const {
         handleSubmit,
         register,

@@ -12,6 +12,7 @@ function Vocabularies() {
     const [vocabularies, setVocabularies] = useState([])
     const [isLoading, setIsLoading] = useState(true)
 
+    // hii
     const queryClient = useQueryClient()
 
     useEffect(() => {

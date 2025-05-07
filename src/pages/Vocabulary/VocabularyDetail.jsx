@@ -9,6 +9,7 @@ const VocabularyDetail = () => {
     const navigate = useNavigate()
     const [vocab, setVocab] = useState(null)
 
+    // hihi
     useEffect(() => {
         const fetchVocabulary = async () => {
             try {
