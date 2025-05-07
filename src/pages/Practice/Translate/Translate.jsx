@@ -52,7 +52,7 @@ export default function Translate() {
 
     return (
         <div className="max-w-6xl mx-auto mt-10 p-6">
-            <h1 className="text-3xl font-bold text-red-600 mb-6 text-center flex items-center justify-center gap-2">
+            <h1 className="text-2xl font-bold text-red-600 mb-6 text-center flex items-center justify-center gap-2">
                 <LanguageIcon className="text-red-600" />
                 Dịch & Tra cứu tiếng Nhật
             </h1>

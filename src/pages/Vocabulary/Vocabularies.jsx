@@ -13,6 +13,7 @@ function Vocabularies() {
     const [isLoading, setIsLoading] = useState(true)
 
     // hii
+    console.log('vocabularies', vocabularies)
     const queryClient = useQueryClient()
 
     useEffect(() => {
@@ -125,7 +126,7 @@ function Vocabularies() {
                                 <Book />
                             </div>
                             <h3 className="font-medium text-gray-900">
-                                {vocabulary.word}
+                                {vocabulary.word} - {vocabulary.meaning}
                             </h3>
                         </div>
 
