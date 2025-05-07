@@ -11,8 +11,8 @@ function Deck() {
             <LoadingOverlay visible={isLoading} overlayBlur={2} />
 
             {/* Header */}
-            <div className="flex justify-between items-center w-full mb-8">
-                <h1 className="text-2xl font-bold text-gray-800">
+            <div className="flex justify-center items-center w-full mb-8">
+                <h1 className="text-2xl font-bold text-red-600 text-center">
                     Bộ Flashcards
                 </h1>
             </div>
