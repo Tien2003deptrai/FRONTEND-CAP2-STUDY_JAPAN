@@ -19,6 +19,11 @@ const DocumentSidebar = () => {
             icon: <Quiz />,
             path: '/manage-document/vocab',
         },
+        {
+            label: 'Kanji',
+            icon: <Quiz />,
+            path: '/manage-document/kanji',
+        },
     ]
 
     const isActive = (path) => {

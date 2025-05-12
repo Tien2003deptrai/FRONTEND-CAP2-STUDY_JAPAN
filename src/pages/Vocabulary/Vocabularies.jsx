@@ -189,7 +189,7 @@ function Vocabularies() {
                         to={'create-vocab'}
                         className="primary-btn inline-flex items-center gap-2"
                     >
-                        <Add /> Tạo từ vựng
+                        <Add /> Tạo từ vựng 
                     </Link>
                 </div>
             )}
