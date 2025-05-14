@@ -42,7 +42,7 @@ function Header() {
                                 <MenuTarget>
                                     <Avatar
                                         className="cursor-pointer border border-gray-300 shadow"
-                                        src={user?.url}
+                                        src={user?.avatar}
                                         alt={user?.name}
                                     />
                                 </MenuTarget>
