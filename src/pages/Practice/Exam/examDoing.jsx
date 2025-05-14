@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
+import Swal from 'sweetalert2'
 
 const ExamDoingPage = () => {
     const { exam_id } = useParams()
@@ -199,13 +200,19 @@ const ExamDoingPage = () => {
     if (isLoading)
         return <div className="text-center p-8">Đang tải đề thi...</div>
 
-    if (examError)
-        return (
-            <div className="text-center p-8 text-red-600">
-                Lỗi khi tải đề thi:{' '}
-                {examError?.message || 'Không tìm thấy bài thi'}
-            </div>
-        )
+    if (examError) {
+        console.log('examError', examError)
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: `"${examError?.response.data.message}".`,
+            confirmButtonColor: '#3085d6',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                navigate('/practice/exam')
+            }
+        })
+    }
 
     if (!exam)
         return (

@@ -65,6 +65,7 @@ export const useExamTake = (examId) =>
         queryKey: EXAM_KEYS.take(examId),
         queryFn: () => examApi.getExamTake(examId),
         enabled: !!examId,
+        retry: false
     })
 
 export const useStartExam = () =>
