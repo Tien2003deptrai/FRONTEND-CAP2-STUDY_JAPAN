@@ -34,7 +34,7 @@ const KanjiLevel = ({ jlptLevel }) => {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-10">
-                <div className="w-10 h-10 border-4 border-blue-400 border-t-transparent rounded-full animate-spin" />
+                <div className="w-10 h-10 border-4 border-red-400 border-t-transparent rounded-full animate-spin" />
             </div>
         )
     }
@@ -44,19 +44,22 @@ const KanjiLevel = ({ jlptLevel }) => {
     }
 
     return (
-        <div className="bg-white p-6 rounded-xl shadow-2xl border border-blue-200 transition-all duration-300">
-            <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-5">
+        <div className="bg-white p-6 rounded-xl shadow-xl border border-red-200">
+            <div className="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-4">
                 {kanjiData.map((kanji, idx) => (
                     <Link
                         key={kanji._id}
                         to={`/kanji/${kanji._id}`}
-                        className="group relative flex items-center justify-center h-20 w-20 rounded-2xl bg-gradient-to-br from-white to-blue-100 border border-blue-300 shadow-md hover:shadow-xl hover:scale-110 transition-all duration-200"
+                        className="group relative flex items-center justify-center h-24 w-24 rounded-xl bg-gradient-to-br from-white via-red-50 to-red-100 border border-red-300 shadow-sm hover:shadow-2xl hover:scale-105 transition duration-300"
                     >
-                        <span className="text-3xl font-bold text-blue-900 group-hover:text-orange-500 transition">
+                        <span className="text-3xl font-bold text-red-900 group-hover:text-orange-500 transition">
                             {kanji.kanji}
                         </span>
                         <div className="absolute top-1 left-1 bg-white border border-gray-300 text-gray-500 text-[10px] w-5 h-5 flex items-center justify-center rounded-full shadow">
                             {idx + 1}
+                        </div>
+                        <div className="absolute bottom-full mb-2 opacity-0 group-hover:opacity-100 transition text-xs text-gray-700 bg-white border rounded px-2 py-1 shadow-md z-10 whitespace-nowrap">
+                            {kanji.meaning || 'No meaning'}
                         </div>
                     </Link>
                 ))}
