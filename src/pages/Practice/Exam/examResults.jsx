@@ -47,7 +47,7 @@ const ExamResultPage = () => {
         <Container size="md" px="sm">
             <Paper shadow="md" radius="md" p="lg" withBorder>
                 <Title order={2} align="center" mb="md" c="red">
-                    🎓 Kết quả bài thi:{' '}
+                    Kết quả bài thi:{' '}
                     <span className="text-black">{result.examTitle}</span>
                 </Title>
 
@@ -66,7 +66,7 @@ const ExamResultPage = () => {
                 >
                     <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
                         <Text size="sm" color="gray.7" fw={500}>
-                            📊 Điểm số
+                            Điểm số
                         </Text>
                         <Text size="xl" fw={700} style={{ color: '#059669' }}>
                             {result.totalScore} điểm
@@ -75,7 +75,7 @@ const ExamResultPage = () => {
 
                     <div style={{ textAlign: 'center', flex: '1 1 200px' }}>
                         <Text size="sm" color="gray.7" fw={500}>
-                            🕒 Thời gian làm bài
+                            Thời gian làm bài
                         </Text>
                         <Text size="xl" fw={700} style={{ color: '#dc2626' }}>
                             {result.time || 'Không xác định'}
