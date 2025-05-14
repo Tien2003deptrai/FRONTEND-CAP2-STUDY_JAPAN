@@ -53,6 +53,9 @@ import MemoryCardGame from '@/components/practice/MemoryCardGame/MemoryCardGame'
 import MiniRPGGame from '@/components/MiniRPGGame/MiniRPGGame'
 import AddVocabulary from '@/pages/Vocabulary/AddVocabulary'
 import Vocabularies from '@/pages/Vocabulary/Vocabularies'
+import Event from '@/pages/Event/Event'
+import Kanji from '@/pages/Kanji/Kanji'
+import AddKanji from '@/pages/Kanji/AddKanji'
 // import VocabularyDetail from '@/pages/Vocabulary/VocabularyDetail'
 
 export const publicRoutes = [
@@ -159,6 +162,19 @@ export const kanjiRoutes = [
             {
                 path: '/kanji/:kanjiId/stroke-practice',
                 element: <KanjiStrokePractice />, // Thêm route cho KanjiStrokePractice
+            },
+        ],
+    },
+]
+
+export const eventRoutes = [
+    {
+        path: '/event',
+        element: <KanjiLayout />,
+        children: [
+            {
+                index: true,
+                element: <Event />,
             },
         ],
     },
@@ -305,6 +321,11 @@ export const teacherRoutes = [
                     {
                         path: 'vocab/edit/:id',
                         element: <EditFlashcard />,
+                    },
+                    { path: 'kanji', element: <Kanji /> },
+                    {
+                        path: 'kanji/create-kanji',
+                        element: <AddKanji />,
                     },
                 ],
             },

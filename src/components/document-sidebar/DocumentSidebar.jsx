@@ -5,19 +5,24 @@ const DocumentSidebar = () => {
     const location = useLocation()
     const menuItems = [
         {
-            label: 'Flashcard',
+            label: 'Bộ thẻ',
             icon: <MenuBook />,
             path: '/manage-document/flashcard',
         },
         {
-            label: 'Exam',
+            label: 'Bài thi',
             icon: <Quiz />,
             path: '/manage-document/exam',
         },
         {
-            label: 'Vocabulary',
+            label: 'Từ vựng',
             icon: <Quiz />,
             path: '/manage-document/vocab',
+        },
+        {
+            label: 'Kanji',
+            icon: <Quiz />,
+            path: '/manage-document/kanji',
         },
     ]
 

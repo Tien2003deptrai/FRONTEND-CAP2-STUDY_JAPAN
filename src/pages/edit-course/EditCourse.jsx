@@ -25,6 +25,8 @@ function EditCourse() {
         (l) => l._id === selectedLesson
     )
 
+    console.log('renshuu', lesson?._id)
+
     useEffect(() => {
         setVideoUrl(lesson?.video_url || '')
         setDescription(lesson?.description || '')
@@ -39,6 +41,7 @@ function EditCourse() {
                 const res = await axiosInstance.get(`/renshuu/${lesson?._id}`)
                 return res.data.data
             },
+            enabled: !!lesson?._id,
         })
     console.log(revisionQuestions)
 

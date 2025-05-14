@@ -13,13 +13,13 @@ function ImageUpload({ thumb, onImageUpload }) {
         if (!file) return
 
         setImage(file)
-        setPreview(URL.createObjectURL(file)) // Show instant preview
+        setPreview(URL.createObjectURL(file))
         setUploading(true)
 
         try {
             const uploadedUrl = await uploadImage(file, setProgress)
-            setPreview(uploadedUrl) // Replace preview with uploaded image
-            onImageUpload(uploadedUrl) // Pass URL to parent
+            setPreview(uploadedUrl)
+            onImageUpload(uploadedUrl)
         } catch (error) {
             console.error('Upload failed:', error)
         } finally {
@@ -28,38 +28,46 @@ function ImageUpload({ thumb, onImageUpload }) {
     }
 
     return (
-        <div className="w-full flex flex-col justify-center items-start gap-3 mt-5">
-            <label className="block font-bold">Thumbnail</label>
-
-            {(thumb || preview) && (
-                <img
-                    src={thumb || preview}
-                    alt="Thumbnail preview"
-                    className="w-32 h-32 object-cover rounded border"
-                />
-            )}
-
-            {uploading && (
-                <p className="text-sm text-gray-500">
-                    Uploading... {progress}%
-                </p>
-            )}
-
-            <input
-                type="file"
-                accept="image/*"
-                className="hidden"
-                id="thumbnail-upload"
-                onChange={handleImageChange}
-            />
-
-            <label
-                htmlFor="thumbnail-upload"
-                className="primary-btn flex justify-center items-center gap-2 cursor-pointer"
-            >
-                <Upload fontSize="small" />
-                {image ? 'Chọn ảnh khác' : 'Tải ảnh'}
+        <div className="w-full space-y-3">
+            <label className="block text-sm font-medium text-gray-700">
+                Ảnh đại diện
             </label>
+
+            <div className="w-full border-2 border-dashed border-gray-300 rounded-xl p-4 flex flex-col items-center justify-center bg-gray-50">
+                {thumb || preview ? (
+                    <img
+                        src={thumb || 'preview'}
+                        alt="Preview"
+                        className="w-32 h-32 object-cover rounded-lg border shadow"
+                    />
+                ) : (
+                    <div className="text-gray-400 flex flex-col items-center text-sm">
+                        <Upload fontSize="large" />
+                        <span>Chưa có ảnh</span>
+                    </div>
+                )}
+
+                {uploading && (
+                    <p className="text-xs text-gray-500 mt-2">
+                        Đang tải... {progress}%
+                    </p>
+                )}
+
+                <input
+                    type="file"
+                    accept="image/*"
+                    id="thumbnail-upload"
+                    onChange={handleImageChange}
+                    className="hidden"
+                />
+                <label
+                    htmlFor="thumbnail-upload"
+                    className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm bg-blue-600 text-white rounded-md shadow hover:bg-blue-700 cursor-pointer transition"
+                >
+                    <Upload fontSize="small" />
+                    {image ? 'Chọn ảnh khác' : 'Tải ảnh lên'}
+                </label>
+            </div>
         </div>
     )
 }

@@ -1,5 +1,6 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import {
+    eventRoutes,
     kanjiRoutes,
     practiceRoutes,
     profileRoutes,
@@ -15,6 +16,7 @@ const routes = [
     ...practiceRoutes,
     ...kanjiRoutes,
     ...profileRoutes,
+    ...eventRoutes,
 ]
 
 const router = createBrowserRouter(routes)
