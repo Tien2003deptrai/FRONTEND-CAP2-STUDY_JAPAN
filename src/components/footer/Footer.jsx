@@ -28,7 +28,7 @@ function Footer() {
                                     to="/learning"
                                     className="hover:text-gray-300 flex items-center"
                                 >
-                                    <span className="mr-2">📚</span> Học tập
+                                    <span className="mr-2"></span> Học tập
                                 </Link>
                             </li>
                             <li>
@@ -36,7 +36,7 @@ function Footer() {
                                     to="/community"
                                     className="hover:text-gray-300 flex items-center"
                                 >
-                                    <span className="mr-2">✏️</span> Luyện tập
+                                    <span className="mr-2"></span> Luyện tập
                                 </Link>
                             </li>
                             <li>
@@ -44,7 +44,7 @@ function Footer() {
                                     to="/courses"
                                     className="hover:text-gray-300 flex items-center"
                                 >
-                                    <span className="mr-2">🎓</span> Khóa học
+                                    <span className="mr-2"></span> Khóa học
                                 </Link>
                             </li>
                             <li>
@@ -60,7 +60,7 @@ function Footer() {
                                     to="/about"
                                     className="hover:text-gray-300 flex items-center"
                                 >
-                                    <span className="mr-2">ℹ️</span> Về chúng
+                                    <span className="mr-2">ℹ</span> Về chúng
                                     tôi
                                 </Link>
                             </li>
@@ -77,27 +77,25 @@ function Footer() {
                                 href="#"
                                 className="hover:text-gray-300 flex items-center"
                             >
-                                <span className="mr-2 text-xl">📘</span>{' '}
-                                Facebook
+                                <span className="mr-2 text-xl"></span> Facebook
                             </a>
                             <a
                                 href="#"
                                 className="hover:text-gray-300 flex items-center"
                             >
-                                <span className="mr-2 text-xl">🐦</span> Twitter
+                                <span className="mr-2 text-xl"></span> Twitter
                             </a>
                             <a
                                 href="#"
                                 className="hover:text-gray-300 flex items-center"
                             >
-                                <span className="mr-2 text-xl">🎥</span> YouTube
+                                <span className="mr-2 text-xl"></span> YouTube
                             </a>
                             <a
                                 href="#"
                                 className="hover:text-gray-300 flex items-center"
                             >
-                                <span className="mr-2 text-xl">📷</span>{' '}
-                                Instagram
+                                <span className="mr-2 text-xl"></span> Instagram
                             </a>
                         </div>
 

@@ -21,7 +21,7 @@ export default function PracticeSidebar() {
         { label: 'Flashcard', path: 'flashcard', icon: <SchoolIcon /> },
         { label: 'Từ Vựng', path: 'vocabulary', icon: <MenuBookIcon /> },
         { label: 'Tra Cứu', path: 'translate', icon: <GTranslateIcon /> },
-        { label: 'Bài Tập', path: 'exam', icon: <QuizIcon /> },
+        { label: 'Bài thi', path: 'exam', icon: <QuizIcon /> },
     ]
 
     const isActive = (path) => location.pathname.includes(`/practice/${path}`)
