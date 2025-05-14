@@ -167,15 +167,16 @@ const KanjiStrokePractice = () => {
     }, [nextKanji])
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-white to-blue-50 py-8 px-4 flex flex-col items-center">
-            <h1 className="text-2xl font-bold text-blue-900 mb-2">
+        <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-indigo-100 py-10 px-4 flex flex-col items-center">
+            <h1 className="text-3xl sm:text-4xl font-bold text-indigo-900 mb-3 tracking-wide">
                 Luyện viết chữ Kanji
             </h1>
-            <h2 className="text-4xl font-extrabold text-gray-800 mb-6">
+            <h2 className="text-6xl font-black text-gray-800 mb-6 drop-shadow">
                 {kanji}
             </h2>
 
-            <div className="relative w-72 h-72 border-4 border-blue-400 rounded-2xl shadow-lg overflow-hidden">
+            <div className="relative w-[300px] h-[300px] border-[5px] border-blue-400 rounded-2xl shadow-2xl bg-white overflow-hidden hover:shadow-indigo-400/50 transition-all duration-500">
+                {/* SVG Layer */}
                 <svg
                     viewBox="0 0 109 109"
                     className="absolute inset-0 w-full h-full"
@@ -193,6 +194,7 @@ const KanjiStrokePractice = () => {
                             <path d="M0,0 L0,8 L8,4 Z" fill="orange" />
                         </marker>
                     </defs>
+
                     <line
                         x1="0"
                         y1="54.5"
@@ -215,9 +217,9 @@ const KanjiStrokePractice = () => {
                             key={i}
                             d={d}
                             stroke={i === step ? 'orange' : 'gray'}
-                            strokeWidth="6"
+                            strokeWidth="5"
                             fill="none"
-                            opacity={i < step ? 0.1 : i === step ? 1 : 0.05}
+                            className={`transition-all duration-300 ${i < step ? 'opacity-10' : i === step ? 'opacity-100' : 'opacity-30'}`}
                         />
                     ))}
 
@@ -231,6 +233,13 @@ const KanjiStrokePractice = () => {
                                         cx={p.x}
                                         cy={p.y}
                                         r="10"
+                                        fill="orange"
+                                        className="animate-ping"
+                                    />
+                                    <circle
+                                        cx={p.x}
+                                        cy={p.y}
+                                        r="8"
                                         fill="orange"
                                     />
                                     <text
@@ -248,6 +257,7 @@ const KanjiStrokePractice = () => {
                         })()}
                 </svg>
 
+                {/* Canvas Layer */}
                 <canvas
                     ref={canvasRef}
                     width={300}
@@ -258,19 +268,21 @@ const KanjiStrokePractice = () => {
                     onPointerUp={handlePointerUp}
                 />
 
+                {/* Step Indicator */}
                 {!complete && (
-                    <div className="absolute top-2 left-2 w-6 h-6 bg-orange-500 text-white text-sm rounded-full flex items-center justify-center z-20">
+                    <div className="absolute top-2 left-2 bg-orange-500 text-white w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold shadow">
                         {step + 1}
                     </div>
                 )}
             </div>
 
+            {/* Button */}
             {complete && (
                 <button
                     onClick={fetchNextKanji}
-                    className="mt-8 bg-red-500 text-white px-6 py-2 rounded-full font-semibold hover:bg-red-600 transition-all duration-300 hover:scale-105"
+                    className="mt-8 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:scale-105 transition-all duration-300"
                 >
-                    Kanji tiếp theo
+                    ➡️ Kanji tiếp theo
                 </button>
             )}
         </div>
