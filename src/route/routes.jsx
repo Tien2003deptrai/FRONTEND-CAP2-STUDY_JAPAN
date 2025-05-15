@@ -1,15 +1,19 @@
+import MiniRPGGame from '@/components/MiniRPGGame/MiniRPGGame'
+import MemoryCardGame from '@/components/practice/MemoryCardGame/MemoryCardGame'
 import AdminLayOut from '@/layout/AdminLayout'
 import EditCourseLayout from '@/layout/EditCourseLayout'
 import KanjiLayout from '@/layout/KanjiLayout'
 import MainLayout from '@/layout/MainLayout'
 import ManageDocumentLayout from '@/layout/ManageDocumentLayout'
 import PracticeLayout from '@/layout/PracticeLayout'
+import ProfieLayout from '@/layout/ProfileLayout'
 import AdminCourseDetail from '@/pages/admin/pages/Course/AdminCourseDetail'
 import Course from '@/pages/admin/pages/Course/Course'
 import CreateAccount from '@/pages/admin/pages/CreateAccount/CreateAccount'
 import MainDash from '@/pages/admin/pages/DashboardContent/Main'
 import Student from '@/pages/admin/pages/Student/Student'
 import Teacher from '@/pages/admin/pages/Teacher/Teacher'
+import CourseStudentTable from '@/pages/CourseStudentTable/CourseStudentTable'
 import CourseDetail from '@/pages/details-course/DetailCoure'
 import EditCourse from '@/pages/edit-course/EditCourse'
 import EditGrammar from '@/pages/edit-course/EditGrammar'
@@ -17,11 +21,16 @@ import EditVocabulary from '@/pages/edit-course/EditVocabulary'
 import EditExam from '@/pages/edit-exam/EditExam'
 import EditListQuestion from '@/pages/edit-exam/EditListQuestion'
 import EditQuestion from '@/pages/edit-exam/EditQuestion'
+import EditFlashcard from '@/pages/EditFlashcard/EditFlashcard'
+import Event from '@/pages/Event/Event'
 import ExamReport from '@/pages/exam-report/ExamReport'
 import ReportDetails from '@/pages/exam-report/report-details/ReportDetails'
 import CreateFlashcard from '@/pages/flashcard/CreateFlashcard'
+import FlashcardDetail from '@/pages/FlashcardDetail/FlashcardDetail'
 import Forbiden from '@/pages/forbiden/Forbiden'
 import Home from '@/pages/home/Home'
+import AddKanji from '@/pages/Kanji/AddKanji'
+import Kanji from '@/pages/Kanji/Kanji'
 import KanjiDetail from '@/pages/KanjiDetail/KanjiDetail'
 import KanjiPage from '@/pages/KanjiPage/KanjiPage'
 import KanjiStrokePractice from '@/pages/KanjiStrokePractice/KanjiStrokePractice'
@@ -44,16 +53,9 @@ import VocabularyDetail from '@/pages/Practice/VocabularyDetail/VocabularyDetail
 import Voice from '@/pages/Practice/Voice'
 import StudentCourse from '@/pages/student-course/StudentCourse'
 import TeacherCourse from '@/pages/teacher-course/TeacherCourse'
-import { Navigate } from 'react-router-dom'
-import ProfieLayout from '@/layout/ProfileLayout'
-import CourseStudentTable from '@/pages/CourseStudentTable/CourseStudentTable'
-import FlashcardDetail from '@/pages/FlashcardDetail/FlashcardDetail'
-import EditFlashcard from '@/pages/EditFlashcard/EditFlashcard'
-import MemoryCardGame from '@/components/practice/MemoryCardGame/MemoryCardGame'
-import MiniRPGGame from '@/components/MiniRPGGame/MiniRPGGame'
 import AddVocabulary from '@/pages/Vocabulary/AddVocabulary'
 import Vocabularies from '@/pages/Vocabulary/Vocabularies'
-import Event from '@/pages/Event/Event'
+import { Navigate } from 'react-router-dom'
 // import VocabularyDetail from '@/pages/Vocabulary/VocabularyDetail'
 
 export const publicRoutes = [
@@ -319,6 +321,11 @@ export const teacherRoutes = [
                     {
                         path: 'vocab/edit/:id',
                         element: <EditFlashcard />,
+                    },
+                    { path: 'kanji', element: <Kanji /> },
+                    {
+                        path: 'kanji/create-kanji',
+                        element: <AddKanji />,
                     },
                 ],
             },

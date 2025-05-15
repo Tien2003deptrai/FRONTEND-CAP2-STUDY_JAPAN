@@ -1,14 +1,14 @@
 // MenuHeader.jsx
 import useAuthStore from '@/store/useAuthStore'
-import { NavLink, useLocation } from 'react-router-dom'
-import HomeIcon from '@mui/icons-material/Home'
-import MenuBookIcon from '@mui/icons-material/MenuBook'
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks'
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import AssignmentIcon from '@mui/icons-material/Assignment'
-import SchoolIcon from '@mui/icons-material/School'
 import DrawIcon from '@mui/icons-material/Draw'
 import EventIcon from '@mui/icons-material/Event'
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
+import HomeIcon from '@mui/icons-material/Home'
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks'
+import MenuBookIcon from '@mui/icons-material/MenuBook'
+import SchoolIcon from '@mui/icons-material/School'
+import { NavLink, useLocation } from 'react-router-dom'
 
 function MenuHeader() {
     const location = useLocation()
@@ -80,7 +80,7 @@ function MenuHeader() {
                                 : 'text-gray-700'
                         }`}
                     >
-                        {item.icon} {item.label}
+                        {item.label}
                     </NavLink>
                 ))}
         </nav>
