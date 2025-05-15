@@ -1,9 +1,9 @@
 import useAuthStore from '@/store/useAuthStore'
 import { Avatar, Menu, MenuDropdown, MenuTarget } from '@mantine/core'
+import LogoutIcon from '@mui/icons-material/Logout'
+import PersonIcon from '@mui/icons-material/Person'
 import { Link } from 'react-router-dom'
 import MenuHeader from '../menu-header/MenuHeader'
-import PersonIcon from '@mui/icons-material/Person'
-import LogoutIcon from '@mui/icons-material/Logout'
 
 function Header() {
     const { user, logout } = useAuthStore()
@@ -65,10 +65,7 @@ function Header() {
                             </Menu>
                         </div>
                     ) : (
-                        <Link
-                            to={'/login'}
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full shadow text-sm font-semibold transition"
-                        >
+                        <Link to={'/login'} className="primary-btn">
                             Đăng nhập
                         </Link>
                     )}
