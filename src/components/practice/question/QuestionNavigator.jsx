@@ -1,17 +1,22 @@
-import React from 'react'
 import TimerDisplay from './TimerDisplay'
 
 const QuestionNavigator = ({
     groupedQuestions = [],
     answers = {},
-    timeLeft,
+    startTime,
+    timeLimit,
+    onTimeEnd = () => {},
 }) => {
     return (
         <div className="bg-white border border-red-200 p-5 rounded-2xl w-full lg:w-60 shadow-md sticky top-6 max-h-[90vh] overflow-y-auto">
             {/* Timer */}
             <div className="text-center mb-5">
                 <div className="inline-flex items-center justify-center gap-2 bg-red-100 border border-red-300 text-red-700 px-6 py-2 rounded-full font-semibold text-lg shadow-sm">
-                    <TimerDisplay timeLeft={timeLeft} />
+                    <TimerDisplay
+                        initialTime={startTime}
+                        time_limit={timeLimit}
+                        onTimeEnd={onTimeEnd}
+                    />
                 </div>
             </div>
 

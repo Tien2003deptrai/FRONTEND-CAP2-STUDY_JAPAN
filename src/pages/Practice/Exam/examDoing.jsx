@@ -21,14 +21,11 @@ const ExamDoingPage = () => {
 
     const [exam, setExam] = useState(null)
     const [answers, setAnswers] = useState({})
-    const [timeLeft, setTimeLeft] = useState(null)
     const [groupedQuestions, setGroupedQuestions] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
 
     const questionRefs = useRef({})
-    const timerRef = useRef(null)
-    const warnedRef = useRef(false)
 
     const handleSubmit = useCallback(
         async (isAutoSubmit = false) => {
@@ -108,6 +105,9 @@ const ExamDoingPage = () => {
                                     : `Lỗi khi nộp bài: ${message}`
                             )
                             toast.error(`Lỗi khi nộp bài: ${message}`)
+                            navigate(`/practice/exam/result/${exam?._id}`, {
+                                replace: true,
+                            })
                         },
                     }
                 )
@@ -146,51 +146,6 @@ const ExamDoingPage = () => {
             })
         })
         questionRefs.current = refs
-
-        // Đồng hồ đếm ngược
-        if (examData.time_limit) {
-            const now = Date.now()
-            const key = `exam_timer_${finalAttemptId}`
-            let startTime = now
-
-            try {
-                const saved = JSON.parse(localStorage.getItem(key) || '{}')
-                if (saved.startTime) startTime = saved.startTime
-                else localStorage.setItem(key, JSON.stringify({ startTime }))
-            } catch {
-                localStorage.setItem(key, JSON.stringify({ startTime }))
-            }
-
-            const duration = examData.time_limit * 60
-            const elapsed = Math.floor((now - startTime) / 1000)
-            const remaining = Math.max(0, duration - elapsed)
-
-            setTimeLeft(remaining)
-
-            if (timerRef.current) clearInterval(timerRef.current)
-            timerRef.current = setInterval(() => {
-                setTimeLeft((prev) => {
-                    if (prev <= 1) {
-                        clearInterval(timerRef.current)
-                        handleSubmit(true)
-                        return 0
-                    }
-
-                    if (prev <= 300 && !warnedRef.current) {
-                        warnedRef.current = true
-                        alert(
-                            '⚠️ Chỉ còn 5 phút. Hãy kiểm tra lại bài làm của bạn.'
-                        )
-                    }
-
-                    return prev - 1
-                })
-            }, 1000)
-        }
-
-        return () => {
-            if (timerRef.current) clearInterval(timerRef.current)
-        }
     }, [data, isLoading, attemptId, handleSubmit])
 
     const handleAnswerChange = (qid, val) => {
@@ -238,7 +193,11 @@ const ExamDoingPage = () => {
                     <QuestionNavigator
                         groupedQuestions={groupedQuestions}
                         answers={answers}
-                        timeLeft={timeLeft}
+                        startTime={data.startTime}
+                        timeLimit={exam.time_limit}
+                        onTimeEnd={() => {
+                            handleSubmit(true)
+                        }}
                     />
                 </div>
 
