@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 
-const TimerDisplay = ({ initialTime, time_limit, onTimeEnd }) => {
+const TimerDisplay = ({ initialTime, time_limit, onTimeEnd = () => {} }) => {
     const [timeLeft, setTimeLeft] = useState(initialTime)
     const timerRef = useRef(null)
 
@@ -10,15 +10,11 @@ const TimerDisplay = ({ initialTime, time_limit, onTimeEnd }) => {
         const remaining = time_limit * 60 * 1000 - (now - startTime)
 
         setTimeLeft(remaining > 0 ? remaining : 0)
-        if (remaining <= 0) {
-            clearInterval(timerRef.current)
-            onTimeEnd()
-            return
-        }
         timerRef.current = setInterval(() => {
             setTimeLeft((prev) => {
                 if (prev <= 1000) {
                     clearInterval(timerRef.current)
+                    onTimeEnd()
                     return 0
                 }
                 return prev - 1000
