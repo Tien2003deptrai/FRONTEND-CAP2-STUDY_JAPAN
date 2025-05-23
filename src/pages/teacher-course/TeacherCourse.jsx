@@ -12,12 +12,12 @@ function TeacherCourse() {
                     <h1 className="text-2xl font-bold">
                         Danh sách khóa học của tôi
                     </h1>
-                    <Link
+                    {/* <Link
                         to={'new-course'}
                         className="primary-btn flex items-center gap-2"
                     >
                         <Add /> Tạo khóa học mới
-                    </Link>
+                    </Link> */}
                 </div>
                 <hr className="w-full my-5" />
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 gap-y-12">

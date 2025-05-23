@@ -8,20 +8,41 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import Swal from 'sweetalert2'
-import { jsPDF } from 'jspdf' // Import jsPDF từ thư viện
+import { jsPDF } from 'jspdf'
+import { useTeachers } from '@/hooks/useTeacher'
 
 function AdminCourseDetail() {
     const navigate = useNavigate()
     const { state } = useLocation()
     const course = state?.course
+    console.log('course', course)
+
+    // Modal mở/đóng
     const [opened, { open, close }] = useDisclosure(false)
+    const [teacherModalOpened, { open: openTeacher, close: closeTeacher }] =
+        useDisclosure(false)
+
+    // Học viên
     const { data } = useStudents()
-    const [searchTerm, setSearchTerm] = useState('')
-    const filteredStudents = data?.filter((student) =>
-        student.email.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const [studentSearchTerm, setStudentSearchTerm] = useState('')
     const [selectedStudents, setSelectedStudents] = useState([])
 
+    // Giáo viên (chỉ chọn 1)
+    const { data: teachers } = useTeachers()
+    const [teacherSearchTerm, setTeacherSearchTerm] = useState('')
+    const [selectedTeacher, setSelectedTeacher] = useState(null)
+
+    // Lọc danh sách học viên theo tìm kiếm
+    const filteredStudents = data?.filter((student) =>
+        student.email.toLowerCase().includes(studentSearchTerm.toLowerCase())
+    )
+
+    // Lọc danh sách giáo viên theo tìm kiếm
+    const filteredTeachers = teachers?.filter((teacher) =>
+        teacher.email.toLowerCase().includes(teacherSearchTerm.toLowerCase())
+    )
+
+    // Danh sách học viên đã đăng ký
     const { data: enrolledStudents, refetch } = useQuery({
         queryKey: ['enrolledStudents', course._id],
         queryFn: async () => {
@@ -31,7 +52,8 @@ function AdminCourseDetail() {
         enabled: !!course._id,
     })
 
-    const onSaveEnroll = async () => {
+    // Lưu học viên được chọn vào khóa học
+    const onSaveEnrollStudents = async () => {
         const studentIds = selectedStudents.map((student) => student._id)
         const payload = {
             courseId: course._id,
@@ -45,7 +67,7 @@ function AdminCourseDetail() {
             if (response.status === 200) {
                 toast.success('Đã thêm học viên thành công!')
                 close()
-                setSearchTerm('')
+                setStudentSearchTerm('')
                 setSelectedStudents([])
                 refetch()
             } else {
@@ -57,6 +79,37 @@ function AdminCourseDetail() {
         }
     }
 
+    // Lưu giáo viên được chọn vào khóa học (chỉ 1 giáo viên)
+    const onSaveEnrollTeachers = async () => {
+        if (!selectedTeacher) {
+            toast.error('Vui lòng chọn một giáo viên!')
+            return
+        }
+        const payload = {
+            courseId: course._id,
+            teacherId: selectedTeacher._id,
+        }
+        try {
+            const response = await axiosInstance.post(
+                `course/teacher/enroll`,
+                payload
+            )
+            if (response.status === 200) {
+                toast.success('Đã thêm giáo viên thành công!')
+                closeTeacher()
+                setTeacherSearchTerm('')
+                setSelectedTeacher(null)
+                refetch()
+            } else {
+                toast.error('Có lỗi xảy ra, vui lòng thử lại!')
+            }
+        } catch (error) {
+            console.error(error)
+            toast.error('Có lỗi xảy ra, vui lòng thử lại!')
+        }
+    }
+
+    // Xóa học viên khỏi khóa học
     const onUnrollStudent = async (studentId) => {
         const confirmResult = await Swal.fire({
             title: 'Xác nhận xóa học viên',
@@ -81,8 +134,6 @@ function AdminCourseDetail() {
                 )
                 if (response.status === 200) {
                     toast.success('Đã xóa học viên thành công!')
-                    setSearchTerm('')
-                    setSelectedStudents([])
                     refetch()
                 } else {
                     toast.error('Có lỗi xảy ra, vui lòng thử lại!')
@@ -94,6 +145,7 @@ function AdminCourseDetail() {
         }
     }
 
+    // Generate PDF danh sách học viên
     const generatePDF = () => {
         const doc = new jsPDF()
 
@@ -140,12 +192,20 @@ function AdminCourseDetail() {
                     </span>
                 </div>
 
-                <button
-                    onClick={open}
-                    className="primary-btn flex items-center gap-4"
-                >
-                    <Add fontSize="small" /> <span>Thêm học viên</span>
-                </button>
+                <div className="flex items-center gap-2">
+                    <button
+                        onClick={open}
+                        className="primary-btn flex items-center gap-4"
+                    >
+                        <Add fontSize="small" /> <span>Thêm học viên</span>
+                    </button>
+                    <button
+                        onClick={openTeacher}
+                        className="primary-btn flex items-center gap-4"
+                    >
+                        <Add fontSize="small" /> <span>Thêm giáo viên</span>
+                    </button>
+                </div>
             </div>
 
             <hr className="mb-6" />
@@ -156,7 +216,32 @@ function AdminCourseDetail() {
                 </h2>
                 <p className="leading-7 text-gray-800">{course?.description}</p>
             </div>
-
+            <hr className="mb-6" />
+            <div className="mb-6">
+                <h2 className="italic text-lg font-medium text-gray-600 mb-1">
+                    Giáo viên phụ trách:
+                </h2>
+                <div className="flex items-center gap-4">
+                    {course?.teacher ? (
+                        <div className="flex items-center gap-4">
+                            <Avatar size="lg" src={course?.teacher?.avatar} />
+                            <div className="flex flex-col gap-3">
+                                <span className="text-gray-700">
+                                    {course?.teacher?.name}
+                                </span>
+                                <span className="text-gray-500">
+                                    {course?.teacher?.email}
+                                </span>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-gray-500 italic">
+                            Chưa có giáo viên nào phụ trách khóa học này.
+                        </p>
+                    )}
+                </div>
+            </div>
+            <hr className="mb-6" />
             <div className="flex items-center gap-2 mb-6">
                 <h2 className="italic text-lg font-medium text-gray-600">
                     Số lượng học viên:
@@ -213,7 +298,7 @@ function AdminCourseDetail() {
                         ) : (
                             <tr>
                                 <td
-                                    colSpan={4}
+                                    colSpan={5}
                                     className="px-4 py-6 text-center text-gray-500 italic"
                                 >
                                     Không có học viên nào đã đăng ký.
@@ -228,7 +313,7 @@ function AdminCourseDetail() {
                 In danh sách sinh viên ra PDF
             </button>
 
-            {/* Modal */}
+            {/* Modal thêm học viên */}
             <Modal
                 closeOnClickOutside={false}
                 opened={opened}
@@ -238,23 +323,24 @@ function AdminCourseDetail() {
             >
                 <Input
                     placeholder="Nhập email học viên"
-                    value={searchTerm}
-                    onChange={(event) =>
-                        setSearchTerm(event.currentTarget.value)
+                    value={studentSearchTerm}
+                    onChange={(e) =>
+                        setStudentSearchTerm(e.currentTarget.value)
                     }
                     rightSectionPointerEvents="all"
                     mt="md"
                     size="md"
                     rightSection={
                         <Clear
-                            onClick={() => setSearchTerm('')}
+                            onClick={() => setStudentSearchTerm('')}
                             style={{ cursor: 'pointer' }}
                         />
                     }
                 />
                 <hr className="my-4" />
                 <div className="max-h-[250px] overflow-y-auto">
-                    {filteredStudents?.length > 0 && searchTerm != '' ? (
+                    {filteredStudents?.length > 0 &&
+                    studentSearchTerm !== '' ? (
                         filteredStudents.map((student, index) => (
                             <div
                                 key={student._id}
@@ -298,7 +384,7 @@ function AdminCourseDetail() {
                     </span>
                     <div className="flex flex-col items-center gap-2 max-h-[250px] overflow-y-auto mt-6">
                         {selectedStudents.length > 0 &&
-                            selectedStudents?.map((student) => (
+                            selectedStudents.map((student) => (
                                 <div
                                     key={student._id}
                                     className="flex  justify-between w-full items-center gap-4 mb-2"
@@ -334,7 +420,107 @@ function AdminCourseDetail() {
                     </div>
                     {selectedStudents.length > 0 && (
                         <button
-                            onClick={onSaveEnroll}
+                            onClick={onSaveEnrollStudents}
+                            className="primary-btn mt-4"
+                        >
+                            Lưu
+                        </button>
+                    )}
+                </div>
+            </Modal>
+
+            {/* Modal thêm giáo viên (chỉ chọn 1) */}
+            <Modal
+                closeOnClickOutside={false}
+                opened={teacherModalOpened}
+                onClose={closeTeacher}
+                title="Quản lý giáo viên"
+                size="600px"
+            >
+                <Input
+                    placeholder="Nhập email giáo viên"
+                    value={teacherSearchTerm}
+                    onChange={(e) =>
+                        setTeacherSearchTerm(e.currentTarget.value)
+                    }
+                    rightSectionPointerEvents="all"
+                    mt="md"
+                    size="md"
+                    rightSection={
+                        <Clear
+                            onClick={() => setTeacherSearchTerm('')}
+                            style={{ cursor: 'pointer' }}
+                        />
+                    }
+                />
+                <hr className="my-4" />
+                <div className="max-h-[250px] overflow-y-auto">
+                    {filteredTeachers?.length > 0 &&
+                    teacherSearchTerm !== '' ? (
+                        filteredTeachers.map((teacher, index) => (
+                            <div
+                                key={teacher._id}
+                                className="flex items-center justify-between p-4 border-b border-gray-200 hover:bg-gray-50 transition-colors"
+                            >
+                                <div className="flex items-center gap-4">
+                                    <span className="font-medium text-gray-800">
+                                        {index + 1}.
+                                    </span>
+                                    <span className="text-gray-700">
+                                        {teacher.name}
+                                    </span>
+                                    <span className="text-gray-500 text-sm">
+                                        {teacher.email}
+                                    </span>
+                                </div>
+                                <button
+                                    onClick={() => setSelectedTeacher(teacher)}
+                                    className="text-blue-500 hover:text-blue-700"
+                                >
+                                    Thêm
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-center text-gray-500 italic py-4">
+                            Không tìm thấy giáo viên nào.
+                        </p>
+                    )}
+                </div>
+                <hr className="my-4" />
+                <div className="flex flex-col justify-center">
+                    <span className="text-gray-700 font-bold">
+                        {selectedTeacher
+                            ? '1 giáo viên đã chọn'
+                            : 'Chưa chọn giáo viên'}
+                    </span>
+                    {selectedTeacher && (
+                        <div className="flex justify-between w-full items-center gap-4 mb-2 mt-2">
+                            <div className="flex items-center gap-4">
+                                <Avatar
+                                    size="lg"
+                                    src={selectedTeacher.avatar}
+                                />
+                                <div className="flex flex-col gap-3">
+                                    <span className="text-gray-700">
+                                        {selectedTeacher.name}
+                                    </span>
+                                    <span className="text-gray-500">
+                                        {selectedTeacher.email}
+                                    </span>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setSelectedTeacher(null)}
+                                className="text-red-500 hover:text-red-700"
+                            >
+                                <Delete />
+                            </button>
+                        </div>
+                    )}
+                    {selectedTeacher && (
+                        <button
+                            onClick={onSaveEnrollTeachers}
                             className="primary-btn mt-4"
                         >
                             Lưu
