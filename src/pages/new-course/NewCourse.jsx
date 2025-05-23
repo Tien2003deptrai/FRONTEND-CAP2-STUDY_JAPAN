@@ -14,17 +14,16 @@ import { z } from 'zod'
 const courseSchema = z.object({
     name: z.string().min(3, 'Tên khóa học phải có ít nhất 3 ký tự'),
     description: z.string().min(10, 'Mô tả khóa học phải có ít nhất 10 ký tự'),
-    lessons: z
-        .array(
-            z.object({
-                lesson_id: z.string(),
-                lesson_title: z
-                    .string()
-                    .min(3, 'Tên bài học phải có ít nhất 3 ký tự'),
-                index: z.number(),
-            })
-        )
-        .min(1, 'Phải có ít nhất một bài học'),
+    lessons: z.array(
+        z.object({
+            lesson_id: z.string(),
+            lesson_title: z
+                .string()
+                .min(3, 'Tên bài học phải có ít nhất 3 ký tự'),
+            index: z.number(),
+        })
+    ),
+    // .min(1, 'Phải có ít nhất một bài học'),
 })
 
 function NewCourse({ isEditMode }) {
@@ -96,7 +95,7 @@ function NewCourse({ isEditMode }) {
             queryClient.invalidateQueries({
                 queryKey: ['getCourseLecturer', user?._id],
             })
-            navigate('/teacher')
+            navigate(-1)
         } catch (error) {
             setApiError(error.message)
         } finally {

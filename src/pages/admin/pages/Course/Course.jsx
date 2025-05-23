@@ -2,6 +2,7 @@ import useAuthStore from '@/store/useAuthStore'
 import { Link } from 'react-router-dom'
 import CourseCard from '../../../../components/CourseCard'
 import { useCourses } from '../../../../hooks/useCourses'
+import { Add } from '@mui/icons-material'
 
 const Course = () => {
     const userId = useAuthStore((state) => state.user?._id)
@@ -38,6 +39,12 @@ const Course = () => {
                             {courses?.length || 0}
                         </span>
                     </div>
+                    <Link
+                        to={'/teacher/new-course'}
+                        className="primary-btn flex items-center gap-2"
+                    >
+                        <Add /> Tạo khóa học mới
+                    </Link>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

@@ -8,16 +8,14 @@ function EditCourseSidebar({ lessonId, onSelectLesson }) {
 
     return (
         <div className="w-full flex flex-col gap-8">
-            <div className="w-full flex flex-col gap-2">
+            <div className="w-full flex flex-col gap-3">
                 <Link
                     className="primary-btn"
                     to={`/teacher/edit-course/${courseId}`}
                 >
                     Chỉnh sửa cấu trúc khóa học
                 </Link>
-            </div>
 
-            <div className="w-full flex flex-col gap-2">
                 <Link
                     className="primary-btn"
                     to={`/teacher/edit/${courseId}/students`}
