@@ -16,6 +16,7 @@ import StopIcon from '@mui/icons-material/Stop'
 import axios from 'axios'
 import axiosInstance from '@/network/httpRequest'
 import annyang from 'annyang'
+import { Check, CheckCircle, CheckCircleOutline } from '@mui/icons-material'
 
 const VocabularyDetail = () => {
     const { id } = useParams()
@@ -73,6 +74,7 @@ const VocabularyDetail = () => {
     }, [])
 
     const startRecording = () => {
+        setSnackbarMessage('')
         if (navigator.mediaDevices) {
             navigator.mediaDevices
                 .getUserMedia({ audio: true })
@@ -105,6 +107,7 @@ const VocabularyDetail = () => {
         if (mediaRecorder && isRecording) {
             mediaRecorder.stop()
             setIsRecording(false)
+            analyzeWord()
         }
     }
 
@@ -205,23 +208,35 @@ const VocabularyDetail = () => {
 
             <Box sx={{ mt: 3 }}>
                 {/* Start and stop recording with icons only */}
-                <Button
-                    variant="contained"
-                    onClick={startRecording}
-                    disabled={isRecording}
-                    sx={{ mr: 2 }}
-                    aria-label="Bắt đầu ghi âm"
-                >
-                    {isRecording ? <StopIcon /> : <MicIcon />}
-                </Button>
-                <Button
-                    variant="contained"
-                    onClick={stopRecording}
-                    disabled={!isRecording}
-                    aria-label="Dừng ghi âm"
-                >
-                    <StopIcon />
-                </Button>
+                {isAnalyzing ? (
+                    <div>
+                        <CircularProgress
+                            size={24}
+                            sx={{ color: 'primary.main' }}
+                        />
+                        <p className="text-gray-600 mt-2">Đang phân tích...</p>
+                    </div>
+                ) : (
+                    <div>
+                        <Button
+                            variant="contained"
+                            onClick={startRecording}
+                            disabled={isRecording}
+                            sx={{ mr: 2 }}
+                            aria-label="Bắt đầu ghi âm"
+                        >
+                            {isRecording ? <StopIcon /> : <MicIcon />}
+                        </Button>
+                        <Button
+                            variant="contained"
+                            onClick={stopRecording}
+                            disabled={!isRecording}
+                            aria-label="Dừng ghi âm"
+                        >
+                            <StopIcon />
+                        </Button>
+                    </div>
+                )}
 
                 {/* Display transcript if available */}
                 {transcript && (
@@ -231,7 +246,7 @@ const VocabularyDetail = () => {
                 )}
 
                 {/* Show "Gửi và phân tích" only if audioBlob and transcript are available */}
-                {audioBlob && transcript && (
+                {/* {audioBlob && transcript && (
                     <Button
                         variant="outlined"
                         color="success"
@@ -246,7 +261,6 @@ const VocabularyDetail = () => {
                         onClick={analyzeWord}
                         disabled={isAnalyzing} // Disable the button when analyzing
                     >
-                        {/* Show CircularProgress when analyzing */}
                         {isAnalyzing ? (
                             <CircularProgress
                                 size={24}
@@ -256,11 +270,21 @@ const VocabularyDetail = () => {
                             'Gửi và phân tích' // Button text when not analyzing
                         )}
                     </Button>
-                )}
+                )} */}
             </Box>
+            {snackbarMessage && (
+                <div className="mt-5 p-4 border rounded-lg bg-green-50 text-green-800">
+                    <div className="flex items-center gap-2 mb-2">
+                        <h3 className="font-bold">Kết quả phân tích</h3>
+                        <CheckCircleOutline fontSize="small" />
+                    </div>
+
+                    <p className="leading-6">{snackbarMessage}</p>
+                </div>
+            )}
 
             {/* Snackbar for success/error messages */}
-            <Snackbar
+            {/* <Snackbar
                 open={openSnackbar}
                 autoHideDuration={6000}
                 onClose={handleCloseSnackbar}
@@ -272,7 +296,7 @@ const VocabularyDetail = () => {
                 >
                     {snackbarMessage}
                 </Alert>
-            </Snackbar>
+            </Snackbar> */}
         </Box>
     )
 }
