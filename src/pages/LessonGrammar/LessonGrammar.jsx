@@ -5,13 +5,12 @@ const LessonGrammar = ({ lessonId }) => {
 
     if (isLoading) return <p>Đang tải ngữ pháp...</p>
     if (isError) return <p className="text-red-500">Lỗi: {error.message}</p>
-    if (!data || data.length === 0)
-        return <p>Không có ngữ pháp cho bài học này.</p>
+    if (!data || data.length === 0) return
 
     return (
         <div className="mt-8 bg-white p-6 rounded shadow-md">
             <h3 className="text-xl font-semibold mb-4 text-red-600">
-                📘 Ngữ pháp
+                Ngữ pháp
             </h3>
             {data.map((item, index) => (
                 <div key={item._id} className="mb-6">
@@ -28,7 +27,7 @@ const LessonGrammar = ({ lessonId }) => {
                         <strong>Ý nghĩa:</strong> {item.mean}
                     </p>
                     <div className="mt-2 space-y-2">
-                        <strong>🌸 Ví dụ:</strong>
+                        <strong>Ví dụ:</strong>
                         {item.examples?.map((ex, idx) => (
                             <div
                                 key={idx}

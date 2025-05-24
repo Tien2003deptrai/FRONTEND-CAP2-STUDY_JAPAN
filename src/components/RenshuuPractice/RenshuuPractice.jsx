@@ -65,11 +65,7 @@ function RenshuuPractice({ lessonId }) {
     }
 
     if (!questions.length) {
-        return (
-            <Typography mt={5} textAlign="center" color="error">
-                Không có câu hỏi để luyện tập.
-            </Typography>
-        )
+        return
     }
 
     const currentQ = questions[currentIndex]

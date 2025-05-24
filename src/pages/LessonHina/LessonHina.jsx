@@ -6,6 +6,7 @@ const LessonHina = ({ courseId, lessonId }) => {
 
     if (isLoading) return <p>Đang tải Hina...</p>
     if (error) return <p className="text-red-500">Lỗi tải Hina</p>
+    console.log(data)
 
     const { words } = data || {}
 

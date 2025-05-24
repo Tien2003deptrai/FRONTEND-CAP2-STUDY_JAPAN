@@ -121,8 +121,28 @@ function UploadQuestionsFile({ onSaveCallback }) {
     console.log(questions)
 
     const onSaveQuestions = async () => {
-        const res = await saveQuestions(examId, [...questions.newQuestions])
-        if (res.status == 200) {
+        const { newQuestions } = questions
+
+        // Validate: ít nhất 1 parent
+        if (!newQuestions || newQuestions.length === 0) {
+            alert('Phải có ít nhất một câu hỏi cha.')
+            return
+        }
+
+        // Validate: mỗi parent phải có ít nhất 1 child
+        const invalidParents = newQuestions.filter(
+            (parent) =>
+                !parent.childQuestions || parent.childQuestions.length === 0
+        )
+
+        if (invalidParents.length > 0) {
+            alert('Mỗi câu hỏi cha phải có ít nhất một câu hỏi con.')
+            return
+        }
+
+        // Nếu hợp lệ, tiến hành lưu
+        const res = await saveQuestions(examId, [...newQuestions])
+        if (res.status === 200) {
             alert('Questions saved successfully')
             clearFileInput()
             onSaveCallback()

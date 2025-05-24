@@ -12,7 +12,7 @@ const LessonVocabulary = ({ lessonId }) => {
 
     if (isLoading) return <p>Đang tải từ vựng...</p>
     if (error) return <p className="text-red-500">Lỗi tải từ vựng</p>
-
+    if (data.length <= 0) return
     return (
         <div className="mt-6 bg-white rounded shadow p-4">
             <h2 className="text-xl font-bold text-red-600 mb-4">Từ vựng</h2>
