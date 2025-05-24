@@ -1,10 +1,80 @@
 import React from 'react'
 import { People, Book, Movie, Description } from '@mui/icons-material'
-import { useAdminDashboard } from '@/hooks/useAdminDashboard'
+import { useAdminDashboard, useRecentStudents } from '@/hooks/useAdminDashboard'
+import { useCourses } from '@/hooks/useCourses'
+import useAuthStore from '@/store/useAuthStore'
+import axiosInstance from '@/network/httpRequest'
+import { useQuery } from '@tanstack/react-query'
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    Tooltip,
+    ResponsiveContainer,
+    CartesianGrid,
+    PieChart,
+    Pie,
+    Cell,
+    BarChart,
+    Bar,
+    Legend,
+} from 'recharts'
+
+const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff8042', '#8dd1e1']
 
 const MainDash = () => {
-    // Mock data for statistics
+    const userId = useAuthStore((state) => state.user?._id)
     const { data, isLoading } = useAdminDashboard()
+    const { data: recentUsers, isLoading: isLoadingUserRecent } =
+        useRecentStudents()
+    const { data: courses = [], isLoading: isLoadingCourses } =
+        useCourses(userId)
+
+    const { data: studentGrowth = [], isLoading: loadingGrowth } = useQuery({
+        queryKey: ['chart-students-growth'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/chart/students-growth')
+            return res.data.data.map((item) => ({
+                month: item._id,
+                count: item.count,
+            }))
+        },
+    })
+
+    const { data: courseRegistrations = [] } = useQuery({
+        queryKey: ['chart-course-registrations'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/chart/course-registrations')
+            return res.data.data.map((item) => ({
+                month: item._id,
+                count: item.count,
+            }))
+        },
+    })
+
+    const { data: learningLevels = [] } = useQuery({
+        queryKey: ['chart-learning-levels'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/chart/learning-levels')
+            return res.data.data.map((item) => ({
+                name: item._id,
+                value: item.count,
+            }))
+        },
+    })
+
+    const { data: gameActivity = [] } = useQuery({
+        queryKey: ['chart-game-activity'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/chart/game-activity')
+            return res.data.data.map((item) => ({
+                game: item._id,
+                avgScore: item.avgScore,
+            }))
+        },
+    })
+
     const stats = [
         {
             title: 'Tổng số giáo viên',
@@ -32,74 +102,7 @@ const MainDash = () => {
         },
     ]
 
-    // Mock data for recent users
-    const recentUsers = [
-        {
-            id: 1,
-            name: 'Nguyễn Văn A',
-            level: 'N5',
-            progress: 75,
-            lastActive: '1 giờ trước',
-        },
-        {
-            id: 2,
-            name: 'Trần Thị B',
-            level: 'N4',
-            progress: 45,
-            lastActive: '2 giờ trước',
-        },
-        {
-            id: 3,
-            name: 'Lê Văn C',
-            level: 'N3',
-            progress: 90,
-            lastActive: '3 giờ trước',
-        },
-        {
-            id: 4,
-            name: 'Phạm Thị D',
-            level: 'N5',
-            progress: 30,
-            lastActive: '1 ngày trước',
-        },
-        {
-            id: 5,
-            name: 'Hoàng Văn E',
-            level: 'N2',
-            progress: 85,
-            lastActive: '1 tuần trước',
-        },
-    ]
-
-    // Mock data for recent content
-    const recentContent = [
-        {
-            id: 1,
-            title: 'Ngữ pháp N5 - Cấu trúc て Form',
-            type: 'Bài học',
-            date: '15/03/2025',
-        },
-        {
-            id: 2,
-            title: 'Kanji N4 - Tập 3',
-            type: 'Bài học',
-            date: '14/03/2025',
-        },
-        {
-            id: 3,
-            title: 'Luyện nghe JLPT N3',
-            type: 'Video',
-            date: '13/03/2025',
-        },
-        {
-            id: 4,
-            title: 'Đề thi thử N5 - Tháng 3',
-            type: 'Kiểm tra',
-            date: '12/03/2025',
-        },
-    ]
-
-    if (isLoading) {
+    if (isLoading || isLoadingUserRecent || isLoadingCourses || loadingGrowth) {
         return (
             <div className="p-6 text-center text-gray-500">
                 Đang tải dữ liệu...
@@ -131,7 +134,94 @@ const MainDash = () => {
                 ))}
             </div>
 
-            {/* Two column layout */}
+            {/* Charts section */}
+            <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8">
+                <div className="bg-white rounded-lg shadow p-6">
+                    <h3 className="text-lg font-semibold mb-4">
+                        Tăng trưởng học viên
+                    </h3>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <LineChart data={studentGrowth}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis />
+                            <Tooltip />
+                            <Line
+                                type="monotone"
+                                dataKey="count"
+                                stroke="#ef4444"
+                                strokeWidth={2}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-6">
+                    <h3 className="text-lg font-semibold mb-4">
+                        Đăng ký khoá học
+                    </h3>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <LineChart data={courseRegistrations}>
+                            <CartesianGrid strokeDasharray="3 3" />
+                            <XAxis dataKey="month" />
+                            <YAxis />
+                            <Tooltip />
+                            <Line
+                                type="monotone"
+                                dataKey="count"
+                                stroke="#0ea5e9"
+                                strokeWidth={2}
+                            />
+                        </LineChart>
+                    </ResponsiveContainer>
+                </div>
+
+                <div className="bg-white rounded-lg shadow p-6">
+                    <h3 className="text-lg font-semibold mb-4">
+                        Tỷ lệ cấp độ học viên
+                    </h3>
+                    <ResponsiveContainer width="100%" height={250}>
+                        <PieChart>
+                            <Pie
+                                data={learningLevels}
+                                dataKey="value"
+                                nameKey="name"
+                                outerRadius={80}
+                                fill="#8884d8"
+                                label
+                            >
+                                {learningLevels.map((entry, index) => (
+                                    <Cell
+                                        key={`cell-${index}`}
+                                        fill={COLORS[index % COLORS.length]}
+                                    />
+                                ))}
+                            </Pie>
+                            <Tooltip />
+                            <Legend />
+                        </PieChart>
+                    </ResponsiveContainer>
+                </div>
+            </div>
+
+            {/* Extra chart - Game activity */}
+            <div className="bg-white rounded-lg shadow p-6 mb-8">
+                <h3 className="text-lg font-semibold mb-4">
+                    Điểm trung bình theo trò chơi
+                </h3>
+                <ResponsiveContainer width="100%" height={250}>
+                    <BarChart data={gameActivity}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="game" />
+                        <YAxis />
+                        <Tooltip />
+                        <Legend />
+                        <Bar dataKey="avgScore" fill="#f97316" />
+                    </BarChart>
+                </ResponsiveContainer>
+            </div>
+
+            {/* Two column layout for users and courses */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Recent users */}
                 <div className="bg-white rounded-lg shadow">
@@ -185,40 +275,40 @@ const MainDash = () => {
                     </div>
                 </div>
 
-                {/* Recent content */}
+                {/* Recent courses */}
                 <div className="bg-white rounded-lg shadow">
                     <div className="p-6 border-b border-gray-200">
                         <h3 className="text-lg font-semibold">
-                            Nội dung mới nhất
+                            Khoá học gần đây
                         </h3>
                     </div>
                     <div className="p-6">
                         <table className="w-full">
                             <thead>
                                 <tr className="text-left text-gray-500">
-                                    <th className="pb-3">Tiêu đề</th>
-                                    <th className="pb-3">Loại</th>
+                                    <th className="pb-3">Tên khoá học</th>
+                                    <th className="pb-3">Trình độ</th>
+                                    <th className="pb-3">Số học viên</th>
                                     <th className="pb-3">Ngày tạo</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {recentContent.map((content) => (
+                                {courses.map((course) => (
                                     <tr
-                                        key={content.id}
+                                        key={course._id}
                                         className="border-t border-gray-100"
                                     >
                                         <td className="py-3 font-medium">
-                                            {content.title}
+                                            {course.name}
                                         </td>
+                                        <td className="py-3">{course.type}</td>
                                         <td className="py-3">
-                                            <span
-                                                className={`px-2 py-1 text-xs rounded-full ${content.type === 'Bài học' ? 'bg-blue-100 text-blue-800' : content.type === 'Video' ? 'bg-purple-100 text-purple-800' : 'bg-yellow-100 text-yellow-800'}`}
-                                            >
-                                                {content.type}
-                                            </span>
+                                            {course.stu_num}
                                         </td>
-                                        <td className="py-3 text-gray-500">
-                                            {content.date}
+                                        <td className="py-3 text-gray-500 text-sm">
+                                            {new Date(
+                                                course.createdAt
+                                            ).toLocaleDateString('vi-VN')}
                                         </td>
                                     </tr>
                                 ))}
@@ -226,7 +316,7 @@ const MainDash = () => {
                         </table>
                         <div className="mt-4 text-center">
                             <button className="text-red-600 hover:text-red-800 font-medium">
-                                Xem tất cả nội dung
+                                Xem tất cả khoá học
                             </button>
                         </div>
                     </div>

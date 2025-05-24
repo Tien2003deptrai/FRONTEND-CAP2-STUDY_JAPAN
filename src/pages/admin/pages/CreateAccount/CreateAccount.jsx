@@ -1,60 +1,31 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import { motion } from 'framer-motion'
 import axiosInstance from '@/network/httpRequest'
 import Swal from 'sweetalert2'
 
-const CreateAccount = () => {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        roles: 'student',
-    })
-    const [loading, setLoading] = useState(false)
+const CreateStudentForm = () => {
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors, isSubmitting },
+    } = useForm()
 
-    const isValidEmail = (email) => {
-        const regex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-        if (!regex.test(email)) return false
-
-        const invalidDomains = ['example.com', 'test.com', 'domain.com']
-        const emailDomain = email.split('@')[1]
-
-        return !invalidDomains.includes(emailDomain)
-    }
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value })
-    }
-
-    const handleSubmit = async (e) => {
-        e.preventDefault()
-
-        if (!isValidEmail(formData.email)) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Email không hợp lệ',
-                text: 'Vui lòng nhập địa chỉ email hợp lệ (Không sử dụng email như example.com).',
-                confirmButtonColor: '#d33',
-            })
-            return
-        }
-
-        setLoading(true)
+    const onSubmit = async (data) => {
         try {
-            const response = await axiosInstance.post('/auth/signup', formData)
-            console.log('Signup response:', response.data)
+            const response = await axiosInstance.post('/auth/signup', {
+                ...data,
+                roles: 'student',
+            })
 
             Swal.fire({
                 icon: 'success',
                 title: 'Tạo tài khoản thành công!',
-                html: `
-                    <p>Email: <strong>${formData.email}</strong></p>
-                    <p>Mật khẩu đã được gửi tới email của bạn</p>
-                `,
-                confirmButtonColor: '#3085d6',
-                confirmButtonText: 'OK',
+                html: `<p>Email: <strong>${data.email}</strong></p><p>Mật khẩu đã được gửi qua email.</p>`,
             })
 
-            setFormData({ name: '', email: '', phone: '', roles: 'student' })
+            reset()
         } catch (error) {
             Swal.fire({
                 icon: 'error',
@@ -62,88 +33,123 @@ const CreateAccount = () => {
                 text:
                     error?.response?.data?.message ||
                     'Đã xảy ra lỗi, vui lòng thử lại.',
-                confirmButtonColor: '#d33',
             })
-        } finally {
-            setLoading(false)
         }
     }
 
     return (
-        <div className="max-w-lg mx-auto p-8 mt-10 bg-white rounded shadow">
-            <h2 className="text-2xl font-bold mb-6 text-center text-red-700">
-                Tạo tài khoản người dùng
+        <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            className="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-xl"
+        >
+            <h2 className="text-3xl font-bold text-center text-red-700 mb-8">
+                Tạo tài khoản học viên
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label className="block text-sm font-medium text-gray-700">
+
+            <form
+                onSubmit={handleSubmit(onSubmit)}
+                className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+                <div className="col-span-2">
+                    <label className="block mb-1 font-medium text-gray-700">
                         Họ tên
                     </label>
                     <input
                         type="text"
-                        name="name"
-                        value={formData.name}
-                        onChange={handleChange}
-                        required
                         placeholder="Nguyễn Văn A"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-red-500 focus:border-red-500"
+                        {...register('name', {
+                            required: 'Họ tên là bắt buộc',
+                        })}
+                        className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
                     />
+                    {errors.name && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.name.message}
+                        </p>
+                    )}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block mb-1 font-medium text-gray-700">
                         Email
                     </label>
                     <input
                         type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        required
-                        placeholder="example@email.com"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-red-500 focus:border-red-500"
+                        placeholder="hocvien@email.com"
+                        {...register('email', {
+                            required: 'Email là bắt buộc',
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: 'Email không hợp lệ',
+                            },
+                        })}
+                        className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
                     />
+                    {errors.email && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.email.message}
+                        </p>
+                    )}
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block mb-1 font-medium text-gray-700">
                         Số điện thoại
                     </label>
                     <input
                         type="tel"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
                         placeholder="0357635003"
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 focus:ring-red-500 focus:border-red-500"
+                        {...register('phone', { required: 'SĐT là bắt buộc' })}
+                        className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                    />
+                    {errors.phone && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.phone.message}
+                        </p>
+                    )}
+                </div>
+
+                <div>
+                    <label className="block mb-1 font-medium text-gray-700">
+                        Ngày sinh
+                    </label>
+                    <input
+                        type="date"
+                        {...register('date_of_birth')}
+                        className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
                     />
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">
-                        Vai trò
+                    <label className="block mb-1 font-medium text-gray-700">
+                        Giới tính
                     </label>
                     <select
-                        name="roles"
-                        value={formData.roles}
-                        onChange={handleChange}
-                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm px-3 py-2 bg-white focus:ring-red-500 focus:border-red-500"
+                        {...register('sex')}
+                        className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
                     >
-                        <option value="student">🎓 Học viên</option>
-                        <option value="teacher">👩‍🏫 Giáo viên</option>
+                        <option value="male">Nam</option>
+                        <option value="female">Nữ</option>
+                        <option value="other">Khác</option>
                     </select>
                 </div>
 
-                <button
-                    type="submit"
-                    disabled={loading}
-                    className="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-md transition-all"
-                >
-                    {loading ? 'Đang tạo...' : 'Tạo tài khoản'}
-                </button>
+                <div className="col-span-2">
+                    <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full py-3 bg-red-600 text-white font-bold rounded-xl shadow-md hover:bg-red-700 transition duration-200"
+                    >
+                        {isSubmitting ? 'Đang tạo...' : 'Tạo tài khoản'}
+                    </motion.button>
+                </div>
             </form>
-        </div>
+        </motion.div>
     )
 }
 
-export default CreateAccount
+export default CreateStudentForm
