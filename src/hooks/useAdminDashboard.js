@@ -41,4 +41,15 @@ export const useStudentCourses = (studentId) =>
     })
 
 /* -------------------- Export Keys (optional) -------------------- */
+
+export const useRecentStudents = () =>
+    useQuery({
+        queryKey: ['recentStudents'],
+        queryFn: async () => {
+            const res = await axiosInstance.get('/admin/recent-students')
+            return res.data.data
+        },
+        staleTime: 5 * 60 * 1000, // cache 5 phút
+    })
+
 export { DASHBOARD_KEYS, STUDENT_KEYS }

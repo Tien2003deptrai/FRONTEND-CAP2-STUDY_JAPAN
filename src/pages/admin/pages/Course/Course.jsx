@@ -9,6 +9,8 @@ const Course = () => {
     console.log('userId', userId)
     const { data: courses, isLoading, error } = useCourses(userId)
 
+    console.log('courses', courses)
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center min-h-screen">
