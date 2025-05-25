@@ -21,6 +21,7 @@ const ExamDoingPage = () => {
 
     const [exam, setExam] = useState(null)
     const [answers, setAnswers] = useState({})
+    const answersRef = useRef({}) 
     const [groupedQuestions, setGroupedQuestions] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -29,6 +30,8 @@ const ExamDoingPage = () => {
 
     const handleSubmit = useCallback(
         async (isAutoSubmit = false) => {
+            const currentAnswers = answersRef.current
+
             if (!attemptId) {
                 setErrorMessage('Không tìm thấy ID lần thi. Vui lòng thử lại.')
                 return
@@ -44,7 +47,7 @@ const ExamDoingPage = () => {
                 .map((child) => child._id)
 
             const unansweredQuestionId = allQuestionIds.find(
-                (questionId) => !answers[questionId]
+                (questionId) => !currentAnswers[questionId]
             )
 
             if (unansweredQuestionId && !isAutoSubmit) {
@@ -68,7 +71,7 @@ const ExamDoingPage = () => {
                     id: child._id,
                     userAnswer: getAnswerValue(
                         child._id,
-                        answers[child._id] ?? ''
+                        currentAnswers[child._id] ?? ''
                     ),
                 })),
             }))
@@ -117,7 +120,7 @@ const ExamDoingPage = () => {
                 toast.error('Lỗi hệ thống khi nộp bài.')
             }
         },
-        [answers, attemptId, exam, navigate, submitExam]
+        [attemptId, exam, navigate, submitExam]
     )
 
     useEffect(() => {
@@ -146,10 +149,26 @@ const ExamDoingPage = () => {
             })
         })
         questionRefs.current = refs
-    }, [data, isLoading, attemptId, handleSubmit])
+        
+        const savedAnswers = localStorage.getItem(`answers_${finalAttemptId}`)
+        if (savedAnswers) {
+            try {
+                const parsed = JSON.parse(savedAnswers)
+                setAnswers(parsed)
+                answersRef.current = parsed
+            } catch (err) {
+                console.error('Lỗi khi parse đáp án từ localStorage:', err)
+            }
+        }
+    }, [data, isLoading, attemptId])
 
     const handleAnswerChange = (qid, val) => {
-        setAnswers((prev) => ({ ...prev, [qid]: val }))
+        setAnswers((prev) => {
+            const updated = { ...prev, [qid]: val }
+            answersRef.current = updated
+            localStorage.setItem(`answers_${attemptId}`, JSON.stringify(updated))
+            return updated
+        })
     }
 
     if (isLoading)
