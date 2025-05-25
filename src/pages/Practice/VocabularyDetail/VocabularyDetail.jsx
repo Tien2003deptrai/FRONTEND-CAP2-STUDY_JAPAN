@@ -158,10 +158,6 @@ const VocabularyDetail = () => {
         navigate('/practice/vocabulary')
     }
 
-    const handleCloseSnackbar = () => {
-        setOpenSnackbar(false)
-    }
-
     if (!vocab) return <Typography textAlign="center">Loading...</Typography>
 
     return (
@@ -282,21 +278,6 @@ const VocabularyDetail = () => {
                     <p className="leading-6">{snackbarMessage}</p>
                 </div>
             )}
-
-            {/* Snackbar for success/error messages */}
-            {/* <Snackbar
-                open={openSnackbar}
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-            >
-                <Alert
-                    onClose={handleCloseSnackbar}
-                    severity={snackbarSeverity}
-                    sx={{ width: '100%' }}
-                >
-                    {snackbarMessage}
-                </Alert>
-            </Snackbar> */}
         </Box>
     )
 }
