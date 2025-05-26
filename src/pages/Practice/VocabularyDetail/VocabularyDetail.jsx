@@ -16,17 +16,17 @@ import StopIcon from '@mui/icons-material/Stop'
 import axios from 'axios'
 import axiosInstance from '@/network/httpRequest'
 import annyang from 'annyang'
-import { Check, CheckCircle, CheckCircleOutline } from '@mui/icons-material'
+import { CheckCircleOutline } from '@mui/icons-material'
 
 const VocabularyDetail = () => {
     const { id } = useParams()
     const navigate = useNavigate()
     const [vocab, setVocab] = useState(null)
     const [transcript, setTranscript] = useState('')
-    const [audioBlob, setAudioBlob] = useState(null)
     const [isRecording, setIsRecording] = useState(false)
     const [mediaRecorder, setMediaRecorder] = useState(null)
     const [isAnalyzing, setIsAnalyzing] = useState(false)
+    const [accuracy, setAccuracy] = useState(null)
 
     // State to control Snackbar visibility and message
     const [openSnackbar, setOpenSnackbar] = useState(false)
@@ -53,7 +53,8 @@ const VocabularyDetail = () => {
     }
 
     useEffect(() => {
-        if (annyang) {
+        if (annyang && isRecording) {
+            annyang.setLanguage('ja-JP')
             const commands = {
                 'stop listening': stopListening,
             }
@@ -86,16 +87,18 @@ const VocabularyDetail = () => {
                         audioChunks.push(event.data)
                     }
 
+                    recorder.start()
+
+                    setMediaRecorder(recorder)
+                    setIsRecording(true)
+
                     recorder.onstop = () => {
                         const blob = new Blob(audioChunks, {
                             type: 'audio/wav',
                         })
-                        setAudioBlob(blob)
-                    }
 
-                    recorder.start()
-                    setMediaRecorder(recorder)
-                    setIsRecording(true)
+                        analyzeWord(blob)
+                    }
                 })
                 .catch((err) =>
                     console.error('Error accessing audio stream:', err)
@@ -105,14 +108,14 @@ const VocabularyDetail = () => {
 
     const stopRecording = () => {
         if (mediaRecorder && isRecording) {
+            console.log('Stopping recording...')
             mediaRecorder.stop()
             setIsRecording(false)
-            analyzeWord()
         }
     }
 
-    const analyzeWord = async () => {
-        if (!audioBlob) {
+    const analyzeWord = async (blob) => {
+        if (!blob) {
             setSnackbarMessage('Vui lòng ghi âm trước!')
             setSnackbarSeverity('error')
             setOpenSnackbar(true)
@@ -122,7 +125,7 @@ const VocabularyDetail = () => {
         setIsAnalyzing(true)
         const formData = new FormData()
         formData.append('target_word', vocab.word)
-        formData.append('audio', audioBlob, 'audio.wav')
+        formData.append('audio', blob, 'audio.wav')
 
         try {
             const response = await axios.post(
@@ -137,6 +140,7 @@ const VocabularyDetail = () => {
             const data = response.data
             setSnackbarMessage(data.feedback || 'Phân tích thành công!')
             setSnackbarSeverity('success')
+            setAccuracy(data.accuracy)
         } catch (error) {
             console.error('Error analyzing word:', error)
             setSnackbarMessage(
@@ -241,32 +245,14 @@ const VocabularyDetail = () => {
                     </Typography>
                 )}
 
-                {/* Show "Gửi và phân tích" only if audioBlob and transcript are available */}
-                {/* {audioBlob && transcript && (
-                    <Button
-                        variant="outlined"
-                        color="success"
-                        sx={{
-                            mt: 2,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            position: 'relative',
-                            minWidth: 200, // Đảm bảo nút có chiều rộng đủ để chứa cả CircularProgress
-                        }}
-                        onClick={analyzeWord}
-                        disabled={isAnalyzing} // Disable the button when analyzing
+                {accuracy !== null && (
+                    <Typography
+                        variant="body1"
+                        sx={{ mt: 1, fontWeight: 'bold' }}
                     >
-                        {isAnalyzing ? (
-                            <CircularProgress
-                                size={24}
-                                sx={{ color: 'primary.main' }}
-                            />
-                        ) : (
-                            'Gửi và phân tích' // Button text when not analyzing
-                        )}
-                    </Button>
-                )} */}
+                        Độ chính xác phát âm: {accuracy}%
+                    </Typography>
+                )}
             </Box>
             {snackbarMessage && (
                 <div className="mt-5 p-4 border rounded-lg bg-green-50 text-green-800">
