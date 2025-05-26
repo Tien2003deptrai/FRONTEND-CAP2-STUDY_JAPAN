@@ -17,6 +17,11 @@ const ExamDetailPage = () => {
             setError('Không tìm thấy ID bài thi')
             return
         }
+        
+        if (!exam.questions || exam.questions.length === 0) {
+            setError('Bài thi này hiện không có câu hỏi nào. Vui lòng liên hệ giáo viên.')
+            return
+        }
 
         const existingAttempt = history?.find(
             (attempt) => attempt.status !== 'completed'
