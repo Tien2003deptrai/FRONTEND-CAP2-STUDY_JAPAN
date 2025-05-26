@@ -21,7 +21,7 @@ const ExamDoingPage = () => {
 
     const [exam, setExam] = useState(null)
     const [answers, setAnswers] = useState({})
-    const answersRef = useRef({}) 
+    const answersRef = useRef({})
     const [groupedQuestions, setGroupedQuestions] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
@@ -149,7 +149,7 @@ const ExamDoingPage = () => {
             })
         })
         questionRefs.current = refs
-        
+
         const savedAnswers = localStorage.getItem(`answers_${finalAttemptId}`)
         if (savedAnswers) {
             try {
@@ -166,7 +166,10 @@ const ExamDoingPage = () => {
         setAnswers((prev) => {
             const updated = { ...prev, [qid]: val }
             answersRef.current = updated
-            localStorage.setItem(`answers_${attemptId}`, JSON.stringify(updated))
+            localStorage.setItem(
+                `answers_${attemptId}`,
+                JSON.stringify(updated)
+            )
             return updated
         })
     }
@@ -207,7 +210,7 @@ const ExamDoingPage = () => {
                 </div>
             )}
 
-            <div className="flex px-6 h-[calc(100vh-100px)] overflow-hidden gap-6 mt-6">
+            <div className="flex px-6 h-[calc(100vh-100px)] overflow-hidden gap-6 mt-6 ">
                 <div className="w-60 bg-white shadow rounded-lg overflow-y-auto sticky top-6 max-h-[calc(100vh-120px)]">
                     <QuestionNavigator
                         groupedQuestions={groupedQuestions}
@@ -234,7 +237,7 @@ const ExamDoingPage = () => {
                         </div>
                     ))}
 
-                    <div className="mt-8 text-right">
+                    <div className="mt-8 text-right mb-24">
                         <button
                             onClick={() => setShowModal(true)}
                             disabled={isSubmitting}
