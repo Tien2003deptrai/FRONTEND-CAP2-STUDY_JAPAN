@@ -25,7 +25,7 @@ function EditCourse() {
         (l) => l._id === selectedLesson
     )
 
-    console.log('renshuu', lesson?._id)
+    console.log('lesson_id', lessonList)
 
     useEffect(() => {
         setVideoUrl(lesson?.video_url || '')

@@ -4,6 +4,11 @@ import { motion } from 'framer-motion'
 import axiosInstance from '@/network/httpRequest'
 import Swal from 'sweetalert2'
 
+const rolesOptions = [
+    { label: 'Học viên', value: 'student' },
+    { label: 'Giáo viên', value: 'teacher' },
+]
+
 const CreateStudentForm = () => {
     const {
         register,
@@ -16,7 +21,7 @@ const CreateStudentForm = () => {
         try {
             const response = await axiosInstance.post('/auth/signup', {
                 ...data,
-                roles: 'student',
+                roles: data.roles || 'student', // đảm bảo có role
             })
 
             Swal.fire({
@@ -134,6 +139,33 @@ const CreateStudentForm = () => {
                         <option value="female">Nữ</option>
                         <option value="other">Khác</option>
                     </select>
+                </div>
+
+                <div className="col-span-2">
+                    <label className="block mb-1 font-medium text-gray-700">
+                        Vai trò
+                    </label>
+                    <select
+                        {...register('roles', {
+                            required: 'Vui lòng chọn vai trò',
+                        })}
+                        defaultValue=""
+                        className="w-full px-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-red-500"
+                    >
+                        <option value="" disabled>
+                            -- Chọn vai trò --
+                        </option>
+                        {rolesOptions.map(({ label, value }) => (
+                            <option key={value} value={value}>
+                                {label}
+                            </option>
+                        ))}
+                    </select>
+                    {errors.roles && (
+                        <p className="text-red-500 text-sm mt-1">
+                            {errors.roles.message}
+                        </p>
+                    )}
                 </div>
 
                 <div className="col-span-2">

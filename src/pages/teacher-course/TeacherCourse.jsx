@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 
 function TeacherCourse() {
     const { data } = useFetchTeacherCourses()
+    console.log('data', data)
 
     return (
         <div className="w-full flex justify-center items-center py-10">
