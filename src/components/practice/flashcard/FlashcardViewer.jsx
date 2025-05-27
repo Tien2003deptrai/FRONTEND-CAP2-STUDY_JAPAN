@@ -10,6 +10,7 @@ import {
 import { useState } from 'react'
 import VolumeUpIcon from '@mui/icons-material/VolumeUp'
 import { useNavigate } from 'react-router-dom'
+import { ArrowBackIosNew, ArrowForwardIos, Games } from '@mui/icons-material'
 
 function FlashcardViewer({ flashcards }) {
     const theme = useTheme()
@@ -129,22 +130,24 @@ function FlashcardViewer({ flashcards }) {
                 </Box>
             </Box>
 
-            <Stack direction="row" spacing={3}>
+            <Stack direction="row" spacing={3} alignItems="center">
                 <Button
                     variant="outlined"
                     color="error"
                     size="large"
                     onClick={prevCard}
+                    aria-label="Card trước"
                 >
-                    Trước
+                    <ArrowBackIosNew />
                 </Button>
                 <Button
                     variant="contained"
                     color="error"
                     size="large"
                     onClick={nextCard}
+                    aria-label="Card tiếp"
                 >
-                    Tiếp
+                    <ArrowForwardIos />
                 </Button>
                 <Button
                     variant="outlined"
@@ -155,8 +158,10 @@ function FlashcardViewer({ flashcards }) {
                             state: { flashcards },
                         })
                     }
+                    aria-label="Chơi Memory Game"
+                    title="Chơi Memory Game"
                 >
-                    Chơi Memory Game
+                    <Games fontSize="medium" />
                 </Button>
             </Stack>
         </Box>

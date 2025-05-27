@@ -30,7 +30,7 @@ const StudentCoursesModal = ({ student, onClose }) => {
                             >
                                 <img
                                     // src={item.course.thumb}
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb9jHXStwRc8YgUIZ3mS5eGWYS36d66whnYw&s"
+                                    src={item.course.thumb}
                                     alt={item.course.name}
                                     className="w-14 h-14 object-cover rounded-md mr-4"
                                 />

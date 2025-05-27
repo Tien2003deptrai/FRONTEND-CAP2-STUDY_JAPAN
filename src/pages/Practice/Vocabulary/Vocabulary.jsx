@@ -14,6 +14,8 @@ import {
 } from '@mui/material'
 import useFetchAllVocabularies from '@/hooks/useFetchAllVocabularies'
 import { Link } from 'react-router-dom'
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
 
 const VocabularyList = () => {
     const {
@@ -26,6 +28,13 @@ const VocabularyList = () => {
     const [isFlashcardMode, setFlashcardMode] = useState(false)
     const [isQuizMode, setQuizMode] = useState(false)
     const [quizAnswer, setQuizAnswer] = useState({})
+    const [currentPage, setCurrentPage] = useState(1)
+    const itemsPerPage = 10
+
+    const totalPages = Math.ceil(vocabularies.length / itemsPerPage)
+    const indexOfLast = currentPage * itemsPerPage
+    const indexOfFirst = indexOfLast - itemsPerPage
+    const currentVocabularies = vocabularies.slice(indexOfFirst, indexOfLast)
 
     // Toggle difficult words
     const toggleDifficult = (id) => {
@@ -41,13 +50,7 @@ const VocabularyList = () => {
         setLearnedWords(newSet)
     }
 
-    // Speak Japanese word using SpeechSynthesis
-    // const speakJapanese = (text) => {
-    //     const utterance = new SpeechSynthesisUtterance(text)
-    //     utterance.lang = 'ja-JP'
-    //     speechSynthesis.speak(utterance)
-    // }
-
+    // Generate random quiz options for a vocabulary item
     const getRandomQuiz = (id) => {
         const options = ['Tình yêu', 'Núi', 'Trường học', 'Cây cối', 'Công ty']
         const correct = vocabularies.find((v) => v._id === id)?.meaning
@@ -86,7 +89,7 @@ const VocabularyList = () => {
                         setQuizMode(false)
                     }}
                 >
-                    Flashcard Mode
+                    Chế độ ẩn
                 </Button>
                 <Button
                     variant={isQuizMode ? 'contained' : 'outlined'}
@@ -103,7 +106,7 @@ const VocabularyList = () => {
             </Box>
 
             <Grid container spacing={4}>
-                {vocabularies.map((vocab) => (
+                {currentVocabularies.map((vocab) => (
                     <Grid item xs={12} md={6} key={vocab._id}>
                         <Card
                             sx={{
@@ -169,36 +172,16 @@ const VocabularyList = () => {
 
                                 {!isFlashcardMode && (
                                     <>
+                                        {/* Uncomment if you want to show additional info */}
                                         {/* <Typography variant="h6" sx={{ mt: 1 }}>
-                                            Kana: <strong>{vocab.kana}</strong>{' '}
-                                            | Kanji:{' '}
-                                            <strong>
-                                                {vocab.kanji || '—'}
-                                            </strong>
-                                        </Typography>
-                                        <Typography
-                                            variant="body1"
-                                            sx={{ mt: 1 }}
-                                        >
-                                            Nghĩa: {vocab.meaning}
-                                        </Typography>
-                                        <Typography
-                                            variant="body2"
-                                            color="text.secondary"
-                                            sx={{ mt: 1 }}
-                                        >
-                                            Ví dụ: <i>{vocab.example}</i>
-                                        </Typography>
-                                        {vocab.audio && (
-                                            <IconButton
-                                                onClick={() => {
-                                                    speakJapanese(vocab.word)
-                                                }}
-                                                size="small"
-                                            >
-                                                <VolumeUpIcon />
-                                            </IconButton>
-                                        )} */}
+                      Kana: <strong>{vocab.kana}</strong> | Kanji: <strong>{vocab.kanji || '—'}</strong>
+                    </Typography>
+                    <Typography variant="body1" sx={{ mt: 1 }}>
+                      Nghĩa: {vocab.meaning}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                      Ví dụ: <i>{vocab.example}</i>
+                    </Typography> */}
                                     </>
                                 )}
 
@@ -240,6 +223,35 @@ const VocabularyList = () => {
                     </Grid>
                 ))}
             </Grid>
+
+            {/* Pagination controls */}
+            <Box
+                mt={4}
+                display="flex"
+                justifyContent="center"
+                gap={2}
+                alignItems="center"
+            >
+                <IconButton
+                    disabled={currentPage === 1}
+                    onClick={() => setCurrentPage((prev) => prev - 1)}
+                    aria-label="Previous page"
+                >
+                    <ArrowBackIosIcon />
+                </IconButton>
+
+                <Typography variant="body1" pt={1}>
+                    Page {currentPage} / {totalPages}
+                </Typography>
+
+                <IconButton
+                    disabled={currentPage === totalPages}
+                    onClick={() => setCurrentPage((prev) => prev + 1)}
+                    aria-label="Next page"
+                >
+                    <ArrowForwardIosIcon />
+                </IconButton>
+            </Box>
         </Box>
     )
 }

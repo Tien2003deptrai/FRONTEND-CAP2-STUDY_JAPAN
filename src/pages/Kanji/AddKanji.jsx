@@ -1,167 +1,413 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import {
+    Box,
+    Button,
+    TextField,
+    Typography,
+    Chip,
+    Stack,
+    Paper,
+} from '@mui/material'
 import axiosInstance from '@/network/httpRequest'
-import { LoadingOverlay } from '@mantine/core'
-import { Add, Book, Delete, Search } from '@mui/icons-material'
 import Swal from 'sweetalert2'
+import { useNavigate } from 'react-router-dom'
 
-function Kanji() {
-    const [kanjis, setKanjis] = useState([])
-    const [searchTerm, setSearchTerm] = useState('')
-    const [jlptLevel, setJlptLevel] = useState('N5')
-    const [page, setPage] = useState(1)
-    const [hasMore, setHasMore] = useState(true)
-    const [isLoading, setIsLoading] = useState(true)
+const initialForm = {
+    kanji: '',
+    cn_vi_word: '',
+    component: [''],
+    examples: [{ ja: '', hira: '', vi: '' }],
+    explain: '',
+    jlpt: 'N5',
+    kunyomi: [''],
+    onyomi: [''],
+    mean: '',
+    stroke_num: '',
+    unicode: '',
+}
 
-    useEffect(() => {
-        setKanjis([])
-        setPage(1)
-        setHasMore(true)
-    }, [jlptLevel])
+const JLPT_LEVELS = ['N1', 'N2', 'N3', 'N4', 'N5']
 
-    useEffect(() => {
-        fetchKanjis(jlptLevel, page)
-    }, [jlptLevel, page])
+function AddKanji() {
+    const [form, setForm] = useState(initialForm)
+    const [loading, setLoading] = useState(false)
+    const navigate = useNavigate()
 
-    const fetchKanjis = async (jlpt, page) => {
-        setIsLoading(true)
+    // Handle input change for simple fields
+    const handleChange = (field) => (e) => {
+        setForm((prev) => ({ ...prev, [field]: e.target.value }))
+    }
+
+    // Handle array fields: component, kunyomi, onyomi
+    const handleArrayChange = (field, index) => (e) => {
+        const newArr = [...form[field]]
+        newArr[index] = e.target.value
+        setForm((prev) => ({ ...prev, [field]: newArr }))
+    }
+    const addArrayItem = (field) => {
+        setForm((prev) => ({ ...prev, [field]: [...prev[field], ''] }))
+    }
+    const removeArrayItem = (field, index) => {
+        const newArr = form[field].filter((_, i) => i !== index)
+        setForm((prev) => ({ ...prev, [field]: newArr }))
+    }
+
+    // Handle examples (array of objects)
+    const handleExampleChange = (index, key) => (e) => {
+        const newExamples = [...form.examples]
+        newExamples[index][key] = e.target.value
+        setForm((prev) => ({ ...prev, examples: newExamples }))
+    }
+    const addExample = () => {
+        setForm((prev) => ({
+            ...prev,
+            examples: [...prev.examples, { ja: '', hira: '', vi: '' }],
+        }))
+    }
+    const removeExample = (index) => {
+        const newExamples = form.examples.filter((_, i) => i !== index)
+        setForm((prev) => ({ ...prev, examples: newExamples }))
+    }
+
+    // Submit handler
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        // Basic validation
+        if (!form.kanji.trim()) {
+            Swal.fire('Lỗi', 'Chữ Kanji không được để trống', 'error')
+            return
+        }
+        if (!form.mean.trim()) {
+            Swal.fire('Lỗi', 'Ý nghĩa Kanji không được để trống', 'error')
+            return
+        }
+
+        setLoading(true)
         try {
-            const res = await axiosInstance.get(`/kanji/${jlpt}/${page}`)
-            const newKanjis = res.data?.data?.kanji || []
-            if (newKanjis.length === 0) {
-                setHasMore(false)
-            } else {
-                setKanjis((prev) => [...prev, ...newKanjis])
+            // Prepare payload: remove empty strings from arrays
+            const payload = {
+                ...form,
+                component: form.component.filter((c) => c.trim() !== ''),
+                kunyomi: form.kunyomi.filter((k) => k.trim() !== ''),
+                onyomi: form.onyomi.filter((o) => o.trim() !== ''),
+                stroke_num: Number(form.stroke_num),
+                examples: form.examples.filter(
+                    (ex) => ex.ja.trim() && ex.hira.trim() && ex.vi.trim()
+                ),
             }
-        } catch (err) {
-            console.error('Error fetching kanji:', err)
+
+            await axiosInstance.post('/kanji/add', payload)
+            navigate(-1)
+            Swal.fire('Thành công', 'Đã thêm Kanji mới', 'success')
+            setForm(initialForm)
+        } catch (error) {
+            Swal.fire(
+                'Lỗi',
+                error.response?.data?.message || 'Thêm Kanji thất bại',
+                'error'
+            )
         } finally {
-            setIsLoading(false)
+            setLoading(false)
         }
     }
-
-    const handleDeleteKanji = async (id, kanjiChar) => {
-        const confirm = await Swal.fire({
-            title: `Xóa Kanji "${kanjiChar}"?`,
-            text: 'Hành động này sẽ không thể hoàn tác.',
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy',
-            confirmButtonColor: '#d33',
-            cancelButtonColor: '#aaa',
-        })
-
-        if (confirm.isConfirmed) {
-            try {
-                const res = await axiosInstance.delete(`/kanji/${id}`)
-                Swal.fire('Đã xóa!', res.data?.message || '', 'success')
-                setKanjis((prev) => prev.filter((k) => k._id !== id))
-            } catch (err) {
-                Swal.fire(
-                    'Lỗi!',
-                    err.response?.data?.message || 'Không thể xóa Kanji',
-                    'error'
-                )
-            }
-        }
-    }
-
-    const filteredKanjis = kanjis.filter(
-        (k) =>
-            k.kanji.includes(searchTerm) ||
-            k.mean?.toLowerCase().includes(searchTerm.toLowerCase())
-    )
 
     return (
-        <div className="p-6 mx-auto max-w-5xl">
-            <LoadingOverlay visible={isLoading} overlayBlur={2} />
+        <Box maxWidth={700} mx="auto" p={4}>
+            <Typography
+                variant="h4"
+                fontWeight="bold"
+                mb={4}
+                color="error"
+                textAlign="center"
+                sx={{
+                    borderBottom: '4px solid',
+                    borderColor: 'error.main',
+                    display: 'inline-block',
+                    pb: 1,
+                    mx: 'auto',
+                }}
+            >
+                Thêm Kanji mới
+            </Typography>
 
-            <div className="flex justify-between items-center flex-wrap gap-4 mb-6">
-                <h1 className="text-2xl font-bold text-gray-800">
-                    Danh sách Kanji - JLPT {jlptLevel}
-                </h1>
+            <form onSubmit={handleSubmit}>
+                {/* Kanji & Mean */}
+                <Stack spacing={3} mb={4}>
+                    <TextField
+                        label="Chữ Kanji"
+                        value={form.kanji}
+                        onChange={handleChange('kanji')}
+                        required
+                        inputProps={{
+                            maxLength: 2,
+                            style: { fontSize: 36, textAlign: 'center' },
+                        }}
+                        sx={{ fontWeight: 'bold' }}
+                    />
 
-                <select
-                    value={jlptLevel}
-                    onChange={(e) => setJlptLevel(e.target.value)}
-                    className="border border-gray-300 rounded px-4 py-2"
+                    <TextField
+                        label="Ý nghĩa (mean)"
+                        value={form.mean}
+                        onChange={handleChange('mean')}
+                        required
+                    />
+
+                    <TextField
+                        label="Nghĩa chữ tiếng Trung (cn_vi_word)"
+                        value={form.cn_vi_word}
+                        onChange={handleChange('cn_vi_word')}
+                        helperText="Ví dụ: Mặt trời, ngày"
+                    />
+                </Stack>
+
+                {/* Components (bộ thủ) */}
+                <Box mb={4}>
+                    <Typography fontWeight="bold" mb={1}>
+                        Bộ thủ (Components)
+                    </Typography>
+                    {form.component.map((c, i) => (
+                        <Stack
+                            key={i}
+                            direction="row"
+                            spacing={2}
+                            alignItems="center"
+                            mb={1}
+                        >
+                            <TextField
+                                label={`Bộ thủ #${i + 1}`}
+                                value={c}
+                                onChange={handleArrayChange('component', i)}
+                                fullWidth
+                            />
+                            {form.component.length > 1 && (
+                                <Button
+                                    variant="outlined"
+                                    color="error"
+                                    onClick={() =>
+                                        removeArrayItem('component', i)
+                                    }
+                                >
+                                    Xóa
+                                </Button>
+                            )}
+                        </Stack>
+                    ))}
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={() => addArrayItem('component')}
+                    >
+                        Thêm bộ thủ
+                    </Button>
+                </Box>
+
+                {/* Examples */}
+                <Box mb={4}>
+                    <Typography fontWeight="bold" mb={1}>
+                        Ví dụ (Examples)
+                    </Typography>
+                    {form.examples.map((ex, i) => (
+                        <Paper key={i} variant="outlined" sx={{ p: 2, mb: 2 }}>
+                            <Stack
+                                direction="row"
+                                spacing={2}
+                                alignItems="center"
+                                mb={1}
+                            >
+                                <TextField
+                                    label="Tiếng Nhật (ja)"
+                                    value={ex.ja}
+                                    onChange={handleExampleChange(i, 'ja')}
+                                    fullWidth
+                                    required
+                                />
+                                <TextField
+                                    label="Kana (hira)"
+                                    value={ex.hira}
+                                    onChange={handleExampleChange(i, 'hira')}
+                                    fullWidth
+                                    required
+                                />
+                                <TextField
+                                    label="Nghĩa tiếng Việt (vi)"
+                                    value={ex.vi}
+                                    onChange={handleExampleChange(i, 'vi')}
+                                    fullWidth
+                                    required
+                                />
+                                {form.examples.length > 1 && (
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        onClick={() => removeExample(i)}
+                                    >
+                                        Xóa
+                                    </Button>
+                                )}
+                            </Stack>
+                        </Paper>
+                    ))}
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={addExample}
+                    >
+                        Thêm ví dụ
+                    </Button>
+                </Box>
+
+                {/* Kunyomi & Onyomi */}
+                <Stack
+                    spacing={4}
+                    mb={4}
+                    direction={{ xs: 'column', sm: 'row' }}
                 >
-                    {['N1', 'N2', 'N3', 'N4', 'N5'].map((level) => (
+                    {/* Kunyomi */}
+                    <Box flex={1}>
+                        <Typography fontWeight="bold" mb={1}>
+                            Kunyomi (Âm thuần Nhật)
+                        </Typography>
+                        {form.kunyomi.map((k, i) => (
+                            <Stack
+                                key={i}
+                                direction="row"
+                                spacing={2}
+                                alignItems="center"
+                                mb={1}
+                            >
+                                <TextField
+                                    label={`Kunyomi #${i + 1}`}
+                                    value={k}
+                                    onChange={handleArrayChange('kunyomi', i)}
+                                    fullWidth
+                                />
+                                {form.kunyomi.length > 1 && (
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        onClick={() =>
+                                            removeArrayItem('kunyomi', i)
+                                        }
+                                    >
+                                        Xóa
+                                    </Button>
+                                )}
+                            </Stack>
+                        ))}
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => addArrayItem('kunyomi')}
+                        >
+                            Thêm Kunyomi
+                        </Button>
+                    </Box>
+
+                    {/* Onyomi */}
+                    <Box flex={1}>
+                        <Typography fontWeight="bold" mb={1}>
+                            Onyomi (Âm Hán Nhật)
+                        </Typography>
+                        {form.onyomi.map((o, i) => (
+                            <Stack
+                                key={i}
+                                direction="row"
+                                spacing={2}
+                                alignItems="center"
+                                mb={1}
+                            >
+                                <TextField
+                                    label={`Onyomi #${i + 1}`}
+                                    value={o}
+                                    onChange={handleArrayChange('onyomi', i)}
+                                    fullWidth
+                                />
+                                {form.onyomi.length > 1 && (
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        onClick={() =>
+                                            removeArrayItem('onyomi', i)
+                                        }
+                                    >
+                                        Xóa
+                                    </Button>
+                                )}
+                            </Stack>
+                        ))}
+                        <Button
+                            variant="contained"
+                            color="error"
+                            onClick={() => addArrayItem('onyomi')}
+                        >
+                            Thêm Onyomi
+                        </Button>
+                    </Box>
+                </Stack>
+
+                {/* Stroke Number & Unicode */}
+                <Stack
+                    direction={{ xs: 'column', sm: 'row' }}
+                    spacing={4}
+                    mb={4}
+                >
+                    <TextField
+                        label="Số nét (stroke_num)"
+                        type="number"
+                        value={form.stroke_num}
+                        onChange={handleChange('stroke_num')}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Unicode"
+                        value={form.unicode}
+                        onChange={handleChange('unicode')}
+                        fullWidth
+                    />
+                </Stack>
+
+                {/* Explain */}
+                <TextField
+                    label="Giải thích (explain)"
+                    value={form.explain}
+                    onChange={handleChange('explain')}
+                    multiline
+                    rows={4}
+                    fullWidth
+                    mb={4}
+                />
+
+                {/* JLPT Level */}
+                <TextField
+                    select
+                    label="JLPT"
+                    value={form.jlpt}
+                    onChange={handleChange('jlpt')}
+                    fullWidth
+                    SelectProps={{ native: true }}
+                    mb={4}
+                >
+                    {JLPT_LEVELS.map((level) => (
                         <option key={level} value={level}>
                             {level}
                         </option>
                     ))}
-                </select>
+                </TextField>
 
-                <div className="relative w-full max-w-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Tìm kiếm Kanji hoặc nghĩa..."
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500"
-                    />
-                </div>
-
-                <Link
-                    to="/kanji/create"
-                    className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700"
+                <Button
+                    type="submit"
+                    variant="contained"
+                    color="error"
+                    size="large"
+                    disabled={loading}
+                    fullWidth
                 >
-                    <Add /> Thêm Kanji
-                </Link>
-            </div>
-
-            <div className="flex flex-col gap-4">
-                {filteredKanjis.map((kanji) => (
-                    <div
-                        key={kanji._id}
-                        className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="p-2 bg-red-50 text-red-600 rounded-lg">
-                                <Book />
-                            </div>
-                            <div>
-                                <p className="text-xl font-bold">
-                                    {kanji.kanji}
-                                </p>
-                                <p className="text-gray-600 text-sm">
-                                    {kanji.mean}
-                                </p>
-                            </div>
-                        </div>
-                        <button
-                            onClick={() =>
-                                handleDeleteKanji(kanji._id, kanji.kanji)
-                            }
-                            className="px-4 py-2 bg-red-100 text-red-600 rounded hover:bg-red-200"
-                        >
-                            <Delete />
-                        </button>
-                    </div>
-                ))}
-            </div>
-
-            {hasMore && (
-                <button
-                    onClick={() => setPage((prev) => prev + 1)}
-                    className="mt-6 py-3 px-6 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
-                >
-                    Xem thêm
-                </button>
-            )}
-
-            {!filteredKanjis.length && !isLoading && (
-                <div className="text-center py-8 text-gray-500">
-                    Không tìm thấy Kanji nào với từ khóa "{searchTerm}"
-                </div>
-            )}
-        </div>
+                    {loading ? 'Đang lưu...' : 'Thêm Kanji'}
+                </Button>
+            </form>
+        </Box>
     )
 }
 
-export default Kanji
+export default AddKanji

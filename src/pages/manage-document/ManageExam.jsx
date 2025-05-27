@@ -3,6 +3,7 @@ import axiosInstance from '@/network/httpRequest'
 import useAuthStore from '@/store/useAuthStore'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Add, ArrowForward, Delete } from '@mui/icons-material'
+import { Typography } from '@mui/material'
 import { useQuery } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
@@ -111,9 +112,25 @@ function ManageExam() {
                 style={{ marginTop: '80px' }}
             />
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-gray-800">
+                {/* <h1 className="text-2xl font-bold text-gray-800">
                     Quản lý bài thi
-                </h1>
+                </h1> */}
+                <Typography
+                    variant="h4"
+                    fontWeight="bold"
+                    mb={4}
+                    color="error"
+                    textAlign="center"
+                    sx={{
+                        borderBottom: '4px solid',
+                        borderColor: 'error.main',
+                        display: 'inline-block',
+                        pb: 1,
+                        mx: 'auto',
+                    }}
+                >
+                    Quản lý bài thi
+                </Typography>
                 <button
                     onClick={handleOpenDialog}
                     className="flex items-center second-btn"

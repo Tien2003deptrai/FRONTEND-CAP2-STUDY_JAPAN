@@ -1,13 +1,14 @@
-import { useAuthStore } from '@/store/useAuthStore'
+import useAuthStore from '@/store/useAuthStore'
+import { Navigate } from 'react-router-dom'
 
-const ProtectedRoute = ({ element, allowedRole }) => {
-  const { isAuthenticated, user } = useAuthStore()
+const ProtectedRoute = ({ element, allowedRoles }) => {
+    const { isAuthenticated, user } = useAuthStore()
 
-  if (!isAuthenticated || user?.roles !== allowedRole) {
-    return <Navigate to="/not-allowed" replace />
-  }
+    if (!isAuthenticated || !allowedRoles.includes(user?.roles)) {
+        return <Navigate to="/not-allowed" replace />
+    }
 
-  return element
+    return element
 }
 
 export default ProtectedRoute

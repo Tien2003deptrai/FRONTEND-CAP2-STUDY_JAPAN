@@ -107,7 +107,7 @@ const ExamDetailPage = () => {
                 ) : (
                     <button
                         onClick={handleStartExam}
-                        className="mt-6 inline-block bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300"
+                        className="mt-6 inline-block bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-semibold transition duration-300"
                     >
                         {isStarting
                             ? 'Đang bắt đầu...'

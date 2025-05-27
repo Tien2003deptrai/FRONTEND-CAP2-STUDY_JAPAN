@@ -34,6 +34,7 @@ const Teacher = () => {
             setTeachers(data.map(transformTeacherData))
         }
     }, [data])
+    console.log(selectedTeacher)
 
     const handleViewDetail = (teacher) => {
         setSelectedTeacher(teacher)

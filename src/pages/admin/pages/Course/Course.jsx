@@ -40,7 +40,7 @@ const Course = () => {
                         </span>
                     </div>
                     <Link
-                        to={'/teacher/new-course'}
+                        to={'/admin/new-course'}
                         className="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg px-5 py-3 shadow-md transition-transform transform hover:scale-105"
                         aria-label="Tạo khóa học mới"
                     >

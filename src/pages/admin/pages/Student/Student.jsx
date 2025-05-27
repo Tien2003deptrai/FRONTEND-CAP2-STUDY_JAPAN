@@ -11,7 +11,7 @@ const transformStudentData = (student) => ({
     email: student.email,
     avatar:
         student.avatar ||
-        'https://png.pngtree.com/png-clipart/20190618/original/pngtree-trend-male-student-illustration-fashion-male-student-male-student-school-season-png-image_3933229.jpg',
+        'https://upload.wikimedia.org/wikipedia/commons/b/b7/Phamnhatvuong2024.jpg',
     phone: student.phone,
     status: student.status,
     region: student.region || 'Chưa xác định',
@@ -26,6 +26,8 @@ const transformStudentData = (student) => ({
 const Student = () => {
     const { data, isLoading, error } = useStudents()
     const students = data?.map(transformStudentData) || []
+
+    console.log('students', students)
 
     const [selectedStudent, setSelectedStudent] = useState(null)
     const [showDetailModal, setShowDetailModal] = useState(false)

@@ -1,4 +1,3 @@
-// MenuHeader.jsx
 import useAuthStore from '@/store/useAuthStore'
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings'
 import AssignmentIcon from '@mui/icons-material/Assignment'
@@ -14,73 +13,78 @@ function MenuHeader() {
     const location = useLocation()
     const { user } = useAuthStore()
 
-    const isActive = (path) => {
-        return path === '/'
+    const isActive = (path) =>
+        path === '/'
             ? location.pathname === '/'
             : location.pathname.startsWith(path)
-    }
 
     const menuItems = [
-        { label: 'Trang chủ', path: '/', icon: <HomeIcon fontSize="small" /> },
+        { label: 'Trang chủ', path: '/', icon: <HomeIcon fontSize="medium" /> },
         {
             label: 'Quản lý khóa học',
             path: '/teacher',
             role: 'teacher',
-            icon: <MenuBookIcon fontSize="small" />,
+            icon: <MenuBookIcon fontSize="medium" />,
         },
         {
             label: 'Quản lý tài liệu',
             path: '/manage-document',
             role: 'teacher',
-            icon: <LibraryBooksIcon fontSize="small" />,
+            icon: <LibraryBooksIcon fontSize="medium" />,
         },
         {
             label: 'Khóa học của tôi',
             path: '/courses',
             role: 'student',
-            icon: <AssignmentIcon fontSize="small" />,
+            icon: <AssignmentIcon fontSize="medium" />,
         },
         {
             label: 'Kanji',
             path: '/kanji',
             role: 'student',
-            icon: <DrawIcon fontSize="small" />,
+            icon: <DrawIcon fontSize="medium" />,
         },
         {
             label: 'Luyện tập',
             path: '/practice',
             role: 'student',
-            icon: <SchoolIcon fontSize="small" />,
+            icon: <SchoolIcon fontSize="medium" />,
         },
         {
             label: 'Sự kiện',
             path: '/event',
             role: 'student',
-            icon: <EventIcon fontSize="small" />,
+            icon: <EventIcon fontSize="medium" />,
         },
         {
             label: 'Admin',
             path: '/admin',
             role: 'admin',
-            icon: <AdminPanelSettingsIcon fontSize="small" />,
+            icon: <AdminPanelSettingsIcon fontSize="medium" />,
         },
     ]
 
     return (
-        <nav className="hidden md:flex space-x-6 text-sm font-medium items-center">
+        <nav className="hidden md:flex items-center space-x-8 text-base font-semibold select-none">
             {menuItems
                 .filter((item) => !item.role || user?.roles === item.role)
                 .map((item) => (
                     <NavLink
                         key={item.label}
                         to={item.path}
-                        className={`text-xl flex items-center text-red-600 gap-1 px-2 py-1 rounded-md hover:text-red-700 hover:bg-red-50 transition duration-150 ${
-                            isActive(item.path)
-                                ? 'text-blue-700 underline'
-                                : 'text-gray-700'
-                        }`}
+                        className={({ isActive }) =>
+                            `flex items-center gap-2 px-3 py-2 rounded-md transition-all duration-200
+               ${
+                   isActive
+                       ? 'text-red-700 underline underline-offset-8 decoration-2 font-bold shadow-md'
+                       : 'text-gray-700 hover:text-red-600 hover:bg-red-50 shadow-sm hover:shadow-md'
+               }`
+                        }
+                        aria-current={isActive(item.path) ? 'page' : undefined}
+                        title={item.label}
                     >
-                        {item.label}
+                        <span className="text-red-600">{item.icon}</span>
+                        <span>{item.label}</span>
                     </NavLink>
                 ))}
         </nav>

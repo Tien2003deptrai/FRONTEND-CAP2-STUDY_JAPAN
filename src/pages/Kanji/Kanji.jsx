@@ -1,9 +1,10 @@
 import axiosInstance from '@/network/httpRequest'
 import { LoadingOverlay } from '@mantine/core'
-import { Add, Book, Delete, Search } from '@mui/icons-material'
+import { Add, Delete } from '@mui/icons-material'
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Swal from 'sweetalert2'
+import { Box, Button, Typography, IconButton } from '@mui/material'
 
 const JLPT_LEVELS = ['N1', 'N2', 'N3', 'N4', 'N5']
 
@@ -30,11 +31,8 @@ function Kanji() {
         try {
             const res = await axiosInstance.get(`/kanji/${jlpt}/${currentPage}`)
             const newKanjis = res.data?.data?.kanji || []
-            if (newKanjis.length === 0) {
-                setHasMore(false)
-            } else {
-                setKanjis((prev) => [...prev, ...newKanjis])
-            }
+            if (newKanjis.length === 0) setHasMore(false)
+            else setKanjis((prev) => [...prev, ...newKanjis])
         } catch (err) {
             console.error('Error fetching kanjis:', err)
         } finally {
@@ -55,7 +53,6 @@ function Kanji() {
             confirmButtonColor: '#d33',
             cancelButtonColor: '#aaa',
         })
-
         if (confirm.isConfirmed) {
             try {
                 await axiosInstance.delete(`/kanji/${id}`)
@@ -78,15 +75,18 @@ function Kanji() {
     )
 
     return (
-        <div className="p-6 mx-auto">
+        <Box maxWidth="1200px" mx="auto" p={4}>
             <LoadingOverlay visible={isLoading} overlayBlur={2} />
 
             {/* Header */}
-            <div className="flex justify-between items-center w-full flex-wrap gap-4">
-                <h1 className="text-2xl font-bold text-gray-800">
-                    Danh sách Kanji
-                </h1>
-
+            <Box
+                mb={4}
+                display="flex"
+                gap={2}
+                flexWrap="wrap"
+                justifyContent="space-between"
+                alignItems="center"
+            >
                 <select
                     value={jlptLevel}
                     onChange={(e) => setJlptLevel(e.target.value)}
@@ -99,75 +99,127 @@ function Kanji() {
                     ))}
                 </select>
 
-                <div className="relative flex-grow min-w-[220px] max-w-sm">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <Search className="h-5 w-5 text-gray-400" />
-                    </div>
-                    <input
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder="Tìm kiếm Kanji hoặc nghĩa..."
-                        className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-red-500 transition-colors"
-                    />
-                </div>
+                <input
+                    type="text"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    placeholder="Tìm kiếm Kanji hoặc nghĩa..."
+                    className="border border-gray-300 rounded-lg px-4 py-2 flex-grow max-w-sm focus:outline-none focus:ring-2 focus:ring-red-400"
+                />
 
                 <Link
-                    to={'create-kanji'}
-                    className="primary-btn inline-flex items-center gap-2"
+                    to="create-kanji"
+                    className="inline-flex items-center gap-2 bg-red-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-red-700 transition"
                 >
                     <Add /> Thêm Kanji
                 </Link>
-            </div>
+            </Box>
 
-            <hr className="my-6" />
+            {/* Grid Kanji Cards */}
+            <Box
+                display="grid"
+                gridTemplateColumns={{
+                    xs: 'repeat(2, 1fr)',
+                    sm: 'repeat(3, 1fr)',
+                    md: 'repeat(4, 1fr)',
+                }}
+                gap={3}
+            >
+                {filteredKanjis.length > 0
+                    ? filteredKanjis.map((kanji) => (
+                          <Box
+                              key={kanji._id}
+                              sx={{
+                                  position: 'relative',
+                                  bgcolor: '#fff0f5',
+                                  borderRadius: 3,
+                                  boxShadow: 3,
+                                  p: 4,
+                                  textAlign: 'center',
+                                  cursor: 'default',
+                                  transition:
+                                      'box-shadow 0.3s ease, transform 0.3s ease',
+                                  '&:hover': {
+                                      boxShadow: 8,
+                                      transform: 'translateY(-6px)',
+                                  },
+                              }}
+                          >
+                              <IconButton
+                                  aria-label={`Xóa Kanji ${kanji.kanji}`}
+                                  onClick={() =>
+                                      handleDeleteKanji(kanji._id, kanji.kanji)
+                                  }
+                                  sx={{
+                                      position: 'absolute',
+                                      top: 8,
+                                      right: 8,
+                                      bgcolor: 'error.light',
+                                      color: 'error.main',
+                                      '&:hover': {
+                                          bgcolor: 'error.main',
+                                          color: 'white',
+                                      },
+                                  }}
+                                  size="small"
+                              >
+                                  <Delete fontSize="small" />
+                              </IconButton>
 
-            {/* List */}
-            <div className="flex flex-col gap-4">
-                {filteredKanjis.map((kanji) => (
-                    <div
-                        key={kanji._id}
-                        className="w-full flex items-center justify-between p-4 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
-                    >
-                        <div className="flex items-center gap-4">
-                            <div className="p-2 bg-red-50 text-red-600 rounded-lg">
-                                <Book />
-                            </div>
-                            <div className="text-gray-900 font-medium">
-                                <span className="text-xl font-bold">
-                                    {kanji.kanji}
-                                </span>{' '}
-                                – {kanji.mean}
-                            </div>
-                        </div>
+                              <Typography
+                                  variant="h3"
+                                  fontWeight="bold"
+                                  color="error.main"
+                                  mb={1}
+                                  userSelect="none"
+                                  sx={{ lineHeight: 1 }}
+                              >
+                                  {kanji.kanji}
+                              </Typography>
+                              <Typography
+                                  variant="body1"
+                                  color="text.secondary"
+                                  userSelect="none"
+                                  sx={{ fontWeight: 600 }}
+                              >
+                                  {kanji.mean}
+                              </Typography>
+                          </Box>
+                      ))
+                    : !isLoading && (
+                          <Typography
+                              variant="h6"
+                              color="text.secondary"
+                              textAlign="center"
+                              gridColumn="1 / -1"
+                              py={8}
+                              userSelect="none"
+                          >
+                              Không tìm thấy Kanji phù hợp với từ khóa "
+                              {searchTerm}"
+                          </Typography>
+                      )}
+            </Box>
 
-                        <button
-                            onClick={() =>
-                                handleDeleteKanji(kanji._id, kanji.kanji)
-                            }
-                            className="px-4 py-2 bg-red-100 text-red-600 rounded-lg text-sm font-medium hover:bg-red-200"
-                        >
-                            <Delete />
-                        </button>
-                    </div>
-                ))}
-            </div>
-
+            {/* Show More */}
             {hasMore && (
-                <button
-                    onClick={handleShowMore}
-                    className="mt-6 py-3 px-6 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
-                >
-                    Xem thêm
-                </button>
+                <Box textAlign="center" mt={5}>
+                    <Button
+                        variant="contained"
+                        color="error"
+                        onClick={handleShowMore}
+                        sx={{
+                            px: 5,
+                            py: 1.5,
+                            fontWeight: 'bold',
+                            fontSize: 16,
+                        }}
+                    >
+                        Xem thêm
+                    </Button>
+                </Box>
             )}
-
-            {!filteredKanjis.length && !isLoading && (
-                <div className="text-center py-8 text-gray-500">
-                    Không tìm thấy Kanji nào phù hợp với từ khóa "{searchTerm}"
-                </div>
-            )}
-        </div>
+        </Box>
     )
 }
 

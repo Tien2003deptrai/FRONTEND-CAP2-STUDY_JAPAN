@@ -4,13 +4,13 @@ import { Avatar, Input, Menu, Modal, Switch } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { Add, ArrowBack, Clear, Delete, Settings } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
-import { use, useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { jsPDF } from 'jspdf'
 import { useTeachers } from '@/hooks/useTeacher'
-import { courseApi, useCourseById } from '@/hooks/useCourses'
+import { useCourseById } from '@/hooks/useCourses'
 
 function AdminCourseDetail() {
     const navigate = useNavigate()
@@ -233,7 +233,7 @@ function AdminCourseDetail() {
                         </button>
                     </Menu.Target>
                     <Menu.Dropdown>
-                        <Menu.Item>
+                        <Menu.Item py={8}>
                             <Switch
                                 label={'Hiển thị'}
                                 defaultChecked={course?.isVisible}
@@ -263,6 +263,7 @@ function AdminCourseDetail() {
                                                 `Khóa học đã được ${isVisible ? 'hiển thị' : 'ẩn'} thành công!`
                                             )
                                         } catch (error) {
+                                            console.log(error)
                                             toast.error(
                                                 'Có lỗi xảy ra, vui lòng thử lại!'
                                             )
@@ -273,7 +274,13 @@ function AdminCourseDetail() {
                                 }}
                             />
                         </Menu.Item>
+                        <Menu.Item py={8}>
+                            <Link to={`/admin/edit/${courseId}`}>
+                                Chỉnh sửa khóa học
+                            </Link>
+                        </Menu.Item>
                         <Menu.Item
+                            py={8}
                             onClick={async () => {
                                 const result = await Swal.fire({
                                     title: 'Xác nhận xóa khóa học',
@@ -292,6 +299,7 @@ function AdminCourseDetail() {
                                         toast.success('Khóa học đã được xóa!')
                                         navigate('/admin/courses')
                                     } catch (err) {
+                                        console.log(err)
                                         toast.error(
                                             'Không thể xóa khóa học. Vui lòng thử lại!'
                                         )
@@ -304,7 +312,7 @@ function AdminCourseDetail() {
                     </Menu.Dropdown>
                 </Menu>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-start gap-2 flex-col">
                 <button
                     onClick={open}
                     className="primary-btn flex items-center gap-4"

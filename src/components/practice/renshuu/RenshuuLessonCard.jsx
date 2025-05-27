@@ -26,7 +26,7 @@ export default function RenshuuLessonCard({ lesson, index, onSelect }) {
                         </div>
                     </div>
                     <Typography className="text-sm text-gray-600 leading-relaxed">
-                        ✍️ Luyện tập từ vựng & ngữ pháp cho bài học này.
+                        Luyện tập từ vựng & ngữ pháp cho bài học này.
                     </Typography>
                 </div>
                 <Button
