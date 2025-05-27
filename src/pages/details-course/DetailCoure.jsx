@@ -42,7 +42,7 @@ function CourseDetail() {
     const course = data?.data?.course || {}
     const courseName = course.name || 'Khóa học'
 
-    const totalLessons = lessons.length
+    const totalLessons = lessons?.length
     const completedLessons = Math.min(maxUnlockedLesson, totalLessons)
     const progress = totalLessons
         ? Math.round((completedLessons / totalLessons) * 100)
@@ -58,14 +58,14 @@ function CourseDetail() {
             return updated
         })
 
-        if (lessons.length > 0 && lessons[currentLessonIndex]?._id) {
+        if (lessons?.length > 0 && lessons[currentLessonIndex]?._id) {
             renshuuData()
         }
     }, [currentLessonIndex, courseId, lessons])
 
     const goToNextLesson = () => {
         const nextIndex = currentLessonIndex + 1
-        if (nextIndex < lessons.length) {
+        if (nextIndex < lessons?.length) {
             setCurrentLessonIndex(nextIndex)
         }
     }
@@ -169,7 +169,7 @@ function CourseDetail() {
                         />
                     )}
 
-                    {lessons && currentLessonIndex < lessons.length - 1 && (
+                    {lessons && currentLessonIndex < lessons?.length - 1 && (
                         <button
                             onClick={goToNextLesson}
                             className={`mt-4 ml-auto px-6 py-2 rounded-lg shadow-md transition w-fit ${

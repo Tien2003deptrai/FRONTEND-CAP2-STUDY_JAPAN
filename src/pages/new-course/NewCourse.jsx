@@ -133,6 +133,7 @@ function NewCourse({ isEditMode }) {
                                     {...register('name')}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Nhập tên khóa học"
+                                    readOnly={user?.role !== 'admin'}
                                 />
                                 {errors.name && (
                                     <p className="text-red-500 text-sm mt-1">
@@ -150,6 +151,7 @@ function NewCourse({ isEditMode }) {
                                     rows={4}
                                     className="w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Nhập mô tả khóa học..."
+                                    readOnly={user?.role !== 'admin'}
                                 />
                                 {errors.description && (
                                     <p className="text-red-500 text-sm mt-1">
