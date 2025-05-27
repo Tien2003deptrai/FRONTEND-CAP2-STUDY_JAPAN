@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
-import AddIcon from '@mui/icons-material/Add'
-import { useStudents } from '@/hooks/useStudents'
 import StudentCard from '@/components/StudentCard'
 import StudentCoursesModal from '@/components/StudentCoursesModal/StudentCoursesModal'
 import StudentDetailModal from '@/components/StudentDetailModal/StudentDetailModal'
+import { useStudents } from '@/hooks/useStudents'
+import AddIcon from '@mui/icons-material/Add'
+import { useState } from 'react'
 
 const transformStudentData = (student) => ({
     id: student._id,
@@ -72,7 +72,7 @@ const Student = () => {
                 <div className="flex justify-between items-center mb-8">
                     <div className="flex items-baseline space-x-3">
                         <h1 className="text-3xl font-semibold text-pink-700">
-                            🌸 Sinh viên
+                            🌸 Học viên
                         </h1>
                         <span className="text-pink-500 text-lg font-medium bg-pink-100 px-3 py-1 rounded-full select-none">
                             {students.length}
@@ -80,14 +80,14 @@ const Student = () => {
                     </div>
                     <button
                         className="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg px-5 py-3 shadow-md transition-transform transform hover:scale-105"
-                        aria-label="Thêm Sinh Viên"
+                        aria-label="Thêm Học Viên"
                     >
                         <AddIcon fontSize="medium" />
-                        Thêm Sinh Viên
+                        Thêm Học Viên
                     </button>
                 </div>
 
-                {/* Grid sinh viên */}
+                {/* Grid học viên */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {students.map((student) => (
                         <div

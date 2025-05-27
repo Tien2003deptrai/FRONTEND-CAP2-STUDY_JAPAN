@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
-import { Menu, MenuItem, IconButton } from '@mui/material'
 import axiosInstance from '@/network/httpRequest'
+import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { IconButton, Menu, MenuItem } from '@mui/material'
+import { useState } from 'react'
 import Swal from 'sweetalert2'
 
 const StudentCard = ({ student, onViewDetail, onViewCourses }) => {
@@ -57,10 +57,10 @@ const StudentCard = ({ student, onViewDetail, onViewCourses }) => {
                     transformOrigin={{ vertical: 'top', horizontal: 'right' }}
                 >
                     <MenuItem onClick={() => handleStatusChange('active')}>
-                        ✅ Active
+                        Active
                     </MenuItem>
                     <MenuItem onClick={() => handleStatusChange('pending')}>
-                        ⏳ Pending
+                        Pending
                     </MenuItem>
                     <MenuItem onClick={() => handleStatusChange('blocked')}>
                         Blocked
