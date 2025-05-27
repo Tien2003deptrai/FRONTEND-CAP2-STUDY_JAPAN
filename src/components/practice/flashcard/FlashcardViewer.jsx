@@ -136,7 +136,7 @@ function FlashcardViewer({ flashcards }) {
                     size="large"
                     onClick={prevCard}
                 >
-                    ⬅️ Trước
+                    Trước
                 </Button>
                 <Button
                     variant="contained"
@@ -144,7 +144,7 @@ function FlashcardViewer({ flashcards }) {
                     size="large"
                     onClick={nextCard}
                 >
-                    Tiếp ➡️
+                    Tiếp
                 </Button>
                 <Button
                     variant="outlined"
@@ -156,7 +156,7 @@ function FlashcardViewer({ flashcards }) {
                         })
                     }
                 >
-                    🧠 Chơi Memory Game
+                    Chơi Memory Game
                 </Button>
             </Stack>
         </Box>

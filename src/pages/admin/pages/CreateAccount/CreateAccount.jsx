@@ -50,7 +50,7 @@ const CreateStudentForm = () => {
             className="max-w-2xl mx-auto mt-10 p-8 bg-white rounded-2xl shadow-xl"
         >
             <h2 className="text-3xl font-bold text-center text-red-700 mb-8">
-                Tạo tài khoản học viên
+                Tạo tài khoản
             </h2>
 
             <form

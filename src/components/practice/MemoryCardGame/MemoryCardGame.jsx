@@ -240,7 +240,7 @@ function MemoryCardGame() {
             sx={{ fontFamily: '"Noto Sans JP", sans-serif', py: 4 }}
         >
             <Typography variant="h4" fontWeight="bold">
-                🎌 Ghép cặp Nhật – Việt
+                Ghép cặp Nhật – Việt
             </Typography>
 
             <Box
@@ -294,16 +294,16 @@ function MemoryCardGame() {
             <Box display="flex" flexWrap="wrap" justifyContent="center" gap={2}>
                 {gameOver ? (
                     <Button variant="contained" onClick={resetGame}>
-                        🔁 Chơi lại
+                        Chơi lại
                     </Button>
                 ) : (
                     <Typography variant="h6">
-                        ✅ {matchedPairs.length} / {flashcards.length} cặp đúng
+                        {matchedPairs.length} / {flashcards.length} cặp đúng
                     </Typography>
                 )}
                 {!hintUsed && !gameOver && (
                     <Button variant="outlined" onClick={useHint}>
-                        🔍 Gợi ý
+                        Gợi ý
                     </Button>
                 )}
                 <Button
@@ -315,7 +315,7 @@ function MemoryCardGame() {
                 </Button>
             </Box>
 
-            <Typography variant="h6">⏱ Thời gian: {timer}s</Typography>
+            <Typography variant="h6">Thời gian: {timer}s</Typography>
 
             <Modal open={openHistory} onClose={() => setOpenHistory(false)}>
                 <Slide
@@ -338,7 +338,7 @@ function MemoryCardGame() {
                         }}
                     >
                         <Typography variant="h6" mb={2} fontWeight="bold">
-                            📜 Lịch sử chơi
+                            Lịch sử chơi
                         </Typography>
                         {historyList.length === 0 ? (
                             <Typography textAlign="center">
@@ -352,11 +352,11 @@ function MemoryCardGame() {
                                     </Typography>
                                     <Divider sx={{ my: 1 }} />
                                     <Typography>
-                                        ✅ Cặp đúng: {h.correctPairs} /{' '}
+                                        Cặp đúng: {h.correctPairs} /{' '}
                                         {h.totalCards}
                                     </Typography>
                                     <Typography>
-                                        ⏱ Thời gian: {h.duration}s
+                                        Thời gian: {h.duration}s
                                     </Typography>
                                 </Box>
                             ))

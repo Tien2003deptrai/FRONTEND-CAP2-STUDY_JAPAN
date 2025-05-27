@@ -76,16 +76,6 @@ const VocabularyList = () => {
 
     return (
         <Box sx={{ px: 3, py: 5, maxWidth: '1200px', mx: 'auto' }}>
-            <Typography
-                variant="h5"
-                align="center"
-                color="error.main"
-                fontWeight="bold"
-                mb={4}
-            >
-                Nihongo Vocab Master
-            </Typography>
-
             <Box textAlign="center" mb={4}>
                 <Button
                     variant={isFlashcardMode ? 'contained' : 'outlined'}

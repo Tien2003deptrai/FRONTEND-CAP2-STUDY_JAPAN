@@ -282,7 +282,7 @@ const KanjiStrokePractice = () => {
                     onClick={fetchNextKanji}
                     className="mt-8 bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-8 py-3 rounded-full font-semibold shadow-md hover:scale-105 transition-all duration-300"
                 >
-                    ➡️ Kanji tiếp theo
+                    Kanji tiếp theo
                 </button>
             )}
         </div>

@@ -46,13 +46,13 @@ function StudentCourse() {
                     </p>
                 ) : isError ? (
                     <div className="text-center text-red-500 font-semibold">
-                        ❌ {error?.message || 'Đã xảy ra lỗi không xác định.'}
+                        {error?.message || 'Đã xảy ra lỗi không xác định.'}
                     </div>
                 ) : courses?.length > 0 ? (
                     <CourseList courses={courses} />
                 ) : (
                     <p className="text-center text-gray-400 text-md">
-                        📭 Không có khoá học nào được tìm thấy.
+                        Không có khoá học nào được tìm thấy.
                     </p>
                 )}
             </div>

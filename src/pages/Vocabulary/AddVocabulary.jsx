@@ -30,7 +30,7 @@ function AddVocabulary() {
             }
         } catch (error) {
             console.error('Lỗi thêm từ vựng:', error)
-            toast.error('❌ Thêm từ vựng thất bại!')
+            toast.error(' Thêm từ vựng thất bại!')
         }
     }
 

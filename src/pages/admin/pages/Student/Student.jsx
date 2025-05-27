@@ -49,16 +49,16 @@ const Student = () => {
 
     if (isLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+            <div className="flex items-center justify-center min-h-screen bg-pink-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-pink-400"></div>
             </div>
         )
     }
 
     if (error) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-red-500">
+            <div className="flex items-center justify-center min-h-screen bg-pink-50">
+                <div className="text-red-600 text-lg font-semibold">
                     Lỗi tải danh sách sinh viên: {error.message}
                 </div>
             </div>
@@ -66,39 +66,49 @@ const Student = () => {
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen p-6">
+        <div className="bg-pink-50 min-h-screen p-8">
             <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center">
-                        <h1 className="text-lg font-medium text-gray-800">
-                            Sinh viên
+                {/* Header */}
+                <div className="flex justify-between items-center mb-8">
+                    <div className="flex items-baseline space-x-3">
+                        <h1 className="text-3xl font-semibold text-pink-700">
+                            🌸 Sinh viên
                         </h1>
-                        <span className="ml-2 text-sm text-gray-500">
+                        <span className="text-pink-500 text-lg font-medium bg-pink-100 px-3 py-1 rounded-full select-none">
                             {students.length}
                         </span>
                     </div>
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
-                        <AddIcon fontSize="small" className="mr-1" />
+                    <button
+                        className="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg px-5 py-3 shadow-md transition-transform transform hover:scale-105"
+                        aria-label="Thêm Sinh Viên"
+                    >
+                        <AddIcon fontSize="medium" />
                         Thêm Sinh Viên
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Grid sinh viên */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {students.map((student) => (
-                        <StudentCard
+                        <div
                             key={student.id}
-                            student={student}
-                            onViewDetail={() =>
-                                handleViewStudentDetail(student)
-                            }
-                            onViewCourses={() =>
-                                handleViewStudentCourses(student)
-                            }
-                        />
+                            className="bg-white rounded-xl shadow-lg border border-pink-200 p-6 hover:shadow-2xl transition-shadow cursor-pointer"
+                        >
+                            <StudentCard
+                                student={student}
+                                onViewDetail={() =>
+                                    handleViewStudentDetail(student)
+                                }
+                                onViewCourses={() =>
+                                    handleViewStudentCourses(student)
+                                }
+                            />
+                        </div>
                     ))}
                 </div>
             </div>
 
+            {/* Modals */}
             {showDetailModal && selectedStudent && (
                 <StudentDetailModal
                     studentId={selectedStudent.id}

@@ -17,9 +17,11 @@ const ExamDetailPage = () => {
             setError('Không tìm thấy ID bài thi')
             return
         }
-        
+
         if (!exam.questions || exam.questions.length === 0) {
-            setError('Bài thi này hiện không có câu hỏi nào. Vui lòng liên hệ giáo viên.')
+            setError(
+                'Bài thi này hiện không có câu hỏi nào. Vui lòng liên hệ giáo viên.'
+            )
             return
         }
 
@@ -44,7 +46,7 @@ const ExamDetailPage = () => {
                 state: { attemptId: res.attemptId },
             })
         } catch (error) {
-            console.error('❌ Lỗi khi startExam:', error)
+            console.error(' Lỗi khi startExam:', error)
             setError(
                 error?.response?.data?.message || 'Không thể bắt đầu bài thi'
             )
@@ -93,8 +95,7 @@ const ExamDetailPage = () => {
                 {completedAttempt ? (
                     <>
                         <p className="mt-4 text-sm text-red-600">
-                            ❌ Bạn đã hoàn thành bài thi này và không thể làm
-                            lại.
+                            Bạn đã hoàn thành bài thi này và không thể làm lại.
                         </p>
                         <button
                             disabled
@@ -120,7 +121,7 @@ const ExamDetailPage = () => {
             {history && history.length > 0 && (
                 <div>
                     <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-                        📝 Lịch sử làm bài
+                        Lịch sử làm bài
                     </h2>
                     <div className="space-y-4">
                         {history.map((attempt) => (

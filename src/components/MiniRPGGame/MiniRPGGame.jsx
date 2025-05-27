@@ -165,7 +165,7 @@ function MiniRPGGame() {
     if (!questions.length) {
         return (
             <Typography color="error" textAlign="center" mt={5}>
-                ⚠️ Không có câu hỏi nào.
+                Không có câu hỏi nào.
             </Typography>
         )
     }
@@ -200,7 +200,7 @@ function MiniRPGGame() {
                     color="error"
                     gutterBottom
                 >
-                    🧠 Mini RPG Quiz Game
+                    Mini RPG Quiz Game
                 </Typography>
             </motion.div>
 
@@ -293,7 +293,7 @@ function MiniRPGGame() {
                                 Thời gian: {timeLeft}s
                             </Typography>
                             <Typography mt={2}>{message}</Typography>
-                            <Typography mt={1}>🔥 Điểm: {score}</Typography>
+                            <Typography mt={1}>Điểm: {score}</Typography>
 
                             {gameOver && (
                                 <Box mt={4}>
@@ -310,7 +310,7 @@ function MiniRPGGame() {
                                                 setOpenLeaderboard(true)
                                             }
                                         >
-                                            🏆 Xem bảng xếp hạng
+                                            Xem bảng xếp hạng
                                         </Button>
                                     </Box>
                                 </Box>
@@ -342,7 +342,7 @@ function MiniRPGGame() {
                         }}
                     >
                         <Typography variant="h6" color="primary">
-                            🏆 Bảng xếp hạng
+                            Bảng xếp hạng
                         </Typography>
                         {leaderboard.map((entry, index) => (
                             <Typography

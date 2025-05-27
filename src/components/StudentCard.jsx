@@ -63,7 +63,7 @@ const StudentCard = ({ student, onViewDetail, onViewCourses }) => {
                         ⏳ Pending
                     </MenuItem>
                     <MenuItem onClick={() => handleStatusChange('blocked')}>
-                        ❌ Blocked
+                        Blocked
                     </MenuItem>
                 </Menu>
             </div>

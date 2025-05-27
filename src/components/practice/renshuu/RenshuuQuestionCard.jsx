@@ -17,7 +17,7 @@ export default function RenshuuQuestionCard({
         <Card className="rounded-xl border border-gray-100 bg-[#fffafa] hover:shadow-md transition-all">
             <CardContent>
                 <Typography className="text-md font-bold text-[#b71c1c] mb-3">
-                    📝 Câu {index + 1}: {question.content}
+                    Câu {index + 1}: {question.content}
                 </Typography>
                 <RadioGroup
                     value={selected || ''}

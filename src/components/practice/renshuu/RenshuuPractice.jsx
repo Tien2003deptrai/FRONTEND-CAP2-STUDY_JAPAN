@@ -37,7 +37,7 @@ export default function RenshuuPractice({
         if (!hasAnsweredAll) {
             setToast({
                 open: true,
-                message: '❗ Vui lòng chọn đáp án cho tất cả các câu hỏi.',
+                message: ' Vui lòng chọn đáp án cho tất cả các câu hỏi.',
                 severity: 'warning',
             })
             return
@@ -65,10 +65,10 @@ export default function RenshuuPractice({
                 severity: 'success',
             })
         } catch (err) {
-            console.error('❌ Submit failed:', err)
+            console.error(' Submit failed:', err)
             setToast({
                 open: true,
-                message: '❌ Gặp lỗi khi nộp bài.',
+                message: ' Gặp lỗi khi nộp bài.',
                 severity: 'error',
             })
         }

@@ -51,7 +51,6 @@ const Teacher = () => {
         setShowCoursesModal(false)
     }
 
-    // ✅ Hàm cập nhật status trong state
     const handleStatusUpdated = (id, newStatus) => {
         setTeachers((prev) =>
             prev.map((teacher) =>
@@ -62,52 +61,57 @@ const Teacher = () => {
 
     if (isLoading) {
         return (
-            <div className="flex justify-center items-center h-screen">
-                Đang tải dữ liệu...
+            <div className="flex justify-center items-center h-screen bg-pink-50">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-pink-400"></div>
             </div>
         )
     }
 
     if (error) {
         return (
-            <div className="text-red-500 text-center mt-10">
+            <div className="text-red-600 text-center mt-10">
                 Lỗi tải dữ liệu giáo viên.
             </div>
         )
     }
 
     return (
-        <div className="bg-gray-50 min-h-screen p-6">
+        <div className="bg-pink-50 min-h-screen p-8">
             <div className="max-w-7xl mx-auto">
-                <div className="flex justify-between items-center mb-6">
-                    <div className="flex items-center">
-                        <h1 className="text-lg font-medium text-gray-800">
-                            Giáo viên
+                {/* Header */}
+                <div className="flex justify-between items-center mb-8">
+                    <div className="flex items-baseline space-x-3">
+                        <h1 className="text-3xl font-semibold text-pink-700">
+                            🌸 Giáo viên
                         </h1>
-                        <span className="ml-2 text-sm text-gray-500">
+                        <span className="text-pink-500 text-lg font-medium bg-pink-100 px-3 py-1 rounded-full select-none">
                             {teachers.length}
                         </span>
                     </div>
-                    <button className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md flex items-center">
-                        <AddIcon fontSize="small" className="mr-1" />
+                    <button
+                        className="inline-flex items-center gap-2 bg-pink-600 hover:bg-pink-700 text-white font-medium rounded-lg px-5 py-3 shadow-md transition-transform transform hover:scale-105"
+                        aria-label="Thêm Giáo Viên"
+                    >
+                        <AddIcon fontSize="medium" />
                         Thêm Giáo Viên
                     </button>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {/* Grid giáo viên */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                     {teachers.map((teacher) => (
                         <div
                             key={teacher.id}
-                            className="bg-white rounded-lg shadow-sm border p-4"
+                            className="bg-white rounded-xl shadow-lg border border-pink-200 p-6 hover:shadow-2xl transition-shadow cursor-pointer"
                         >
                             <TeacherCard
                                 teacher={teacher}
                                 onStatusUpdated={handleStatusUpdated}
                             />
-                            <div className="mt-4 flex justify-between">
+                            <div className="mt-5 flex justify-between">
                                 <button
                                     onClick={() => handleViewDetail(teacher)}
-                                    className="flex items-center px-3 py-1 text-sm text-blue-600 hover:text-blue-800"
+                                    className="flex items-center text-pink-600 hover:text-pink-800 text-sm font-semibold"
                                 >
                                     <VisibilityIcon
                                         fontSize="small"
@@ -117,7 +121,7 @@ const Teacher = () => {
                                 </button>
                                 <button
                                     onClick={() => handleViewCourses(teacher)}
-                                    className="flex items-center px-3 py-1 text-sm text-green-600 hover:text-green-800"
+                                    className="flex items-center text-green-600 hover:text-green-800 text-sm font-semibold"
                                 >
                                     <LibraryBooksIcon
                                         fontSize="small"

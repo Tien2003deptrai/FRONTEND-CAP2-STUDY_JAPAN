@@ -108,7 +108,7 @@ function CourseDetail() {
                         }
                         className="bg-red-600 text-white hover:bg-red-700 px-4 py-2 rounded-full shadow-md text-sm font-semibold"
                     >
-                        🎮 Chơi game
+                        Chơi game
                     </Button>
 
                     <div className="relative w-12 h-12">
