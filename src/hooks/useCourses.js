@@ -22,7 +22,9 @@ const courseApi = {
 
     getCourseById: async (courseId) => {
         const response = await axiosInstance.get(`/course/${courseId}`)
-        return response.data
+        console.log('getCourseById response:', response.data.data)
+
+        return response.data.data
     },
 
     updateCourseStatus: async (courseId, status) => {

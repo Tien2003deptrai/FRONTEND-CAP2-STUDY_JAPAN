@@ -1,21 +1,23 @@
 import { useStudents } from '@/hooks/useStudents'
 import axiosInstance from '@/network/httpRequest'
-import { Avatar, Input, Modal } from '@mantine/core'
+import { Avatar, Input, Menu, Modal, Switch } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { Add, ArrowBack, Clear, Delete } from '@mui/icons-material'
+import { Add, ArrowBack, Clear, Delete, Settings } from '@mui/icons-material'
 import { useQuery } from '@tanstack/react-query'
-import { useState } from 'react'
+import { use, useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { jsPDF } from 'jspdf'
 import { useTeachers } from '@/hooks/useTeacher'
+import { courseApi, useCourseById } from '@/hooks/useCourses'
 
 function AdminCourseDetail() {
     const navigate = useNavigate()
     const { state } = useLocation()
-    const course = state?.course
-    console.log('course', course)
+    const courseId = state?.course?._id
+    const { data: course, refetch: refetchCourse } = useCourseById(courseId)
+    console.log(course)
 
     // Modal mở/đóng
     const [opened, { open, close }] = useDisclosure(false)
@@ -44,19 +46,19 @@ function AdminCourseDetail() {
 
     // Danh sách học viên đã đăng ký
     const { data: enrolledStudents, refetch } = useQuery({
-        queryKey: ['enrolledStudents', course._id],
+        queryKey: ['enrolledStudents', courseId],
         queryFn: async () => {
-            const res = await axiosInstance.get(`course/${course._id}/students`)
+            const res = await axiosInstance.get(`course/${courseId}/students`)
             return res.data.data
         },
-        enabled: !!course._id,
+        enabled: !!courseId,
     })
 
     // Lưu học viên được chọn vào khóa học
     const onSaveEnrollStudents = async () => {
         const studentIds = selectedStudents.map((student) => student._id)
         const payload = {
-            courseId: course._id,
+            courseId: courseId,
             studentIds,
         }
         try {
@@ -86,7 +88,7 @@ function AdminCourseDetail() {
             return
         }
         const payload = {
-            courseId: course._id,
+            courseId: courseId,
             teacherId: selectedTeacher._id,
         }
         try {
@@ -99,7 +101,7 @@ function AdminCourseDetail() {
                 closeTeacher()
                 setTeacherSearchTerm('')
                 setSelectedTeacher(null)
-                refetch()
+                refetchCourse()
             } else {
                 toast.error('Có lỗi xảy ra, vui lòng thử lại!')
             }
@@ -125,7 +127,7 @@ function AdminCourseDetail() {
         if (confirmResult.isConfirmed) {
             try {
                 const payload = {
-                    courseId: course._id,
+                    courseId: courseId,
                     studentId,
                 }
                 const response = await axiosInstance.post(
@@ -169,6 +171,39 @@ function AdminCourseDetail() {
         doc.save('danh_sach_sinh_vien.pdf')
     }
 
+    const toggleCourseVisibility = async (courseId) => {
+        try {
+            const response = await axiosInstance.put(
+                `course/visibility/${courseId}`
+            )
+            if (response.status === 200) {
+                refetchCourse()
+                return true
+            } else {
+                throw new Error(
+                    'Chỉnh sửa trạng thái hiển thị khóa học thất bại'
+                )
+            }
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+    const deleteCourse = async (courseId) => {
+        try {
+            const response = await axiosInstance.delete(`course/${courseId}`)
+            if (response.status === 200) {
+                navigate('/admin/courses')
+                return true
+            } else {
+                throw new Error('Xóa khóa học thất bại')
+            }
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
+    }
+
     return (
         <div className="max-w-6xl mx-auto px-4 py-6">
             <ToastContainer
@@ -191,24 +226,99 @@ function AdminCourseDetail() {
                         {course?.name}
                     </span>
                 </div>
+                <Menu>
+                    <Menu.Target>
+                        <button className="p-2 rounded-full hover:bg-gray-100 transition text-gray-600">
+                            <Settings />
+                        </button>
+                    </Menu.Target>
+                    <Menu.Dropdown>
+                        <Menu.Item>
+                            <Switch
+                                label={'Hiển thị'}
+                                defaultChecked={course?.isVisible}
+                                labelPosition={'left'}
+                                onChange={async (e) => {
+                                    const isVisible = e.currentTarget.checked
 
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={open}
-                        className="primary-btn flex items-center gap-4"
-                    >
-                        <Add fontSize="small" /> <span>Thêm học viên</span>
-                    </button>
-                    <button
-                        onClick={openTeacher}
-                        className="primary-btn flex items-center gap-4"
-                    >
-                        <Add fontSize="small" /> <span>Thêm giáo viên</span>
-                    </button>
-                </div>
+                                    const confirmResult = await Swal.fire({
+                                        title: 'Xác nhận thay đổi',
+                                        text: `Bạn có chắc muốn ${
+                                            isVisible ? 'hiển thị' : 'ẩn'
+                                        } khóa học này?`,
+                                        icon: 'question',
+                                        showCancelButton: true,
+                                        confirmButtonColor: '#3085d6',
+                                        cancelButtonColor: '#aaa',
+                                        confirmButtonText: 'Xác nhận',
+                                        cancelButtonText: 'Hủy',
+                                    })
+
+                                    if (confirmResult.isConfirmed) {
+                                        try {
+                                            await toggleCourseVisibility(
+                                                courseId
+                                            )
+                                            toast.success(
+                                                `Khóa học đã được ${isVisible ? 'hiển thị' : 'ẩn'} thành công!`
+                                            )
+                                        } catch (error) {
+                                            toast.error(
+                                                'Có lỗi xảy ra, vui lòng thử lại!'
+                                            )
+                                        }
+                                    } else {
+                                        e.preventDefault()
+                                    }
+                                }}
+                            />
+                        </Menu.Item>
+                        <Menu.Item
+                            onClick={async () => {
+                                const result = await Swal.fire({
+                                    title: 'Xác nhận xóa khóa học',
+                                    text: 'Bạn có chắc chắn muốn xóa khóa học này? Hành động này không thể hoàn tác.',
+                                    icon: 'warning',
+                                    showCancelButton: true,
+                                    confirmButtonText: 'Xóa',
+                                    cancelButtonText: 'Hủy',
+                                    confirmButtonColor: '#d33',
+                                    cancelButtonColor: '#3085d6',
+                                })
+
+                                if (result.isConfirmed) {
+                                    try {
+                                        await deleteCourse(courseId)
+                                        toast.success('Khóa học đã được xóa!')
+                                        navigate('/admin/courses')
+                                    } catch (err) {
+                                        toast.error(
+                                            'Không thể xóa khóa học. Vui lòng thử lại!'
+                                        )
+                                    }
+                                }
+                            }}
+                        >
+                            <p className="text-md text-red-600">Xoá khóa học</p>
+                        </Menu.Item>
+                    </Menu.Dropdown>
+                </Menu>
             </div>
-
-            <hr className="mb-6" />
+            <div className="flex items-center gap-2">
+                <button
+                    onClick={open}
+                    className="primary-btn flex items-center gap-4"
+                >
+                    <Add fontSize="small" /> <span>Thêm học viên</span>
+                </button>
+                <button
+                    onClick={openTeacher}
+                    className="primary-btn flex items-center gap-4"
+                >
+                    <Add fontSize="small" /> <span>Thêm giáo viên</span>
+                </button>
+            </div>
+            <hr className="my-6" />
 
             <div className="mb-6">
                 <h2 className="italic text-lg font-medium text-gray-600 mb-1">
