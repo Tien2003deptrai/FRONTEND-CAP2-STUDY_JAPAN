@@ -1,6 +1,5 @@
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { motion } from 'framer-motion'
 import axiosInstance from '@/network/httpRequest'
 import Swal from 'sweetalert2'
 
@@ -23,12 +22,13 @@ const CreateStudentForm = () => {
                 ...data,
                 roles: data.roles || 'student', // đảm bảo có role
             })
-
-            Swal.fire({
-                icon: 'success',
-                title: 'Tạo tài khoản thành công!',
-                html: `<p>Email: <strong>${data.email}</strong></p><p>Mật khẩu đã được gửi qua email.</p>`,
-            })
+            if (response.status == 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Tạo tài khoản thành công!',
+                    html: `<p>Email: <strong>${data.email}</strong></p><p>Mật khẩu đã được gửi qua email.</p>`,
+                })
+            }
 
             reset()
         } catch (error) {
