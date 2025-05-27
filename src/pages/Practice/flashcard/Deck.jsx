@@ -21,7 +21,7 @@ function Deck() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {decks?.map((deck) => (
                     <Link key={deck._id} to={`${deck._id}`} className="group">
-                        <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-6">
+                        <div className="bg-white rounded-lg shadow-sm hover:shadow-md transition-all duration-200 p-6 border border-gray-200 hover:border-red-500 border-solid">
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="p-2 bg-red-50 text-red-600 rounded-lg">
                                     <Book />
