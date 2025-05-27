@@ -2,7 +2,7 @@ import React from 'react'
 import { useForm } from 'react-hook-form'
 import axiosInstance from '@/network/httpRequest'
 import Swal from 'sweetalert2'
-
+import { motion } from 'framer-motion'
 const rolesOptions = [
     { label: 'Học viên', value: 'student' },
     { label: 'Giáo viên', value: 'teacher' },
