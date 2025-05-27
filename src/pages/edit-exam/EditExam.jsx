@@ -86,10 +86,8 @@ function EditExam() {
                     <AlarmOffOutlined fontSize="small" />
                     Kết thúc:
                     <p className="tracking-wider font-semibold">
-                        {examData?.startTime
-                            ? dayjs(examData.startTime).format(
-                                  'DD/MM/YYYY hh:mm'
-                              )
+                        {examData?.endTime
+                            ? dayjs(examData.endTime).format('DD/MM/YYYY hh:mm')
                             : 'Chưa có'}
                     </p>
                 </div>
